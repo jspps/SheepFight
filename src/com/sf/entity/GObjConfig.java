@@ -20,7 +20,7 @@ public class GObjConfig {
 	static final public String Fmt_JsonState = "{\"code\":\"%s\"}";
 	static public int NM_Runway = 5; // 总共有多少跑道(NM = NumMax)
 	static public int NM_Room = 2; // 一个房间最大人数
-	static public int LensRunway = 10; // 跑道长度
+	static public int LM_Runway = 10; // 跑道总长度(LM = LengthMax)
 	static public int NM_OnLine = 100000; // 同时在线人数(超过了就排队)
 	static public int N_Init_Forage = 100; // 初始草料值
 }

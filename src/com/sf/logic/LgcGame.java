@@ -23,6 +23,8 @@ import com.sf.entity.Player;
 public class LgcGame extends LgcRoom {
 
 	private static final long serialVersionUID = 1L;
+	
+	static public boolean isMustEncode = false;
 
 	static final protected String base64(String src, boolean encode) {
 		try {
@@ -61,10 +63,15 @@ public class LgcGame extends LgcRoom {
 		long sessionId = MapEx.getLong(pars, GObjConfig.K_SesID);
 		return (GObjSession) getSession(sessionId);
 	}
+	
+	static final private boolean isEncode(Map<String, String> pars){
+		boolean isEncode = MapEx.getBoolean(pars, "isEncode");
+		return isMustEncode || isEncode;
+	}
 
 	/** 心跳 **/
 	static public String heart(Map<String, String> pars) {
-		boolean isEncode = MapEx.getBoolean(pars, "isEncode");
+		boolean isEncode = isEncode(pars);
 		GObjSession ses = mySession(pars);
 		if (ses == null) {
 			pars.clear();
@@ -80,9 +87,9 @@ public class LgcGame extends LgcRoom {
 
 	/** 登录 **/
 	static public String login(Map<String, String> pars) {
+		boolean isEncode = isEncode(pars);
 		String lgid = MapEx.getString(pars, "lgid");
 		String lgpwd = MapEx.getString(pars, "lgpwd");
-		boolean isEncode = MapEx.getBoolean(pars, "isEncode");
 		if (StrEx.isEmpty(lgid)) {
 			pars.clear();
 			pars.put("tip", "帐号为空了");
@@ -116,7 +123,7 @@ public class LgcGame extends LgcRoom {
 
 	/** 放羊 **/
 	static public String downSheep(Map<String, String> pars) {
-		boolean isEncode = MapEx.getBoolean(pars, "isEncode");
+		boolean isEncode = isEncode(pars);
 		GObjSession ses = mySession(pars);
 		if (ses == null) {
 			pars.clear();

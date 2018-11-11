@@ -2,6 +2,7 @@
 	"code": "success",
 	"msg": {
 		"time_ms": 1541924503373,
+		"lens_way":10,
 		"sesid": 10031530743173120,
 		"enemy": 与player一样(可为空),
 		"listRunning": 跑道的羊羊(可为空),

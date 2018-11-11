@@ -11,7 +11,7 @@ import com.sf.entity.BeanOrigin;
 public class Session extends BeanOrigin {
 	private static final long serialVersionUID = 1L;
 
-	public long sessionID;
+	protected long sessionID;
 	private long timeOverdue;
 	private long creattime;
 

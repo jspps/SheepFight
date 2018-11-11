@@ -32,6 +32,10 @@ public class GameServlet extends AbsHandlerDispatcher {
 			outVal = sysNowTime(pars);
 			break;
 		}
+		case 101: {
+			outVal = gameEncode(pars);
+			break;
+		}
 		default:
 			outVal = disp(cmd, pars);
 			break;
@@ -41,6 +45,12 @@ public class GameServlet extends AbsHandlerDispatcher {
 
 	String sysNowTime(Map<String, String> pars) {
 		return String.valueOf(DateEx.now());
+	}
+	
+	String gameEncode(Map<String, String> pars) {
+		boolean isEncode = MapEx.getBoolean(pars, "isEncode");
+		LgcGame.isMustEncode = isEncode;
+		return String.valueOf(isEncode);
 	}
 
 	String disp(int cmd, Map<String, String> pars) {

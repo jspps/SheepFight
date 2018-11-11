@@ -1,12 +1,10 @@
 package com.sf.logic;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import com.bowlong.util.CalendarEx;
 import com.sf.entity.GObjConfig;
 import com.sf.entity.GObjRoom;
 import com.sf.entity.GObjSession;
@@ -72,16 +70,14 @@ class LgcRoom extends MgrSession {
 
 	static final public void addSession(GObjSession ses) {
 		String vKey = String.format("%s_%s", ses.getLgid(), ses.getLgpwd());
-		mapLg2Key.put(vKey, ses.sessionID);
-		mapSession.put(ses.sessionID, ses);
-		chgRoom(ses.getRoomid(), ses.sessionID, true);
+		mapLg2Key.put(vKey, ses.getSessionID());
+		mapSession.put(ses.getSessionID(), ses);
+		chgRoom(ses.getRoomid(), ses.getSessionID(), true);
 	}
 
-	static final public Map<String, Object> heart(GObjSession ses, Map<String, Object> pars) {
-		if (pars == null)
-			pars = new HashMap<String, Object>();
-		pars.put("time_ms", CalendarEx.now());
-		pars.put(GObjConfig.K_SesID, ses.getSessionID());
+	static final public Map<String, Object> heart(GObjSession ses,
+			Map<String, Object> pars) {
+		pars = ses.toMapMust(pars);
 
 		List<NotifyType> _list = new ArrayList<NotifyType>();
 		_list.addAll(ses.getListNotify());

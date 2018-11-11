@@ -83,10 +83,7 @@ public class GObjSession extends Session {
 	}
 
 	public Map<String, Object> toMap(Map<String, Object> map) {
-		if (map == null)
-			map = new HashMap<String, Object>();
-		map.put(GObjConfig.K_SesID, sessionID);
-		map.put("time_ms", CalendarEx.now());
+		map = toMapMust(map);
 		map.put("player", curr.toMap());
 		if (enemy != null) {
 			map.put("enemy", enemy.toMap());
@@ -96,6 +93,15 @@ public class GObjSession extends Session {
 
 	public Map<String, Object> toMap() {
 		return toMap(null);
+	}
+	
+	public Map<String, Object> toMapMust(Map<String, Object> map) {
+		if (map == null)
+			map = new HashMap<String, Object>();
+		map.put(GObjConfig.K_SesID, sessionID);
+		map.put("time_ms", CalendarEx.now());
+		map.put("lens_way", GObjConfig.LM_Runway);
+		return map;
 	}
 
 	public void addNotify(NotifyType notifyType) {
