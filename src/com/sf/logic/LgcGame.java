@@ -58,13 +58,18 @@ public class LgcGame extends LgcRoom {
 		}
 		return String.format(GObjConfig.Fmt_JsonMsg, state, msg);
 	}
+	
+	static final public String msg(String state, Map<String, ?> srcMap){
+		boolean encode = isEncode(srcMap);
+		return msg(state, srcMap, encode);
+	}
 
 	static final private GObjSession mySession(Map<String, String> pars) {
 		long sessionId = MapEx.getLong(pars, GObjConfig.K_SesID);
 		return (GObjSession) getSession(sessionId);
 	}
 	
-	static final private boolean isEncode(Map<String, String> pars){
+	static final private boolean isEncode(Map<String, ?> pars){
 		boolean isEncode = MapEx.getBoolean(pars, "isEncode");
 		return isMustEncode || isEncode;
 	}
