@@ -1,0 +1,33 @@
+{
+	"code": "success",
+	"msg": {
+		"player": {
+			"roomid": 10031530680389632,
+			"icon": "021089204",
+			"name": "021089204",
+			"forage": 100,
+			"listRunning": [],
+			"big": {
+				"index": 3,
+				"speed": 1,
+				"name": "大羊",
+				"power": 4
+			},
+			"small": {
+				"index": 1,
+				"speed": 1,
+				"name": "小羊",
+				"power": 1
+			},
+			"middle": {
+				"index": 2,
+				"speed": 1,
+				"name": "中羊",
+				"power": 2
+			}
+		},
+		"enemy": 可能为空,不为空的时候，参数与player一样
+		"time_ms": 1541924503373,
+		"sesid": 10031530743173120
+	}
+}

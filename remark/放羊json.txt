@@ -1,0 +1,16 @@
+{
+	"code": "success",
+	"msg": {
+		"listRunning": [{
+			"belongTo": 10057184113070080,
+			"index": 1,
+			"numRunway": 1,
+			"isRunning": true,
+			"speed": 1,
+			"name": "小羊",
+			"power": 1,
+			"runTo": 10057122419052544
+		}],
+		"sesid": 10057184113070080
+	}
+}

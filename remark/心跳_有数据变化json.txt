@@ -1,0 +1,11 @@
+{
+	"code": "success",
+	"msg": {
+		"time_ms": 1541924503373,
+		"sesid": 10031530743173120,
+		"enemy": 与player一样(可为空),
+		"listRunning": 跑道的羊羊(可为空),
+	}
+}
+
+一般情况下，enemy 不会 listRunning 同时存在(有特殊情况)
