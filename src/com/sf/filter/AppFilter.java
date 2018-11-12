@@ -33,8 +33,8 @@ public class AppFilter extends BasicFilter {
 		if (uri.contains("/Svlet/Game")) {
 			int cmd = MapEx.getInt(pars, "cmd");
 			isFitler = (cmd > 1000) && (cmd != 1000);
-			isFitler = isFitler && isFilterTime(pars, key_time);
 		}
+		isFitler = isFitler && isFilterTime(pars, key_time);
 		isFitler = isFitler || LgcGame.isFilter4NetCount(pars,refObj);
 		if(isFitler){
 			netCount = refObj.val;
@@ -49,7 +49,7 @@ public class AppFilter extends BasicFilter {
 		if(netCount > 0)
 			pars.put("tip", String.format("每%s秒超过了%s条请求,当前已请求%s条!",(GObjConfig.LS_Net / 1000),GObjConfig.LN_Net,netCount));
 		else
-			pars.put("tip", (state == 1)?"消息过时了!":"消息带有有sql注入");
+			pars.put("tip", (state == 3)?"消息带有有sql注入":"消息过时了!");
 		return LgcGame.msg(GObjConfig.S_Fails, pars);
 	}
 }
