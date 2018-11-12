@@ -5,11 +5,11 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.bowlong.third.jsp.AbsDispatcherServlet;
 import com.bowlong.tool.TkitJsp;
 import com.bowlong.util.DateEx;
 import com.bowlong.util.MapEx;
 import com.sf.logic.LgcGame;
-import com.sf.servlet.basic.AbsHandlerDispatcher;
 
 /**
  * 统一入口
@@ -17,13 +17,12 @@ import com.sf.servlet.basic.AbsHandlerDispatcher;
  * @author Canyon
  * 
  */
-public class GameServlet extends AbsHandlerDispatcher {
+public class GameServlet extends AbsDispatcherServlet {
 	private static final long serialVersionUID = 1L;
 	static final Object objLock = new Object();
 
 	@Override
-	public String HandlerDispatcher(HttpServletRequest req,
-			HttpServletResponse resp) {
+	public String dispatcher(HttpServletRequest req, HttpServletResponse resp) {
 		Map<String, String> pars = TkitJsp.getMapAllParams(req, true);
 		int cmd = MapEx.getInt(pars, "cmd");
 		String outVal = "";
@@ -46,7 +45,7 @@ public class GameServlet extends AbsHandlerDispatcher {
 	String sysNowTime(Map<String, String> pars) {
 		return String.valueOf(DateEx.now());
 	}
-	
+
 	String gameEncode(Map<String, String> pars) {
 		boolean isEncode = MapEx.getBoolean(pars, "isEncode");
 		LgcGame.isMustEncode = isEncode;
