@@ -7,6 +7,7 @@ import com.bowlong.lang.StrEx;
 import com.bowlong.reflect.JsonHelper;
 import com.bowlong.security.Base64;
 import com.bowlong.util.MapEx;
+import com.bowlong.util.Ref;
 import com.sf.entity.GObjConfig;
 import com.sf.entity.GObjSession;
 import com.sf.entity.GObjType;
@@ -64,7 +65,7 @@ public class LgcGame extends LgcRoom {
 		return msg(state, srcMap, encode);
 	}
 
-	static final private GObjSession mySession(Map<String, String> pars) {
+	static final private GObjSession mySession(Map<String, ?> pars) {
 		long sessionId = MapEx.getLong(pars, GObjConfig.K_SesID);
 		return (GObjSession) getSession(sessionId);
 	}
@@ -72,6 +73,18 @@ public class LgcGame extends LgcRoom {
 	static final private boolean isEncode(Map<String, ?> pars){
 		boolean isEncode = MapEx.getBoolean(pars, "isEncode");
 		return isMustEncode || isEncode;
+	}
+	
+	static final public boolean isFilter4NetCount(Map<String, ?> pars,Ref<Integer> refPars){ 
+		GObjSession ses = mySession(pars);
+		if(ses != null){
+			ses.recordNetCount();
+			if(refPars != null){
+				refPars.val = ses.getNetCount();
+			}
+			return ses.isNetMore();
+		}
+		return false;
 	}
 
 	/** 心跳 **/

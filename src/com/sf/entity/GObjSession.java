@@ -23,6 +23,8 @@ public class GObjSession extends Session {
 	String lgid;
 	String lgpwd;
 
+	long lmtLastTime = 0;// 上一次计数时间
+	int netCount = 0;// 5秒内总限定次数
 	List<NotifyType> lNotify = new ArrayList<NotifyType>();
 
 	public long getRoomid() {
@@ -69,6 +71,10 @@ public class GObjSession extends Session {
 		return lNotify;
 	}
 
+	public int getNetCount() {
+		return netCount;
+	}
+
 	public GObjSession() {
 		super();
 	}
@@ -94,7 +100,7 @@ public class GObjSession extends Session {
 	public Map<String, Object> toMap() {
 		return toMap(null);
 	}
-	
+
 	public Map<String, Object> toMapMust(Map<String, Object> map) {
 		if (map == null)
 			map = new HashMap<String, Object>();
@@ -112,10 +118,25 @@ public class GObjSession extends Session {
 			lNotify.add(notifyType);
 		}
 	}
-	
+
 	public void rmNotify(NotifyType notifyType) {
 		synchronized (this) {
 			lNotify.remove(notifyType);
 		}
+	}
+
+	public void recordNetCount() {
+		long _now = CalendarEx.now();
+		long diff = _now - lmtLastTime;
+		if (diff > GObjConfig.LS_Net) {
+			lmtLastTime = _now;
+			netCount = 1;
+		} else {
+			netCount++;
+		}
+	}
+
+	public boolean isNetMore() {
+		return netCount >= GObjConfig.LN_Net;
 	}
 }
