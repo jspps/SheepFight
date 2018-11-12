@@ -14,7 +14,6 @@ import com.sf.logic.LgcGame;
 public class AppFilter extends BasicFilter {
 	
 	int netCount = 0;
-	boolean pre_isVTime = false; 
 	Ref<Integer> refObj = new Ref<Integer>(0);
 	
 	@Override
@@ -29,7 +28,7 @@ public class AppFilter extends BasicFilter {
 	public boolean isFilter(String uri, Map<String, String> pars) {
 		boolean isFitler = false;
 		netCount = 0;
-		pre_isVTime = isVTime;
+		isVTime = false;
 		// 要排除的(服务器系统时间,支付回調等)
 		if (uri.contains("/Svlet/Game")) {
 			int cmd = MapEx.getInt(pars, "cmd");
@@ -40,9 +39,6 @@ public class AppFilter extends BasicFilter {
 		if(isFitler){
 			netCount = refObj.val;
 			refObj.val = 0;
-			if(netCount > 0){
-				isVTime = false;
-			}
 		}
 		return isFitler;
 	}
@@ -54,7 +50,6 @@ public class AppFilter extends BasicFilter {
 			pars.put("tip", String.format("每%s秒超过了%s条请求,当前已请求%s条!",(GObjConfig.LS_Net / 1000),GObjConfig.LN_Net,netCount));
 		else
 			pars.put("tip", (state == 1)?"消息过时了!":"消息带有有sql注入");
-		isVTime = pre_isVTime;
 		return LgcGame.msg(GObjConfig.S_Fails, pars);
 	}
 }
