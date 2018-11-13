@@ -80,10 +80,14 @@ public class GameServlet extends AbsDispatcherServlet {
 			break;
 		}
 		case 1002: {
-			outVal = LgcGame.Start(pars);
+			outVal = LgcGame.matching(pars);
 			break;
 		}
 		case 1003: {
+			outVal = LgcGame.start(pars);
+			break;
+		}
+		case 1004: {
 			outVal = LgcGame.downSheep(pars);
 			break;
 		}

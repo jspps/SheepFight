@@ -1,5 +1,12 @@
 package com.sf.entity;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ScheduledExecutorService;
+
+import com.bowlong.Toolkit;
+import com.bowlong.lang.task.SchedulerEx;
+
 /**
  * 房间数据
  * 
@@ -7,11 +14,15 @@ package com.sf.entity;
  * @version createtime：2018-11-11下午2:48:18
  */
 public class GObjRoom extends BeanOrigin {
+	static ScheduledExecutorService ses = Toolkit.newScheduledThreadPool("GObjRoom", 2);
 	private static final long serialVersionUID = 1L;
 	long roomid = 0;
 	long psid1 = 0;
 	long psid2 = 0;
 	ETState state = ETState.None;
+	long start_matching_ms = 0; // 开始匹配
+
+	List<GObject> lstRnd = new ArrayList<GObject>();
 
 	public long getRoomid() {
 		return roomid;
@@ -58,7 +69,7 @@ public class GObjRoom extends BeanOrigin {
 		return psid == psid1 ? psid2 : psid1;
 	}
 
-	boolean setOne(long psid) {
+	private boolean setOne(long psid) {
 		if (psid1 == 0) {
 			psid1 = psid;
 			return true;
@@ -69,7 +80,7 @@ public class GObjRoom extends BeanOrigin {
 		return false;
 	}
 
-	boolean clearOne(long psid) {
+	private boolean clearOne(long psid) {
 		if (psid1 == psid) {
 			psid1 = 0;
 			return true;
@@ -87,12 +98,19 @@ public class GObjRoom extends BeanOrigin {
 			return clearOne(psid);
 		}
 	}
-	
+
 	public boolean isEmpty() {
 		return psid1 <= 0 && psid2 <= 0;
 	}
-	
+
 	public boolean isFree() {
 		return psid1 <= 0 || psid2 <= 0;
+	}
+	
+	public void startMatching(){
+//		Toolkit.scheduleMS(ses, r, 30 * 1000);
+		if(isFree()){
+			
+		}
 	}
 }

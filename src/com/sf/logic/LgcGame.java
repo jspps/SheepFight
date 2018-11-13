@@ -70,22 +70,29 @@ public class LgcGame extends LgcRoom {
 		GObjSession ses = (GObjSession) getSession(lgid, lgpwd);
 		if (ses == null) {
 			ses = new GObjSession(lgid, lgpwd);
-			alloterRoom(ses);
 		}
 
+		return msg(GObjConfig.S_Success, ses.toMap(), isEncode);
+	}
+
+	static public String matching(Map<String, Object> pars) {
+		boolean isEncode = isEncode(pars);
+		GObjSession ses = mySession(pars);
+		pars.clear();
+
+		alloterRoom(ses);
 		GObjSession sesOther = enemySession(ses);
-		// 自身数据加上敌人
 		if (sesOther != null) {
+			// 自身数据加上敌人
 			ses.setEnemySesId(sesOther.getSessionID());
 			sesOther.setEnemySesId(ses.getSessionID());
-
 			// 给敌人推送自身数据
 			sesOther.addNotify(ETNotify.Enemy_Login);
 		}
 		return msg(GObjConfig.S_Success, ses.toMap(), isEncode);
 	}
 
-	static public String Start(Map<String, Object> pars) {
+	static public String start(Map<String, Object> pars) {
 		boolean isEncode = isEncode(pars);
 		GObjSession ses = mySession(pars);
 		GObjSession sesOther = enemySession(ses);
