@@ -7,6 +7,7 @@ import java.util.Map;
 
 import com.bowlong.lang.RndEx;
 import com.bowlong.util.CalendarEx;
+import com.sf.logic.LgcGame;
 import com.sf.ses.Session;
 
 /**
@@ -18,10 +19,10 @@ import com.sf.ses.Session;
 public class GObjSession extends Session {
 	private static final long serialVersionUID = 1L;
 	long roomid;
-	Player curr;
-	Player enemy;
 	String lgid;
 	String lgpwd;
+	Player curr;
+	long enemySesId;
 
 	ETState state = ETState.None;
 
@@ -45,14 +46,6 @@ public class GObjSession extends Session {
 		this.curr = currPlay;
 	}
 
-	public Player getEnemy() {
-		return enemy;
-	}
-
-	public void setEnemy(Player enemy) {
-		this.enemy = enemy;
-	}
-
 	public String getLgid() {
 		return lgid;
 	}
@@ -67,6 +60,14 @@ public class GObjSession extends Session {
 
 	public void setLgpwd(String lgpwd) {
 		this.lgpwd = lgpwd;
+	}
+
+	public long getEnemySesId() {
+		return enemySesId;
+	}
+
+	public void setEnemySesId(long enemySesId) {
+		this.enemySesId = enemySesId;
 	}
 
 	public List<ETNotify> getListNotify() {
@@ -89,20 +90,27 @@ public class GObjSession extends Session {
 		super();
 	}
 
-	public GObjSession(String lgid, String lgpwd, long roomid) {
-		InitSesID(GObjConfig.SW_ID.nextId());
-		this.roomid = roomid;
+	public GObjSession(String lgid, String lgpwd) {
+		reInit(lgid, lgpwd);
+	}
+
+	public GObjSession reInit(String lgid, String lgpwd) {
 		this.lgid = lgid;
 		this.lgpwd = lgpwd;
 		String rndVal = RndEx.nextString09(9);
-		this.curr = new Player(rndVal, rndVal, this.roomid);
+		this.curr = new Player(rndVal, rndVal, 0);
+		InitSesID(GObjConfig.SW_ID.nextId());
+		return this;
 	}
 
 	public Map<String, Object> toMap(Map<String, Object> map) {
 		map = toMapMust(map);
 		map.put("player", curr.toMap());
+
+		GObjSession enemy = LgcGame.targetSession(enemySesId);
 		if (enemy != null) {
-			map.put("enemy", enemy.toMap());
+			map.put("enemy", enemy.getCurr().toMap());
+			map.put("enemy_state", enemy.getState().ordinal());
 		}
 		return map;
 	}
@@ -117,6 +125,7 @@ public class GObjSession extends Session {
 		map.put(GObjConfig.K_SesID, sessionID);
 		map.put("time_ms", CalendarEx.now());
 		map.put("lens_way", GObjConfig.LM_Runway);
+		map.put("roomid", roomid);
 		map.put("state", state.ordinal());
 		return map;
 	}
@@ -149,5 +158,34 @@ public class GObjSession extends Session {
 
 	public boolean isNetMore() {
 		return netCount >= GObjConfig.LN_Net;
+	}
+
+	public void resetRoomId(long roomId) {
+		setRoomid(roomId);
+	}
+
+	public void readyOrStart(boolean isStart) {
+		synchronized (this) {
+			lNotify.clear();
+			if (isStart)
+				state = ETState.Running;
+			else
+				state = ETState.Ready;
+		}
+	}
+
+	public void clear() {
+		synchronized (this) {
+			resetRoomId(0);
+			lmtLastTime = 0;
+			netCount = 0;
+			state = ETState.None;
+			enemySesId = 0;
+			lNotify.clear();
+		}
+	}
+
+	public boolean isReady() {
+		return state == ETState.Ready;
 	}
 }

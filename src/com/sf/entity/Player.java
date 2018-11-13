@@ -16,7 +16,6 @@ public class Player extends BeanOrigin {
 	String name; // 名字
 	String icon; // 头像
 	int forage; // 草料
-	long roomid;// 房间号
 
 	List<GObject> lGobjRunning = new ArrayList<GObject>();
 	List<Map<String, Object>> lMap = new ArrayList<Map<String, Object>>();
@@ -45,14 +44,6 @@ public class Player extends BeanOrigin {
 		this.forage = forage;
 	}
 
-	public long getRoomid() {
-		return roomid;
-	}
-
-	public void setRoomid(long roomid) {
-		this.roomid = roomid;
-	}
-
 	public List<GObject> getlGobjRunning() {
 		return lGobjRunning;
 	}
@@ -62,16 +53,15 @@ public class Player extends BeanOrigin {
 		this.forage = GObjConfig.N_Init_Forage;
 	}
 
-	public Player(String name, String icon, int forage, long roomid) {
+	public Player(String name, String icon, int forage) {
 		super();
 		this.name = name;
 		this.icon = icon;
 		this.forage = forage;
-		this.roomid = roomid;
 	}
 
-	public Player(String name, String icon, long roomid) {
-		this(name, icon, GObjConfig.N_Init_Forage, roomid);
+	public Player(String name, String icon) {
+		this(name, icon, GObjConfig.N_Init_Forage);
 	}
 
 	public List<Map<String, Object>> listMap() {
@@ -87,7 +77,6 @@ public class Player extends BeanOrigin {
 		map.put("name", name);
 		map.put("icon", icon);
 		map.put("forage", forage);
-		map.put("roomid", roomid);
 		map.put("small", ETGObj.SheepSmall.toMap());
 		map.put("middle", ETGObj.SheepMiddle.toMap());
 		map.put("big", ETGObj.SheepBig.toMap());

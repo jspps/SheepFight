@@ -1,7 +1,7 @@
-取得服务器时间
+请求 - 取得服务器时间
 http://127.0.0.1:8080/SheepFight/Svlet/Game?cmd=100
 
-入口请求
+请求 - 入口
 http://127.0.0.1:8080/SheepFight/Svlet/Game?cmd=1000
 &lgid=[帐号id]
 &lgpwd=[帐号密码]
@@ -10,19 +10,27 @@ http://127.0.0.1:8080/SheepFight/Svlet/Game?cmd=1000&lgid=111111&lgpwd=222222
 
 登录返回json.txt
 
-
-// 放羊
+ 请求 - 开始
 http://127.0.0.1:8080/SheepFight/Svlet/Game?cmd=1002
 &sesid=[sesid]
 &time_ms=[当前系统时间(单位ms)] - (可选,传递了会验证请求的有效性)
-&sheepIndex=[羊的类型index]
-&numRunway=[放置的跑到1-5]
 
 http://127.0.0.1:8080/SheepFight/Svlet/Game?cmd=1002&sesid=10038664411222016&sheepIndex=1&numRunway=1
 
 放羊json.txt
 
-心跳 - 请求频率:1秒/次 或者 0.5秒/次
+ 请求 - 放羊
+http://127.0.0.1:8080/SheepFight/Svlet/Game?cmd=1003
+&sesid=[sesid]
+&sheepIndex=[羊的类型index]
+&numRunway=[放置的跑到1-5]
+&time_ms=[当前系统时间(单位ms)] - (可选,传递了会验证请求的有效性)
+
+http://127.0.0.1:8080/SheepFight/Svlet/Game?cmd=1002&sesid=10038664411222016&sheepIndex=1&numRunway=1
+
+放羊json.txt
+
+请求 - 心跳 - 成功登陆后，定时请求，该请求频率:1秒/次 或者 0.5秒/次
 http://127.0.0.1:8080/SheepFight/Svlet/Game?cmd=1001
 &sesid=[sesid]
 &time_ms=[当前系统时间(单位ms)] - (可选,传递了会验证请求的有效性)

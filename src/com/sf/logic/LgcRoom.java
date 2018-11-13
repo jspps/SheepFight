@@ -8,10 +8,13 @@ import java.util.concurrent.ConcurrentHashMap;
 import com.bowlong.reflect.JsonHelper;
 import com.bowlong.security.Base64;
 import com.bowlong.util.MapEx;
+import com.bowlong.util.Ref;
+import com.sf.entity.ETNotify;
+import com.sf.entity.ETState;
 import com.sf.entity.GObjConfig;
 import com.sf.entity.GObjRoom;
 import com.sf.entity.GObjSession;
-import com.sf.entity.ETNotify;
+import com.sf.entity.Player;
 import com.sf.ses.MgrSession;
 
 /**
@@ -21,9 +24,11 @@ import com.sf.ses.MgrSession;
  */
 class LgcRoom extends MgrSession {
 	private static final long serialVersionUID = 1L;
+	static final public Object objLock = new Object();
+	static final Map<Long, GObjRoom> mapRoom = new ConcurrentHashMap<Long, GObjRoom>();
+	static final List<Long> list = new ArrayList<Long>();
+	static final public Ref<String> objMsgValid = new Ref<String>("");
 	static public boolean isMustEncode = false;
-	static private List<Long> list = new ArrayList<Long>();
-	static Map<Long, GObjRoom> mapRoom = new ConcurrentHashMap<Long, GObjRoom>();
 
 	static final public GObjRoom getRoom(long roomid) {
 		if (mapRoom.containsKey(roomid)) {
@@ -31,22 +36,26 @@ class LgcRoom extends MgrSession {
 		}
 		return null;
 	}
-	
-	static final protected GObjSession mySession(Map<String, ?> pars) {
-		long sessionId = MapEx.getLong(pars, GObjConfig.K_SesID);
-		return (GObjSession) getSession(sessionId);
-	}
-	
-	static final protected GObjSession otherSession(GObjSession ses) {
-		GObjRoom room = getRoom(ses.getRoomid());
-		long sesid = room.getOther(ses.getSessionID());
+
+	static final public GObjSession targetSession(long sesid) {
 		return (GObjSession) getSession(sesid);
 	}
 	
-	static final protected GObjSession otherSession(Map<String, ?> pars) {
-		return otherSession(mySession(pars));
+	static final GObjSession mySession(Map<String, ?> pars) {
+		long sessionId = MapEx.getLong(pars, GObjConfig.K_SesID);
+		return targetSession(sessionId);
 	}
 	
+	static final GObjSession enemySession(GObjSession ses) {
+		GObjRoom room = getRoom(ses.getRoomid());
+		long sesid = room.getOther(ses.getSessionID());
+		return targetSession(sesid);
+	}
+
+	static final protected GObjSession otherSession(Map<String, ?> pars) {
+		return enemySession(mySession(pars));
+	}
+
 	static final protected String base64(String src, boolean encode) {
 		try {
 			if (encode) {
@@ -71,73 +80,98 @@ class LgcRoom extends MgrSession {
 		return String.format(GObjConfig.Fmt_JsonState, state);
 	}
 
-	static final protected String msg(String state, Map<String, ?> srcMap,
-			boolean encode) {
+	static final protected String msg(String state, Map<String, ?> srcMap, boolean encode) {
 		String msg = toJson(srcMap, encode);
 		if (encode) {
 			return String.format(GObjConfig.Fmt_JsonMsgStr, state, msg);
 		}
 		return String.format(GObjConfig.Fmt_JsonMsg, state, msg);
 	}
-	
-	static final public String msg(String state, Map<String, ?> srcMap){
+
+	static final public String msg(String state, Map<String, ?> srcMap) {
 		boolean encode = isEncode(srcMap);
 		return msg(state, srcMap, encode);
 	}
 
-	static final protected boolean isEncode(Map<String, ?> pars){
+	static final protected boolean isEncode(Map<String, ?> pars) {
 		boolean isEncode = MapEx.getBoolean(pars, "isEncode");
 		return isMustEncode || isEncode;
 	}
 
-	static final public long getRoomId() {
-		synchronized (objLock) {
-			long ret = 0;
-			list.clear();
-			list.addAll(mapRoom.keySet());
-			int lens = list.size();
-			GObjRoom room = null;
-			if (lens <= 0) {
-				ret = GObjConfig.SW_RoomID.nextId();
-				room = new GObjRoom(ret);
-				mapRoom.put(ret, room);
-			} else {
-				for (int i = 0; i < lens; i++) {
-					room = getRoom(list.get(i));
-					if (!room.isFull()) {
-						ret = room.getRoomid();
-						break;
-					}
-				}
+	static final private GObjRoom getFreeRoom() {
+		list.clear();
+		list.addAll(mapRoom.keySet());
+		int lens = list.size();
+		GObjRoom _tmp = null;
+		GObjRoom _ret = null;
+		for (int i = 0; i < lens; i++) {
+			_tmp = getRoom(list.get(i));
+			if (_tmp.isFree()) {
+				_ret = _tmp;
+				break;
 			}
-			return ret;
+		}
+		if (_ret == null) {
+			long id = GObjConfig.SW_RoomID.nextId();
+			_ret = new GObjRoom(id);
+			mapRoom.put(id, _ret);
+		}
+		return _ret;
+	}
+
+	static protected GObjRoom alloterRoom(GObjSession ses) {
+		synchronized (objLock) {
+			long sesid = ses.getSessionID();
+			GObjRoom room = getFreeRoom();
+			room.changeOne(sesid, true);
+
+			ses.resetRoomId(room.getRoomid());
+			addSession(ses.getLgid(), ses.getLgpwd(), ses);
+			return room;
 		}
 	}
 
-	static final public boolean chgRoom(long roomid, long sesid, boolean isAdd) {
+	static public void remove4Room(GObjSession ses) {
 		synchronized (objLock) {
+			long roomid = ses.getRoomid();
 			if (mapRoom.containsKey(roomid)) {
 				GObjRoom room = getRoom(roomid);
-				return room.changeOne(sesid, isAdd);
+				room.changeOne(ses.getSessionID(), false);
+				if (room.isEmpty()) {
+					room.setState(ETState.None);
+				}
 			}
-			return false;
+			rmSession(ses);
 		}
 	}
 
-	static final public void addSession(GObjSession ses) {
-		String vKey = String.format("%s_%s", ses.getLgid(), ses.getLgpwd());
-		mapLg2Key.put(vKey, ses.getSessionID());
-		mapSession.put(ses.getSessionID(), ses);
-		chgRoom(ses.getRoomid(), ses.getSessionID(), true);
-	}
-	
-	static final public void Start(Map<String, Object> pars){
-		
+	static public boolean isVerifySession(Map<String, String> pars, Ref<String> refMsg) {
+		refMsg.val = "";
+		boolean isEncode = isEncode(pars);
+		GObjSession ses = mySession(pars);
+		if (ses == null) {
+			pars.clear();
+			pars.put("tip", "账号未登录");
+			refMsg.val = msg(GObjConfig.S_Fails, pars, isEncode);
+			return false;
+		}
+		if (!ses.IsValid()) {
+			pars.clear();
+			pars.put("tip", "帐号已过期");
+			refMsg.val = msg(GObjConfig.S_Fails, pars, isEncode);
+			remove4Room(ses);
+			return false;
+		}
+		return true;
 	}
 
-	static final public Map<String, Object> heart(GObjSession ses,
-			Map<String, Object> pars) {
+	static public Map<String, Object> roomHeart(GObjSession ses, Map<String, Object> pars) {
 		pars = ses.toMapMust(pars);
+		Player plEnemy = null;
+		GObjSession enemy = enemySession(ses);
+		if (enemy != null) {
+			plEnemy = enemy.getCurr();
+		}
 
 		List<ETNotify> _list = new ArrayList<ETNotify>();
 		_list.addAll(ses.getListNotify());
@@ -149,10 +183,13 @@ class LgcRoom extends MgrSession {
 				ses.rmNotify(notifyType);
 				switch (notifyType) {
 				case Enemy_Login:
-					pars.put("enemy", ses.getEnemy().toMap());
+					pars.put("enemy", plEnemy.toMap());
+					break;
+				case Enemy_State:
+					pars.put("enemy_state", enemy.getState().ordinal());
 					break;
 				case Enemy_DownSheep:
-					pars.put("listRunning", ses.getEnemy().listMap());
+					pars.put("listRunning",plEnemy.listMap());
 					break;
 				default:
 					break;

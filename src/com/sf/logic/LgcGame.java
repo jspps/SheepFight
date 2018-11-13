@@ -7,10 +7,12 @@ import com.bowlong.lang.StrEx;
 import com.bowlong.util.MapEx;
 import com.bowlong.util.Ref;
 import com.sf.entity.GObjConfig;
+import com.sf.entity.GObjRoom;
 import com.sf.entity.GObjSession;
 import com.sf.entity.ETGObj;
 import com.sf.entity.GObject;
 import com.sf.entity.ETNotify;
+import com.sf.entity.ETState;
 import com.sf.entity.Player;
 
 /**
@@ -22,12 +24,12 @@ import com.sf.entity.Player;
 public class LgcGame extends LgcRoom {
 
 	private static final long serialVersionUID = 1L;
-	
-	static final public boolean isFilter4NetCount(Map<String, ?> pars,Ref<Integer> refPars){ 
+
+	static final public boolean isFilter4NetCount(Map<String, ?> pars, Ref<Integer> refPars) {
 		GObjSession ses = mySession(pars);
-		if(ses != null){
+		if (ses != null) {
 			ses.recordNetCount();
-			if(refPars != null){
+			if (refPars != null) {
 				refPars.val = ses.getNetCount();
 			}
 			return ses.isNetMore();
@@ -47,7 +49,7 @@ public class LgcGame extends LgcRoom {
 			ses.ResetTimeOverdue();
 		}
 
-		Map<String, Object> map = heart(ses, null);
+		Map<String, Object> map = roomHeart(ses, null);
 		return msg(GObjConfig.S_Success, map, isEncode);
 	}
 
@@ -70,16 +72,15 @@ public class LgcGame extends LgcRoom {
 
 		GObjSession ses = (GObjSession) getSession(lgid, lgpwd);
 		if (ses == null) {
-			long roomid = getRoomId();
-			ses = new GObjSession(lgid, lgpwd, roomid);
-			addSession(ses);
+			ses = new GObjSession(lgid, lgpwd);
+			alloterRoom(ses);
 		}
 
-		GObjSession sesOther = otherSession(ses);
+		GObjSession sesOther = enemySession(ses);
 		// 自身数据加上敌人
 		if (sesOther != null) {
-			ses.setEnemy(sesOther.getCurr());
-			sesOther.setEnemy(ses.getCurr());
+			ses.setEnemySesId(sesOther.getSessionID());
+			sesOther.setEnemySesId(ses.getSessionID());
 
 			// 给敌人推送自身数据
 			sesOther.addNotify(ETNotify.Enemy_Login);
@@ -87,16 +88,40 @@ public class LgcGame extends LgcRoom {
 		return msg(GObjConfig.S_Success, ses.toMap(), isEncode);
 	}
 
+	static public String Start(Map<String, String> pars) {
+		boolean isEncode = isEncode(pars);
+		GObjSession ses = mySession(pars);
+		GObjSession sesOther = enemySession(ses);
+		pars.clear();
+		if (sesOther == null || !sesOther.IsValid()) {
+			pars.put("tip", "尚未对手，请等待");
+			return msg(GObjConfig.S_Fails, pars, isEncode);
+		}
+		
+		GObjRoom room = getRoom(ses.getRoomid());
+		if(room == null){
+			room = alloterRoom(ses);
+		}
+		
+		if(sesOther.isReady()){
+			sesOther.readyOrStart(true);
+			ses.readyOrStart(true);
+			room.setState(ETState.Running);
+		}else{
+			ses.readyOrStart(false);
+		}
+		
+		// 自身数据
+		String outVal = msg(GObjConfig.S_Success, ses.toMapMust(null), isEncode);
+		// 推送给别的数据
+		sesOther.addNotify(ETNotify.Enemy_State);
+		return outVal;
+	}
+
 	/** 放羊 **/
 	static public String downSheep(Map<String, String> pars) {
 		boolean isEncode = isEncode(pars);
 		GObjSession ses = mySession(pars);
-		if (ses == null) {
-			pars.clear();
-			pars.put("tip", "帐号已过期");
-			return msg(GObjConfig.S_Fails, pars, isEncode);
-		}
-
 		int numRunway = MapEx.getInt(pars, "numRunway");
 		if (numRunway < 0 || numRunway > GObjConfig.NM_Runway) {
 			pars.clear();
@@ -112,7 +137,7 @@ public class LgcGame extends LgcRoom {
 			return msg(GObjConfig.S_Fails, pars, isEncode);
 		}
 
-		GObjSession sesOther = otherSession(ses);
+		GObjSession sesOther = enemySession(ses);
 		if (sesOther == null || !sesOther.IsValid()) {
 			pars.clear();
 			pars.put("tip", "对手已经掉线");
@@ -130,7 +155,7 @@ public class LgcGame extends LgcRoom {
 		currForce -= needForce;
 		currPlay.setForage(currForce);
 
-		GObject gobj = new GObject(sType, numRunway,ses.getSessionID());
+		GObject gobj = new GObject(sType, numRunway, ses.getSessionID());
 		gobj.StartRunning(sesOther.getSessionID());
 
 		currPlay.getlGobjRunning().add(gobj);

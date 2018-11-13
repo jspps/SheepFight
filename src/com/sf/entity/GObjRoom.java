@@ -87,8 +87,12 @@ public class GObjRoom extends BeanOrigin {
 			return clearOne(psid);
 		}
 	}
-
-	public boolean isFull() {
-		return psid1 > 0 && psid2 > 0;
+	
+	public boolean isEmpty() {
+		return psid1 <= 0 && psid2 <= 0;
+	}
+	
+	public boolean isFree() {
+		return psid1 <= 0 || psid2 <= 0;
 	}
 }

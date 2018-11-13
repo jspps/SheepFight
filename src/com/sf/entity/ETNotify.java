@@ -10,6 +10,6 @@ package com.sf.entity;
 public enum ETNotify {
 	None,
 	Enemy_Login,
-	Enemy_Ready,
+	Enemy_State,
 	Enemy_DownSheep,
 }

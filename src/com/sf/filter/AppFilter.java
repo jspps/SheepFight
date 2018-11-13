@@ -33,6 +33,7 @@ public class AppFilter extends BasicFilter {
 		if (uri.contains("/Svlet/Game")) {
 			int cmd = MapEx.getInt(pars, "cmd");
 			isFitler = (cmd > 1000) && (cmd != 1000);
+			isVTime = isFitler && pars.containsKey(key_time);
 		}
 		isFitler = isFitler && isFilterTime(pars, key_time);
 		isFitler = isFitler || LgcGame.isFilter4NetCount(pars,refObj);

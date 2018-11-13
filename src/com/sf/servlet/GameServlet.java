@@ -60,18 +60,36 @@ public class GameServlet extends AbsDispatcherServlet {
 				outVal = LgcGame.login(pars);
 				break;
 			}
-			case 1001: {
-				outVal = LgcGame.heart(pars);
-				break;
-			}
-			case 1002: {
-				outVal = LgcGame.downSheep(pars);
-				break;
-			}
 			default:
+				if(LgcGame.isVerifySession(pars, LgcGame.objMsgValid)){
+					outVal = dispGame(cmd,pars);
+				}else{
+					outVal = LgcGame.objMsgValid.val;
+				}
 				break;
 			}
 			return outVal;
 		}
+	}
+
+	String dispGame(int cmd, Map<String, String> pars) {
+		String outVal = "";
+		switch (cmd) {
+		case 1001: {
+			outVal = LgcGame.heart(pars);
+			break;
+		}
+		case 1002: {
+			outVal = LgcGame.Start(pars);
+			break;
+		}
+		case 1003: {
+			outVal = LgcGame.downSheep(pars);
+			break;
+		}
+		default:
+			break;
+		}
+		return outVal;
 	}
 }
