@@ -29,6 +29,7 @@ public class GObjSession extends Session {
 	long lmtLastTime = 0;// 上一次计数时间
 	int netCount = 0;// 5秒内总限定次数
 	List<ETNotify> lNotify = new ArrayList<ETNotify>();
+	List<Map<String, Object>> lMap = new ArrayList<Map<String, Object>>();
 
 	public long getRoomid() {
 		return roomid;
@@ -106,12 +107,17 @@ public class GObjSession extends Session {
 	public Map<String, Object> toMap(Map<String, Object> map) {
 		map = toMapMust(map);
 		map.put("player", curr.toMap());
+		lMap.clear();
+		lMap.addAll(curr.listMap());
 
 		GObjSession enemy = LgcGame.targetSession(enemySesId);
 		if (enemy != null) {
-			map.put("enemy", enemy.getCurr().toMap());
+			Player _pl = enemy.getCurr();
+			map.put("enemy", _pl.toMap());
 			map.put("enemy_state", enemy.getState().ordinal());
+			lMap.addAll(_pl.listMap());
 		}
+		map.put("listRunning", lMap);
 		return map;
 	}
 

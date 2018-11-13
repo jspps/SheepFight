@@ -2,11 +2,9 @@
 	"code": "success",
 	"msg": {
 		"player": {
-			"roomid": 10031530680389632,
 			"icon": "021089204",
 			"name": "021089204",
 			"forage": 100,
-			"listRunning": [],
 			"big": {
 				"index": 3,
 				"speed": 1,
@@ -29,6 +27,10 @@
 		"enemy": 可能为空,不为空的时候，参数与player一样，
 		"lens_way":10,
 		"time_ms": 1541924503373,
-		"sesid": 10031530743173120
+		"listRunning": [],
+		"roomid": 10031530680389632,
+		"state": 1,
+		"enemy_state": 0,
+		"sesid": 10031530743173120,
 	}
 }

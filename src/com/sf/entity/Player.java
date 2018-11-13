@@ -79,8 +79,7 @@ public class Player extends BeanOrigin {
 		map.put("forage", forage);
 		map.put("small", ETGObj.SheepSmall.toMap());
 		map.put("middle", ETGObj.SheepMiddle.toMap());
-		map.put("big", ETGObj.SheepBig.toMap());
-		map.put("listRunning", listMap());
+		map.put("big", ETGObj.SheepBig.toMap());		
 		return map;
 	}
 }
