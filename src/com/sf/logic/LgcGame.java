@@ -4,15 +4,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.bowlong.lang.StrEx;
-import com.bowlong.reflect.JsonHelper;
-import com.bowlong.security.Base64;
 import com.bowlong.util.MapEx;
 import com.bowlong.util.Ref;
 import com.sf.entity.GObjConfig;
 import com.sf.entity.GObjSession;
-import com.sf.entity.GObjType;
+import com.sf.entity.ETGObj;
 import com.sf.entity.GObject;
-import com.sf.entity.NotifyType;
+import com.sf.entity.ETNotify;
 import com.sf.entity.Player;
 
 /**
@@ -24,56 +22,6 @@ import com.sf.entity.Player;
 public class LgcGame extends LgcRoom {
 
 	private static final long serialVersionUID = 1L;
-	
-	static public boolean isMustEncode = false;
-
-	static final protected String base64(String src, boolean encode) {
-		try {
-			if (encode) {
-				return Base64.encode(src);
-			}
-			return Base64.decodeToStr(src);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return "";
-	}
-
-	static final protected String toJson(Map<String, ?> srcMap, boolean encode) {
-		String ret = JsonHelper.toJSON(srcMap).toString();
-		if (encode) {
-			ret = base64(ret, true);
-		}
-		return ret;
-	}
-
-	static final protected String msg(String state) {
-		return String.format(GObjConfig.Fmt_JsonState, state);
-	}
-
-	static final protected String msg(String state, Map<String, ?> srcMap,
-			boolean encode) {
-		String msg = toJson(srcMap, encode);
-		if (encode) {
-			return String.format(GObjConfig.Fmt_JsonMsgStr, state, msg);
-		}
-		return String.format(GObjConfig.Fmt_JsonMsg, state, msg);
-	}
-	
-	static final public String msg(String state, Map<String, ?> srcMap){
-		boolean encode = isEncode(srcMap);
-		return msg(state, srcMap, encode);
-	}
-
-	static final private GObjSession mySession(Map<String, ?> pars) {
-		long sessionId = MapEx.getLong(pars, GObjConfig.K_SesID);
-		return (GObjSession) getSession(sessionId);
-	}
-	
-	static final private boolean isEncode(Map<String, ?> pars){
-		boolean isEncode = MapEx.getBoolean(pars, "isEncode");
-		return isMustEncode || isEncode;
-	}
 	
 	static final public boolean isFilter4NetCount(Map<String, ?> pars,Ref<Integer> refPars){ 
 		GObjSession ses = mySession(pars);
@@ -127,14 +75,14 @@ public class LgcGame extends LgcRoom {
 			addSession(ses);
 		}
 
-		GObjSession sesOther = getOther(ses);
+		GObjSession sesOther = otherSession(ses);
 		// 自身数据加上敌人
 		if (sesOther != null) {
 			ses.setEnemy(sesOther.getCurr());
 			sesOther.setEnemy(ses.getCurr());
 
 			// 给敌人推送自身数据
-			sesOther.addNotify(NotifyType.Enemy_Login);
+			sesOther.addNotify(ETNotify.Enemy_Login);
 		}
 		return msg(GObjConfig.S_Success, ses.toMap(), isEncode);
 	}
@@ -157,14 +105,14 @@ public class LgcGame extends LgcRoom {
 		}
 
 		int sheepIndex = MapEx.getInt(pars, "sheepIndex");
-		GObjType sType = GObjType.get(sheepIndex);
+		ETGObj sType = ETGObj.get(sheepIndex);
 		if (sType == null || sheepIndex > 3) {
 			pars.clear();
 			pars.put("tip", "类型不对(SheepSmall,SheepMiddle,SheepBig)");
 			return msg(GObjConfig.S_Fails, pars, isEncode);
 		}
 
-		GObjSession sesOther = getOther(ses);
+		GObjSession sesOther = otherSession(ses);
 		if (sesOther == null || !sesOther.IsValid()) {
 			pars.clear();
 			pars.put("tip", "对手已经掉线");
@@ -194,7 +142,7 @@ public class LgcGame extends LgcRoom {
 		String outVal = msg(GObjConfig.S_Success, map, isEncode);
 
 		// 推送给别的数据
-		sesOther.addNotify(NotifyType.Enemy_DownSheep);
+		sesOther.addNotify(ETNotify.Enemy_DownSheep);
 		return outVal;
 	}
 }

@@ -4,17 +4,17 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * 对象类型
- * 
+ * 枚举 - 对象类型<br/>
+ * ET = Enum_Type
  * @author Canyon
  * @version createtime：2018-11-11上午9:13:20
  */
-public enum GObjType {
+public enum ETGObj {
 	SheepSmall("小羊", 1, 1), SheepMiddle("中羊", 2, 2), SheepBig("大羊", 3, 4), SheepNeutral(
 			"叛变羊", 4), Wolf("狼", 5), Spinach("菠菜罐头", 6, 7), ;
 	// 取得对象的方法
-	static public GObjType get(int index) {
-		for (GObjType got : GObjType.values()) {
+	static public ETGObj get(int index) {
+		for (ETGObj got : ETGObj.values()) {
 			if (got.getIndex() == index) {
 				return got;
 			}
@@ -22,8 +22,8 @@ public enum GObjType {
 		return null;
 	}
 
-	static public GObjType get(String enum_name) {
-		for (GObjType got : GObjType.values()) {
+	static public ETGObj get(String enum_name) {
+		for (ETGObj got : ETGObj.values()) {
 			if (got.name().equalsIgnoreCase(enum_name)) {
 				return got;
 			}
@@ -38,18 +38,18 @@ public enum GObjType {
 	private int speed;// 速度单位Unit/秒 - 这个单位：可能是米，有可能是一个单元格
 
 	// 构造方法
-	private GObjType(String name, int index, int power, int speed) {
+	private ETGObj(String name, int index, int power, int speed) {
 		this.name = name;
 		this.index = index;
 		this.power = power;
 		this.speed = speed;
 	}
 
-	private GObjType(String name, int index, int power) {
+	private ETGObj(String name, int index, int power) {
 		this(name, index, power, 1);
 	}
 
-	private GObjType(String name, int index) {
+	private ETGObj(String name, int index) {
 		this(name, index, 0);
 	}
 

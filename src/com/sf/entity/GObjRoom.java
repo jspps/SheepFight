@@ -1,6 +1,5 @@
 package com.sf.entity;
 
-
 /**
  * 房间数据
  * 
@@ -12,6 +11,7 @@ public class GObjRoom extends BeanOrigin {
 	long roomid = 0;
 	long psid1 = 0;
 	long psid2 = 0;
+	ETState state = ETState.None;
 
 	public long getRoomid() {
 		return roomid;
@@ -37,6 +37,14 @@ public class GObjRoom extends BeanOrigin {
 		this.psid2 = psid2;
 	}
 
+	public ETState getState() {
+		return state;
+	}
+
+	public void setState(ETState state) {
+		this.state = state;
+	}
+
 	public GObjRoom() {
 		super();
 	}
@@ -45,42 +53,42 @@ public class GObjRoom extends BeanOrigin {
 		super();
 		this.roomid = roomid;
 	}
-	
-	public long getOther(long psid){
+
+	public long getOther(long psid) {
 		return psid == psid1 ? psid2 : psid1;
 	}
-	
-	public boolean setOne(long psid){
-		if(psid1 == 0){
+
+	public boolean setOne(long psid) {
+		if (psid1 == 0) {
 			psid1 = psid;
 			return true;
-		}else if(psid2 == 0){
+		} else if (psid2 == 0) {
 			psid2 = psid;
 			return true;
 		}
 		return false;
 	}
-	
-	public boolean clearOne(long psid){
-		if(psid1 == psid){
+
+	public boolean clearOne(long psid) {
+		if (psid1 == psid) {
 			psid1 = 0;
 			return true;
-		}else if(psid2 == psid){
+		} else if (psid2 == psid) {
 			psid2 = 0;
 			return true;
 		}
 		return false;
 	}
-	
-	public boolean changeOne(long psid,boolean isAdd){
-		if(isAdd){
+
+	public boolean changeOne(long psid, boolean isAdd) {
+		if (isAdd) {
 			return setOne(psid);
-		}else{
+		} else {
 			return clearOne(psid);
 		}
 	}
-	
-	public boolean isFull(){
+
+	public boolean isFull() {
 		return psid1 > 0 && psid2 > 0;
 	}
 }

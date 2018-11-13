@@ -14,19 +14,20 @@ import com.bowlong.util.CalendarEx;
  */
 public class GObject extends BeanOrigin {
 	private static final long serialVersionUID = 1L;
-	GObjType gobjType = GObjType.SheepSmall; // 类型
+	ETGObj gobjType = ETGObj.SheepSmall; // 类型
 	int numRunway = 0; // 跑道编号
 	long createtime = 0; // 创建时间
 	long startRunTime = 0;// 开始跑的时间
 	long belongTo = 0; // 拥有者
 	long runTo = 0; // 跑向的人
 	boolean isRunning = false;
+	double distance = 0.0;
 
-	public GObjType getGobjType() {
+	public ETGObj getGobjType() {
 		return gobjType;
 	}
 
-	public void setGobjType(GObjType gobjType) {
+	public void setGobjType(ETGObj gobjType) {
 		this.gobjType = gobjType;
 	}
 
@@ -83,7 +84,7 @@ public class GObject extends BeanOrigin {
 		this.createtime = CalendarEx.now();
 	}
 
-	public GObject(GObjType gobjType, int numRunway, long belongTo) {
+	public GObject(ETGObj gobjType, int numRunway, long belongTo) {
 		super();
 		this.gobjType = gobjType;
 		this.numRunway = numRunway;
@@ -91,11 +92,11 @@ public class GObject extends BeanOrigin {
 		this.createtime = CalendarEx.now();
 	}
 
-	public GObject(GObjType gobjType, int numRunway) {
-		this(gobjType,numRunway, 0);
+	public GObject(ETGObj gobjType, int numRunway) {
+		this(gobjType, numRunway, 0);
 	}
 
-	public GObject(GObjType gobjType) {
+	public GObject(ETGObj gobjType) {
 		this(gobjType, 1 + RndEx.nextInt(GObjConfig.NM_Runway));
 	}
 
@@ -106,6 +107,7 @@ public class GObject extends BeanOrigin {
 		map.put("belongTo", belongTo);
 		map.put("runTo", runTo);
 		map.put("isRunning", isRunning);
+		map.put("distance", calcDistance());
 		map = gobjType.toMap(map);
 		return map;
 	}
@@ -114,5 +116,14 @@ public class GObject extends BeanOrigin {
 		this.runTo = runTo;
 		this.startRunTime = CalendarEx.now();
 		this.isRunning = true;
+	}
+
+	public double calcDistance() {
+		distance = 0;
+		if (isRunning) {
+			distance = CalendarEx.now() - this.startRunTime;
+			distance *= gobjType.getSpeed() * 0.001;
+		}
+		return distance;
 	}
 }

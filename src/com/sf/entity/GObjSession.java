@@ -23,9 +23,11 @@ public class GObjSession extends Session {
 	String lgid;
 	String lgpwd;
 
+	ETState state = ETState.None;
+
 	long lmtLastTime = 0;// 上一次计数时间
 	int netCount = 0;// 5秒内总限定次数
-	List<NotifyType> lNotify = new ArrayList<NotifyType>();
+	List<ETNotify> lNotify = new ArrayList<ETNotify>();
 
 	public long getRoomid() {
 		return roomid;
@@ -67,12 +69,20 @@ public class GObjSession extends Session {
 		this.lgpwd = lgpwd;
 	}
 
-	public List<NotifyType> getListNotify() {
+	public List<ETNotify> getListNotify() {
 		return lNotify;
 	}
 
 	public int getNetCount() {
 		return netCount;
+	}
+
+	public ETState getState() {
+		return state;
+	}
+
+	public void setState(ETState state) {
+		this.state = state;
 	}
 
 	public GObjSession() {
@@ -107,10 +117,11 @@ public class GObjSession extends Session {
 		map.put(GObjConfig.K_SesID, sessionID);
 		map.put("time_ms", CalendarEx.now());
 		map.put("lens_way", GObjConfig.LM_Runway);
+		map.put("state", state.ordinal());
 		return map;
 	}
 
-	public void addNotify(NotifyType notifyType) {
+	public void addNotify(ETNotify notifyType) {
 		synchronized (this) {
 			if (lNotify.contains(notifyType)) {
 				return;
@@ -119,7 +130,7 @@ public class GObjSession extends Session {
 		}
 	}
 
-	public void rmNotify(NotifyType notifyType) {
+	public void rmNotify(ETNotify notifyType) {
 		synchronized (this) {
 			lNotify.remove(notifyType);
 		}
