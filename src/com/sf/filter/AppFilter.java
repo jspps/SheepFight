@@ -25,7 +25,7 @@ public class AppFilter extends BasicFilter {
 	}
 
 	@Override
-	public boolean isFilter(String uri, Map<String, String> pars) {
+	public boolean isFilter(String uri, Map<String, Object> pars) {
 		boolean isFitler = false;
 		netCount = 0;
 		isVTime = false;
@@ -45,7 +45,7 @@ public class AppFilter extends BasicFilter {
 	}
 
 	@Override
-	public String cfFilter(int state,String uri, Map<String, String> pars) {
+	public String cfFilter(int state,String uri, Map<String, Object> pars) {
 		pars.put("uri", uri);
 		if(netCount > 0)
 			pars.put("tip", String.format("每%s秒超过了%s条请求,当前已请求%s条!",(GObjConfig.LS_Net / 1000),GObjConfig.LN_Net,netCount));

@@ -134,8 +134,8 @@ class LgcRoom extends MgrSession {
 	static public void remove4Room(GObjSession ses) {
 		synchronized (objLock) {
 			long roomid = ses.getRoomid();
-			if (mapRoom.containsKey(roomid)) {
-				GObjRoom room = getRoom(roomid);
+			GObjRoom room = getRoom(roomid);
+			if (room != null) {
 				room.changeOne(ses.getSessionID(), false);
 				if (room.isEmpty()) {
 					room.setState(ETState.None);
@@ -145,7 +145,7 @@ class LgcRoom extends MgrSession {
 		}
 	}
 
-	static public boolean isVerifySession(Map<String, String> pars, Ref<String> refMsg) {
+	static public boolean isVerifySession(Map<String, Object> pars, Ref<String> refMsg) {
 		refMsg.val = "";
 		boolean isEncode = isEncode(pars);
 		GObjSession ses = mySession(pars);

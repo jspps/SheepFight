@@ -58,7 +58,7 @@ public class GObjRoom extends BeanOrigin {
 		return psid == psid1 ? psid2 : psid1;
 	}
 
-	public boolean setOne(long psid) {
+	boolean setOne(long psid) {
 		if (psid1 == 0) {
 			psid1 = psid;
 			return true;
@@ -69,7 +69,7 @@ public class GObjRoom extends BeanOrigin {
 		return false;
 	}
 
-	public boolean clearOne(long psid) {
+	boolean clearOne(long psid) {
 		if (psid1 == psid) {
 			psid1 = 0;
 			return true;

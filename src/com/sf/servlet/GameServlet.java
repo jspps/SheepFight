@@ -23,7 +23,7 @@ public class GameServlet extends AbsDispatcherServlet {
 
 	@Override
 	public String dispatcher(HttpServletRequest req, HttpServletResponse resp) {
-		Map<String, String> pars = TkitJsp.getMapAllParams(req, true);
+		Map<String, Object> pars = TkitJsp.getAllParams(req, true);
 		int cmd = MapEx.getInt(pars, "cmd");
 		String outVal = "";
 		switch (cmd) {
@@ -42,17 +42,17 @@ public class GameServlet extends AbsDispatcherServlet {
 		return outVal;
 	}
 
-	String sysNowTime(Map<String, String> pars) {
+	String sysNowTime(Map<String, Object> pars) {
 		return String.valueOf(DateEx.now());
 	}
 
-	String gameEncode(Map<String, String> pars) {
+	String gameEncode(Map<String, Object> pars) {
 		boolean isEncode = MapEx.getBoolean(pars, "isEncode");
 		LgcGame.isMustEncode = isEncode;
 		return String.valueOf(isEncode);
 	}
 
-	String disp(int cmd, Map<String, String> pars) {
+	String disp(int cmd, Map<String, Object> pars) {
 		synchronized (objLock) {
 			String outVal = "";
 			switch (cmd) {
@@ -72,7 +72,7 @@ public class GameServlet extends AbsDispatcherServlet {
 		}
 	}
 
-	String dispGame(int cmd, Map<String, String> pars) {
+	String dispGame(int cmd, Map<String, Object> pars) {
 		String outVal = "";
 		switch (cmd) {
 		case 1001: {

@@ -107,6 +107,7 @@ public class GObject extends BeanOrigin {
 		map.put("belongTo", belongTo);
 		map.put("runTo", runTo);
 		map.put("isRunning", isRunning);
+		map.put("start_ms", startRunTime);
 		map.put("distance", calcDistance());
 		map = gobjType.toMap(map);
 		return map;

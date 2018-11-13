@@ -38,7 +38,7 @@ public class LgcGame extends LgcRoom {
 	}
 
 	/** 心跳 **/
-	static public String heart(Map<String, String> pars) {
+	static public String heart(Map<String, Object> pars) {
 		boolean isEncode = isEncode(pars);
 		GObjSession ses = mySession(pars);
 		if (ses == null) {
@@ -54,7 +54,7 @@ public class LgcGame extends LgcRoom {
 	}
 
 	/** 登录 **/
-	static public String login(Map<String, String> pars) {
+	static public String login(Map<String, Object> pars) {
 		boolean isEncode = isEncode(pars);
 		String lgid = MapEx.getString(pars, "lgid");
 		String lgpwd = MapEx.getString(pars, "lgpwd");
@@ -88,7 +88,7 @@ public class LgcGame extends LgcRoom {
 		return msg(GObjConfig.S_Success, ses.toMap(), isEncode);
 	}
 
-	static public String Start(Map<String, String> pars) {
+	static public String Start(Map<String, Object> pars) {
 		boolean isEncode = isEncode(pars);
 		GObjSession ses = mySession(pars);
 		GObjSession sesOther = enemySession(ses);
@@ -119,7 +119,7 @@ public class LgcGame extends LgcRoom {
 	}
 
 	/** 放羊 **/
-	static public String downSheep(Map<String, String> pars) {
+	static public String downSheep(Map<String, Object> pars) {
 		boolean isEncode = isEncode(pars);
 		GObjSession ses = mySession(pars);
 		int numRunway = MapEx.getInt(pars, "numRunway");
