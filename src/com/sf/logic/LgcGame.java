@@ -1,18 +1,17 @@
 package com.sf.logic;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import com.bowlong.lang.StrEx;
 import com.bowlong.util.MapEx;
 import com.bowlong.util.Ref;
+import com.sf.entity.ETGObj;
+import com.sf.entity.ETNotify;
+import com.sf.entity.ETState;
 import com.sf.entity.GObjConfig;
 import com.sf.entity.GObjRoom;
 import com.sf.entity.GObjSession;
-import com.sf.entity.ETGObj;
 import com.sf.entity.GObject;
-import com.sf.entity.ETNotify;
-import com.sf.entity.ETState;
 import com.sf.entity.Player;
 
 /**
@@ -41,16 +40,15 @@ public class LgcGame extends LgcRoom {
 	static public String heart(Map<String, Object> pars) {
 		boolean isEncode = isEncode(pars);
 		GObjSession ses = mySession(pars);
+		pars.clear();
 		if (ses == null) {
-			pars.clear();
 			pars.put("tip", "帐号已过期");
 			return msg(GObjConfig.S_Fails, pars, isEncode);
 		} else {
 			ses.ResetTimeOverdue();
 		}
-
-		Map<String, Object> map = roomHeart(ses, null);
-		return msg(GObjConfig.S_Success, map, isEncode);
+		pars = roomHeart(ses, pars);
+		return msg(GObjConfig.S_Success, pars, isEncode);
 	}
 
 	/** 登录 **/
@@ -58,14 +56,13 @@ public class LgcGame extends LgcRoom {
 		boolean isEncode = isEncode(pars);
 		String lgid = MapEx.getString(pars, "lgid");
 		String lgpwd = MapEx.getString(pars, "lgpwd");
+		pars.clear();
 		if (StrEx.isEmpty(lgid)) {
-			pars.clear();
 			pars.put("tip", "帐号为空了");
 			return msg(GObjConfig.S_Fails, pars, isEncode);
 		}
 
 		if (StrEx.isEmpty(lgpwd)) {
-			pars.clear();
 			pars.put("tip", "密码为空了");
 			return msg(GObjConfig.S_Fails, pars, isEncode);
 		}
@@ -97,22 +94,22 @@ public class LgcGame extends LgcRoom {
 			pars.put("tip", "尚未对手，请等待");
 			return msg(GObjConfig.S_Fails, pars, isEncode);
 		}
-		
+
 		GObjRoom room = getRoom(ses.getRoomid());
-		if(room == null){
+		if (room == null) {
 			room = alloterRoom(ses);
 		}
-		
-		if(sesOther.isReady()){
+
+		if (sesOther.isReady()) {
 			sesOther.readyOrStart(true);
 			ses.readyOrStart(true);
 			room.setState(ETState.Running);
-		}else{
+		} else {
 			ses.readyOrStart(false);
 		}
-		
+
 		// 自身数据
-		String outVal = msg(GObjConfig.S_Success, ses.toMapMust(null), isEncode);
+		String outVal = msg(GObjConfig.S_Success, ses.toMapMust(pars), isEncode);
 		// 推送给别的数据
 		sesOther.addNotify(ETNotify.Enemy_State);
 		return outVal;
@@ -123,23 +120,21 @@ public class LgcGame extends LgcRoom {
 		boolean isEncode = isEncode(pars);
 		GObjSession ses = mySession(pars);
 		int numRunway = MapEx.getInt(pars, "numRunway");
+		int sheepIndex = MapEx.getInt(pars, "sheepIndex");
+		pars.clear();
 		if (numRunway < 0 || numRunway > GObjConfig.NM_Runway) {
-			pars.clear();
 			pars.put("tip", "超出了跑道[1-5]");
 			return msg(GObjConfig.S_Fails, pars, isEncode);
 		}
 
-		int sheepIndex = MapEx.getInt(pars, "sheepIndex");
 		ETGObj sType = ETGObj.get(sheepIndex);
 		if (sType == null || sheepIndex > 3) {
-			pars.clear();
 			pars.put("tip", "类型不对(SheepSmall,SheepMiddle,SheepBig)");
 			return msg(GObjConfig.S_Fails, pars, isEncode);
 		}
 
 		GObjSession sesOther = enemySession(ses);
 		if (sesOther == null || !sesOther.IsValid()) {
-			pars.clear();
 			pars.put("tip", "对手已经掉线");
 			return msg(GObjConfig.S_Fails, pars, isEncode);
 		}
@@ -148,7 +143,6 @@ public class LgcGame extends LgcRoom {
 		int needForce = sType.getPower();
 		int currForce = currPlay.getForage();
 		if (currForce < needForce) {
-			pars.clear();
 			pars.put("tip", "草料不足，不能放" + sType.getName());
 			return msg(GObjConfig.S_Fails, pars, isEncode);
 		}
@@ -161,10 +155,9 @@ public class LgcGame extends LgcRoom {
 		currPlay.getlGobjRunning().add(gobj);
 
 		// 自身数据
-		Map<String, Object> map = new HashMap<String, Object>();
-		map.put("sesid", ses.getSessionID());
-		map.put("listRunning", currPlay.listMap());
-		String outVal = msg(GObjConfig.S_Success, map, isEncode);
+		pars.put("sesid", ses.getSessionID());
+		pars.put("listRunning", currPlay.listMap());
+		String outVal = msg(GObjConfig.S_Success, pars, isEncode);
 
 		// 推送给别的数据
 		sesOther.addNotify(ETNotify.Enemy_DownSheep);
