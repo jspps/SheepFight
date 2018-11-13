@@ -106,6 +106,7 @@ public class GObjSession extends Session {
 
 	public Map<String, Object> toMap(Map<String, Object> map) {
 		map = toMapMust(map);
+		map.put("lens_way", GObjConfig.LM_Runway);
 		map.put("player", curr.toMap());
 		lMap.clear();
 		lMap.addAll(curr.listMap());
@@ -130,7 +131,6 @@ public class GObjSession extends Session {
 			map = new HashMap<String, Object>();
 		map.put(GObjConfig.K_SesID, sessionID);
 		map.put("time_ms", CalendarEx.now());
-		map.put("lens_way", GObjConfig.LM_Runway);
 		map.put("roomid", roomid);
 		map.put("state", state.ordinal());
 		return map;
