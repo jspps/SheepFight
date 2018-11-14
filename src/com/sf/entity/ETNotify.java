@@ -9,7 +9,7 @@ package com.sf.entity;
  */
 public enum ETNotify {
 	None,
-	Enemy_Login,
+	Enemy_Matched,
 	Enemy_State,
 	Enemy_DownSheep,
 }

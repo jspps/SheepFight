@@ -7,7 +7,6 @@ import com.bowlong.util.MapEx;
 import com.bowlong.util.Ref;
 import com.sf.entity.ETGObj;
 import com.sf.entity.ETNotify;
-import com.sf.entity.ETState;
 import com.sf.entity.GObjConfig;
 import com.sf.entity.GObjRoom;
 import com.sf.entity.GObjSession;
@@ -34,6 +33,13 @@ public class LgcGame extends LgcRoom {
 			return ses.isNetMore();
 		}
 		return false;
+	}
+
+	static final Map<String, Object> matching(GObjSession ses, Map<String, Object> pars) {
+		pars.clear();
+		GObjRoom room = alloterRoom(ses);
+		room.matching(ses);
+		return ses.toMap(pars);
 	}
 
 	/** 心跳 **/
@@ -71,55 +77,9 @@ public class LgcGame extends LgcRoom {
 		if (ses == null) {
 			ses = new GObjSession(lgid, lgpwd);
 		}
-
-		return msg(GObjConfig.S_Success, ses.toMap(), isEncode);
-	}
-
-	static public String matching(Map<String, Object> pars) {
-		boolean isEncode = isEncode(pars);
-		GObjSession ses = mySession(pars);
-		pars.clear();
-
-		alloterRoom(ses);
-		GObjSession sesOther = enemySession(ses);
-		if (sesOther != null) {
-			// 自身数据加上敌人
-			ses.setEnemySesId(sesOther.getSessionID());
-			sesOther.setEnemySesId(ses.getSessionID());
-			// 给敌人推送自身数据
-			sesOther.addNotify(ETNotify.Enemy_Login);
-		}
-		return msg(GObjConfig.S_Success, ses.toMap(), isEncode);
-	}
-
-	static public String start(Map<String, Object> pars) {
-		boolean isEncode = isEncode(pars);
-		GObjSession ses = mySession(pars);
-		GObjSession sesOther = enemySession(ses);
-		pars.clear();
-		if (sesOther == null || !sesOther.IsValid()) {
-			pars.put("tip", "尚未对手，请等待");
-			return msg(GObjConfig.S_Fails, pars, isEncode);
-		}
-
-		GObjRoom room = getRoom(ses.getRoomid());
-		if (room == null) {
-			room = alloterRoom(ses);
-		}
-
-		if (sesOther.isReady()) {
-			sesOther.readyOrStart(true);
-			ses.readyOrStart(true);
-			room.setState(ETState.Running);
-		} else {
-			ses.readyOrStart(false);
-		}
-
-		// 自身数据
-		String outVal = msg(GObjConfig.S_Success, ses.toMapMust(pars), isEncode);
-		// 推送给别的数据
-		sesOther.addNotify(ETNotify.Enemy_State);
-		return outVal;
+		
+		pars = matching(ses, pars);
+		return msg(GObjConfig.S_Success, pars, isEncode);
 	}
 
 	/** 放羊 **/
@@ -156,13 +116,13 @@ public class LgcGame extends LgcRoom {
 		currForce -= needForce;
 		currPlay.setForage(currForce);
 
-		GObject gobj = new GObject(sType, numRunway, ses.getSessionID());
-		gobj.StartRunning(sesOther.getSessionID());
+		GObject gobj = new GObject(sType, numRunway, ses.getId());
+		gobj.StartRunning(sesOther.getId());
 
 		currPlay.getlGobjRunning().add(gobj);
 
 		// 自身数据
-		pars.put("sesid", ses.getSessionID());
+		pars.put("sesid", ses.getId());
 		pars.put("listRunning", currPlay.listMap());
 		String outVal = msg(GObjConfig.S_Success, pars, isEncode);
 

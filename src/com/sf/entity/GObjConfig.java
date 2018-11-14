@@ -15,7 +15,8 @@ public class GObjConfig {
 	static final public String S_Success = "success";
 	static final public String S_Wait = "wait";
 	static final public String K_SesID = "sesid"; // sessionID的key值
-	static final public long LS_Net = 5 * 1000; // 5秒
+	static final public int LMS_Net = 5 * 1000; // 5秒
+	static final public int LMS_Matching = 15 * 1000; // 15秒
 	static final public int LN_Net = 50; // 每个session对象每5秒限定最多请求数(LN = LimitNum)
 	static final public String Fmt_JsonMsgStr = "{\"code\":\"%s\",\"msg\":\"%s\"}"; // msg 是一个字符串
 	static final public String Fmt_JsonMsg = "{\"code\":\"%s\",\"msg\":%s}"; // msg 是一个对象

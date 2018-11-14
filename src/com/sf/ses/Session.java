@@ -1,6 +1,5 @@
 package com.sf.ses;
 
-import com.bowlong.tool.SnowflakeIdWorker;
 import com.sf.entity.BeanOrigin;
 
 /**
@@ -10,24 +9,20 @@ import com.sf.entity.BeanOrigin;
  */
 public class Session extends BeanOrigin {
 	private static final long serialVersionUID = 1L;
-
-	protected long sessionID;
-	private long timeOverdue;
-	private long creattime;
-
-	protected long overLimitMs = 0;
+	static long minLmt = 100;
 	static protected long defMs = 600000; // 10分钟
 
-	public long getSessionID() {
-		return sessionID;
+	protected long lmsOver = 0;
+	protected long id;
+	private long nextOverdue;
+	private long creattime;
+
+	public long getId() {
+		return id;
 	}
 
-	public void setSessionID(long sessionID) {
-		this.sessionID = sessionID;
-	}
-
-	public long getTimeOverdue() {
-		return timeOverdue;
+	public void setId(long sesid) {
+		this.id = sesid;
 	}
 
 	public long getCreattime() {
@@ -35,38 +30,46 @@ public class Session extends BeanOrigin {
 	}
 
 	public Session() {
-		this(defMs);
 	}
 
-	public Session(long sesID, long limitMs) {
-		InitAll(sesID, limitMs);
+	public Session(long id) {
+		InitSesID(id);
 	}
 
-	public Session(long limitMs) {
-		InitMs(limitMs);
+	public Session(long id, long limitMs) {
+		InitAll(id, limitMs);
 	}
 
-	public void InitAll(long sesID, long limitMs) {
-		this.sessionID = sesID;
-		this.creattime = System.currentTimeMillis();
-		this.overLimitMs = limitMs;
+	long now() {
+		return System.currentTimeMillis();
+	}
+
+	public void InitAll(long id, long lmtMs) {
+		this.creattime = now();
+		this.id = id;
+		ReLmtOver(lmtMs);
+	}
+
+	public void InitSesID(long id) {
+		long lmtMs = lmsOver > minLmt ? lmsOver : defMs;
+		InitAll(id, lmtMs);
+	}
+
+	public void ReLmtOver(long lmtMs) {
+		lmsOver = lmtMs;
 		ResetTimeOverdue();
 	}
 
-	public void InitMs(long limitMs) {
-		long sesID = SnowflakeIdWorker.defInstance().nextId();
-		InitAll(sesID, limitMs);
-	}
-
-	public void InitSesID(long sesID) {
-		InitAll(sesID, defMs);
-	}
-
 	public void ResetTimeOverdue() {
-		this.timeOverdue = System.currentTimeMillis() + this.overLimitMs;
+		if(lmsOver > minLmt){
+			nextOverdue = now() + lmsOver;
+		}
 	}
 
 	public boolean IsValid() {
-		return System.currentTimeMillis() < this.timeOverdue;
+		if(lmsOver > minLmt){
+			return now() < nextOverdue;
+		}
+		return true;
 	}
 }

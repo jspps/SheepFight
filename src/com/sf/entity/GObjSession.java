@@ -18,18 +18,19 @@ import com.sf.ses.Session;
  */
 public class GObjSession extends Session {
 	private static final long serialVersionUID = 1L;
-	long roomid;
-	String lgid;
-	String lgpwd;
-	Player curr;
-	long enemySesId;
+	private long roomid;
+	private String lgid;
+	private String lgpwd;
+	private Player curr;
+	private long enemySesId;
+	private boolean isRobot;
 
-	ETState state = ETState.None;
+	private ETState state = ETState.None;
 
-	long lmtLastTime = 0;// 上一次计数时间
-	int netCount = 0;// 5秒内总限定次数
-	List<ETNotify> lNotify = new ArrayList<ETNotify>();
-	List<Map<String, Object>> lMap = new ArrayList<Map<String, Object>>();
+	private long lmtLastTime = 0;// 上一次计数时间
+	private int netCount = 0;// 5秒内总限定次数
+	private List<ETNotify> lNotify = new ArrayList<ETNotify>();
+	private List<Map<String, Object>> lMap = new ArrayList<Map<String, Object>>();
 
 	public long getRoomid() {
 		return roomid;
@@ -86,6 +87,10 @@ public class GObjSession extends Session {
 	public void setState(ETState state) {
 		this.state = state;
 	}
+	
+	public boolean isRobot() {
+		return isRobot;
+	}
 
 	public GObjSession() {
 		super();
@@ -98,8 +103,9 @@ public class GObjSession extends Session {
 	public GObjSession reInit(String lgid, String lgpwd) {
 		this.lgid = lgid;
 		this.lgpwd = lgpwd;
+		isRobot = lgid.contains("robot_");
 		String rndVal = RndEx.nextString09(9);
-		this.curr = new Player(rndVal, rndVal, 0);
+		curr = new Player(rndVal, rndVal);
 		InitSesID(GObjConfig.SW_ID.nextId());
 		return this;
 	}
@@ -115,7 +121,7 @@ public class GObjSession extends Session {
 		if (enemy != null) {
 			Player _pl = enemy.getCurr();
 			map.put("enemy", _pl.toMap());
-			map.put("enemy_state", enemy.getState().ordinal());
+//			map.put("enemy_state", enemy.getState().ordinal());
 			lMap.addAll(_pl.listMap());
 		}
 		map.put("listRunning", lMap);
@@ -129,10 +135,10 @@ public class GObjSession extends Session {
 	public Map<String, Object> toMapMust(Map<String, Object> map) {
 		if (map == null)
 			map = new HashMap<String, Object>();
-		map.put(GObjConfig.K_SesID, sessionID);
+		map.put(GObjConfig.K_SesID, id);
 		map.put("time_ms", CalendarEx.now());
 		map.put("roomid", roomid);
-		map.put("state", state.ordinal());
+//		map.put("state", state.ordinal());
 		return map;
 	}
 
@@ -154,7 +160,7 @@ public class GObjSession extends Session {
 	public void recordNetCount() {
 		long _now = CalendarEx.now();
 		long diff = _now - lmtLastTime;
-		if (diff > GObjConfig.LS_Net) {
+		if (diff > GObjConfig.LMS_Net) {
 			lmtLastTime = _now;
 			netCount = 1;
 		} else {
@@ -169,14 +175,20 @@ public class GObjSession extends Session {
 	public void resetRoomId(long roomId) {
 		setRoomid(roomId);
 	}
-
-	public void readyOrStart(boolean isStart) {
+	
+	public void ready(long enemyID) {
 		synchronized (this) {
 			lNotify.clear();
-			if (isStart)
-				state = ETState.Running;
-			else
-				state = ETState.Ready;
+			enemySesId = enemyID;
+			state = ETState.Matching;
+		}
+	}
+
+	public void start(long enemyID) {
+		synchronized (this) {
+			lNotify.clear();
+			enemySesId = enemyID;
+			state = ETState.Running;
 		}
 	}
 
@@ -192,6 +204,6 @@ public class GObjSession extends Session {
 	}
 
 	public boolean isReady() {
-		return state == ETState.Ready;
+		return state == ETState.Matching;
 	}
 }

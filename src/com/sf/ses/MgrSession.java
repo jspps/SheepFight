@@ -46,12 +46,12 @@ public class MgrSession implements Serializable {
 	static final public boolean rmSession(Session objSes) {
 		if (objSes == null)
 			return false;
-		return rmSession(objSes.getSessionID());
+		return rmSession(objSes.getId());
 	}
 
 	static final public void addSession(String lgid, String lgpwd, Session objSes) {
 		String vKey = String.format("%s_%s", lgid, lgpwd);
-		long sesid = objSes.getSessionID();
+		long sesid = objSes.getId();
 		mapLg2Id.put(vKey, sesid);
 		mapId2Lg.put(sesid, vKey);
 		mapSession.put(sesid, objSes);

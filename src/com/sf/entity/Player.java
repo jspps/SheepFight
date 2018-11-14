@@ -50,7 +50,6 @@ public class Player extends BeanOrigin {
 
 	public Player() {
 		super();
-		this.forage = GObjConfig.N_Init_Forage;
 	}
 
 	public Player(String name, String icon, int forage) {

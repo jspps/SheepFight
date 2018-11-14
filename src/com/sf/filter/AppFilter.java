@@ -48,7 +48,7 @@ public class AppFilter extends BasicFilter {
 	public String cfFilter(int state,String uri, Map<String, Object> pars) {
 		pars.put("uri", uri);
 		if(netCount > 0)
-			pars.put("tip", String.format("每%s秒超过了%s条请求,当前已请求%s条!",(GObjConfig.LS_Net / 1000),GObjConfig.LN_Net,netCount));
+			pars.put("tip", String.format("每%s秒超过了%s条请求,当前已请求%s条!",(GObjConfig.LMS_Net / 1000),GObjConfig.LN_Net,netCount));
 		else
 			pars.put("tip", (state == 3)?"消息带有有sql注入":"消息过时了!");
 		return LgcGame.msg(GObjConfig.S_Fails, pars);

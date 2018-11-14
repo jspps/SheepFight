@@ -10,7 +10,6 @@ import com.bowlong.security.Base64;
 import com.bowlong.util.MapEx;
 import com.bowlong.util.Ref;
 import com.sf.entity.ETNotify;
-import com.sf.entity.ETState;
 import com.sf.entity.GObjConfig;
 import com.sf.entity.GObjRoom;
 import com.sf.entity.GObjSession;
@@ -48,7 +47,7 @@ class LgcRoom extends MgrSession {
 	
 	static final GObjSession enemySession(GObjSession ses) {
 		GObjRoom room = getRoom(ses.getRoomid());
-		long sesid = room.getOther(ses.getSessionID());
+		long sesid = room.getOther(ses.getId());
 		return targetSession(sesid);
 	}
 
@@ -121,7 +120,7 @@ class LgcRoom extends MgrSession {
 
 	static protected GObjRoom alloterRoom(GObjSession ses) {
 		synchronized (objLock) {
-			long sesid = ses.getSessionID();
+			long sesid = ses.getId();
 			GObjRoom room = getFreeRoom();
 			room.changeOne(sesid, true);
 
@@ -133,15 +132,12 @@ class LgcRoom extends MgrSession {
 
 	static public void remove4Room(GObjSession ses) {
 		synchronized (objLock) {
+			rmSession(ses);
 			long roomid = ses.getRoomid();
 			GObjRoom room = getRoom(roomid);
 			if (room != null) {
-				room.changeOne(ses.getSessionID(), false);
-				if (room.isEmpty()) {
-					room.setState(ETState.None);
-				}
+				room.remove(ses.getId());
 			}
-			rmSession(ses);
 		}
 	}
 
@@ -182,7 +178,7 @@ class LgcRoom extends MgrSession {
 				notifyType = _list.get(i);
 				ses.rmNotify(notifyType);
 				switch (notifyType) {
-				case Enemy_Login:
+				case Enemy_Matched:
 					pars.put("enemy", plEnemy.toMap());
 					break;
 				case Enemy_State:

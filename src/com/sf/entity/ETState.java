@@ -8,7 +8,7 @@ package com.sf.entity;
  */
 public enum ETState {
 	None,
-	Ready,
+	Matching,
 	Running,
 	End,
 	Win,
