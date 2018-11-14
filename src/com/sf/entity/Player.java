@@ -20,8 +20,7 @@ public class Player extends BeanOrigin {
 	String name; // 名字
 	String icon; // 头像
 	int forage; // 草料
-
-	List<Map<String, Object>> lMap = new ArrayList<Map<String, Object>>();
+	
 	Map<Long, GObject> mapWait = new ConcurrentHashMap<Long, GObject>();
 	Map<Long, GObject> mapRunning = new ConcurrentHashMap<Long, GObject>();
 	List<GObject> lstEnd = new ArrayList<GObject>();
@@ -58,7 +57,6 @@ public class Player extends BeanOrigin {
 		mapWait.clear();
 		mapRunning.clear();
 		lstEnd.clear();
-		lMap.clear();
 		return this;
 	}
 
@@ -100,7 +98,7 @@ public class Player extends BeanOrigin {
 	}
 
 	List<Map<String, Object>> listMap(Collection<GObject> list) {
-		lMap.clear();
+		List<Map<String, Object>> lMap = new ArrayList<Map<String, Object>>();
 		for (GObject item : list) {
 			lMap.add(item.toMap(null));
 		}
