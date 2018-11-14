@@ -13,11 +13,11 @@ http://127.0.0.1:8080/SheepFight/Svlet/Game?cmd=1000&lgid=111111&lgpwd=222222
  请求 - 放羊
 http://127.0.0.1:8080/SheepFight/Svlet/Game?cmd=1010
 &sesid=[sesid]
-&sheepIndex=[羊的类型index]
-&numRunway=[放置的跑到1-5]
+&sheepId=[羊的标识id]
+&runway=[放置的跑到1-5]
 &time_ms=[当前系统时间(单位ms)] - (可选,传递了会验证请求的有效性)
 
-http://127.0.0.1:8080/SheepFight/Svlet/Game?cmd=1010&sesid=10038664411222016&sheepIndex=1&numRunway=1
+http://127.0.0.1:8080/SheepFight/Svlet/Game?cmd=1010&sesid=10038664411222016&sheepId=10038664411222016&runway=1
 
 放羊json.txt
 

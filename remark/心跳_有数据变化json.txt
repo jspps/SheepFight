@@ -2,10 +2,8 @@
 	"code": "success",
 	"msg": {
 		"time_ms": 1541924503373,
-		"state": 1,
 		"roomid": 10031530680389632,
 		"sesid": 10031530743173120,
-		"enemy_state": 0,(字段可能不存在)
 		"enemy": 与player一样(字段可能不存在),
 		"listRunning": 跑道的羊羊(字段可能不存在),
 	}
