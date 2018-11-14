@@ -109,6 +109,7 @@ public class GObject extends BeanOrigin {
 		this(gobjType, 1 + RndEx.nextInt(GObjConfig.NM_Runway), 0);
 	}
 
+	@Override
 	public Map<String, Object> toMap(Map<String, Object> map) {
 		if (map == null)
 			map = new HashMap<String, Object>();
@@ -123,6 +124,17 @@ public class GObject extends BeanOrigin {
 		return map;
 	}
 
+	public int currWay() {
+		return this.runway > 0 ? this.runway : 1 + RndEx.nextInt(GObjConfig.NM_Runway);
+	}
+
+	public void stop() {
+		this.runway = 0;
+		this.runTo = 0;
+		this.startRunTime = 0;
+		this.isRunning = false;
+	}
+
 	public void startRunning(long runTo, int runway) {
 		this.runway = runway;
 		this.runTo = runTo;
@@ -131,14 +143,14 @@ public class GObject extends BeanOrigin {
 	}
 
 	public void startRunning(long runTo) {
-		startRunning(runTo, this.runway);
+		startRunning(runTo, currWay());
 	}
-	
-	public boolean isWolf(){
+
+	public boolean isWolf() {
 		return this.gobjType == ETGObj.Wolf;
 	}
-	
-	public boolean isNeutral(){
+
+	public boolean isNeutral() {
 		return this.gobjType == ETGObj.SheepNeutral;
 	}
 

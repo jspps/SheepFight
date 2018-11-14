@@ -1,7 +1,7 @@
 package com.sf.entity;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 
@@ -22,11 +22,10 @@ public class GObjRoom extends BeanOrigin implements Runnable {
 	private long psid1 = 0;
 	private long psid2 = 0;
 	private ETState state = ETState.None;
-
-	// 随机动物
-	private List<GObject> lstRnd = new ArrayList<GObject>();
 	private ScheduledFuture<?> objSF = null;
 
+	// 随机动物
+	GObject gobjWolf = new GObject(ETGObj.Wolf);
 	public long getRoomid() {
 		return roomid;
 	}
@@ -110,6 +109,32 @@ public class GObjRoom extends BeanOrigin implements Runnable {
 	public boolean isFree() {
 		return psid1 <= 0 || psid2 <= 0;
 	}
+	
+	public boolean isHas(long sesid){
+		return psid1 == sesid || psid2 == sesid; 
+	}
+
+	public void clear() {
+		synchronized (this) {
+			if (objSF != null) {
+				objSF.cancel(true);
+				objSF = null;
+			}
+
+			GObjSession ses1 = LgcGame.targetSession(psid1);
+			if (ses1 != null) {
+				ses1.clear();
+			}
+			ses1 = LgcGame.targetSession(psid2);
+			if (ses1 != null) {
+				ses1.clear();
+			}
+
+			psid1 = 0;
+			psid2 = 0;
+			state = ETState.None;
+		}
+	}
 
 	public void matching(GObjSession ses) {
 		synchronized (this) {
@@ -132,10 +157,18 @@ public class GObjRoom extends BeanOrigin implements Runnable {
 
 	public void starting(GObjSession ses, boolean isNdSelf) {
 		synchronized (this) {
-			state = ETState.Running;
 			long id1 = ses.getId();
+			if(!isHas(id1)){
+				return;
+			}
 			long id2 = getOther(id1);
 			GObjSession sesOther = LgcGame.targetSession(id2);
+			if (ses.isRobot() && sesOther.isRobot()) {
+				clear();
+				return;
+			}
+
+			state = ETState.Running;
 			ses.start(id2);
 			sesOther.start(id1);
 			if (!sesOther.isRobot()) {
@@ -146,7 +179,15 @@ public class GObjRoom extends BeanOrigin implements Runnable {
 			}
 			objSF = Toolkit.scheduled8FixedRate(_ses, this, 0, 100);
 			
-			
+			long runTo = 0;
+			if (ses.isRobot()) {
+				runTo = id2;
+			} else if (sesOther.isRobot()) {
+				runTo = id1;
+			} else {
+				runTo = RndEx.nextBoolean() ? id1 : id2;
+			}
+			gobjWolf.startRunning(runTo);
 		}
 	}
 
@@ -164,10 +205,7 @@ public class GObjRoom extends BeanOrigin implements Runnable {
 		synchronized (this) {
 			switch (state) {
 			case None:
-				if (objSF != null) {
-					objSF.cancel(true);
-					objSF = null;
-				}
+				clear();
 				break;
 			case Matching:
 				objSF = null;

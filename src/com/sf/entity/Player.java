@@ -75,6 +75,7 @@ public class Player extends BeanOrigin {
 		this(name, icon, GObjConfig.NI_Forage);
 	}
 
+	@Override
 	public Map<String, Object> toMap(Map<String, Object> map) {
 		if (map == null)
 			map = new HashMap<String, Object>();
