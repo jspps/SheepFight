@@ -101,35 +101,32 @@ public class GObjSession extends Session {
 	}
 
 	public GObjSession reInit(String lgid, String lgpwd) {
+		InitSesID(GObjConfig.SW_SID.nextId());
 		this.lgid = lgid;
 		this.lgpwd = lgpwd;
 		isRobot = lgid.contains("robot_");
 		String rndVal = RndEx.nextString09(9);
 		curr = new Player(rndVal, rndVal);
-		InitSesID(GObjConfig.SW_ID.nextId());
+		curr.rndWaitFirst(id);
 		return this;
 	}
 
 	public Map<String, Object> toMap(Map<String, Object> map) {
 		map = toMapMust(map);
 		map.put("lens_way", GObjConfig.LM_Runway);
-		map.put("player", curr.toMap());
+		map.put("player", curr.toMap(null));
 		lMap.clear();
 		lMap.addAll(curr.listMap());
 
 		GObjSession enemy = LgcGame.targetSession(enemySesId);
 		if (enemy != null) {
 			Player _pl = enemy.getCurr();
-			map.put("enemy", _pl.toMap());
+			map.put("enemy", _pl.toMap(null));
 //			map.put("enemy_state", enemy.getState().ordinal());
 			lMap.addAll(_pl.listMap());
 		}
 		map.put("listRunning", lMap);
 		return map;
-	}
-
-	public Map<String, Object> toMap() {
-		return toMap(null);
 	}
 
 	public Map<String, Object> toMapMust(Map<String, Object> map) {

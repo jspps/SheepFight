@@ -5,12 +5,10 @@ import java.util.Map;
 import com.bowlong.lang.StrEx;
 import com.bowlong.util.MapEx;
 import com.bowlong.util.Ref;
-import com.sf.entity.ETGObj;
 import com.sf.entity.ETNotify;
 import com.sf.entity.GObjConfig;
 import com.sf.entity.GObjRoom;
 import com.sf.entity.GObjSession;
-import com.sf.entity.GObject;
 import com.sf.entity.Player;
 
 /**
@@ -86,20 +84,14 @@ public class LgcGame extends LgcRoom {
 	static public String downSheep(Map<String, Object> pars) {
 		boolean isEncode = isEncode(pars);
 		GObjSession ses = mySession(pars);
-		int numRunway = MapEx.getInt(pars, "numRunway");
-		int sheepIndex = MapEx.getInt(pars, "sheepIndex");
+		int runway = MapEx.getInt(pars, "runway");
+		long sheepId = MapEx.getLong(pars, "sheepId");
 		pars.clear();
-		if (numRunway < 0 || numRunway > GObjConfig.NM_Runway) {
+		if (runway < 0 || runway > GObjConfig.NM_Runway) {
 			pars.put("tip", "超出了跑道[1-5]");
 			return msg(GObjConfig.S_Fails, pars, isEncode);
 		}
-
-		ETGObj sType = ETGObj.get(sheepIndex);
-		if (sType == null || sheepIndex > 3) {
-			pars.put("tip", "类型不对(SheepSmall,SheepMiddle,SheepBig)");
-			return msg(GObjConfig.S_Fails, pars, isEncode);
-		}
-
+		
 		GObjSession sesOther = enemySession(ses);
 		if (sesOther == null || !sesOther.IsValid()) {
 			pars.put("tip", "对手已经掉线");
@@ -107,20 +99,12 @@ public class LgcGame extends LgcRoom {
 		}
 
 		Player currPlay = ses.getCurr();
-		int needForce = sType.getPower();
-		int currForce = currPlay.getForage();
-		if (currForce < needForce) {
-			pars.put("tip", "草料不足，不能放" + sType.getName());
+		if (!currPlay.isInWait(sheepId)) {
+			pars.put("tip", "放置的羊ID不正确;错误 id = "+sheepId);
 			return msg(GObjConfig.S_Fails, pars, isEncode);
 		}
-		currForce -= needForce;
-		currPlay.setForage(currForce);
-
-		GObject gobj = new GObject(sType, numRunway, ses.getId());
-		gobj.StartRunning(sesOther.getId());
-
-		currPlay.getlGobjRunning().add(gobj);
-
+		
+		currPlay.startRunning(sheepId, runway,sesOther.getId());
 		// 自身数据
 		pars.put("sesid", ses.getId());
 		pars.put("listRunning", currPlay.listMap());

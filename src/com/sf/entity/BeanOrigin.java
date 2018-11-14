@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Map;
 import java.sql.Connection;
 
 /**
@@ -50,5 +51,9 @@ public class BeanOrigin implements Serializable {
 			}
 		}
 		return -1;
+	}
+	
+	public Map<String, Object> toMap(Map<String, Object> map) {
+		return map;
 	}
 }

@@ -111,7 +111,7 @@ class LgcRoom extends MgrSession {
 			}
 		}
 		if (_ret == null) {
-			long id = GObjConfig.SW_RoomID.nextId();
+			long id = GObjConfig.SW_RID.nextId();
 			_ret = new GObjRoom(id);
 			mapRoom.put(id, _ret);
 		}
@@ -179,7 +179,7 @@ class LgcRoom extends MgrSession {
 				ses.rmNotify(notifyType);
 				switch (notifyType) {
 				case Enemy_Matched:
-					pars.put("enemy", plEnemy.toMap());
+					pars.put("enemy", plEnemy.toMap(null));
 					break;
 				case Enemy_State:
 					pars.put("enemy_state", enemy.getState().ordinal());

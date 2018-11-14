@@ -1,9 +1,13 @@
 package com.sf.entity;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
+import com.bowlong.lang.RndEx;
 
 /**
  * 玩家
@@ -17,8 +21,10 @@ public class Player extends BeanOrigin {
 	String icon; // 头像
 	int forage; // 草料
 
-	List<GObject> lGobjRunning = new ArrayList<GObject>();
 	List<Map<String, Object>> lMap = new ArrayList<Map<String, Object>>();
+	Map<Long, GObject> mapWait = new ConcurrentHashMap<Long, GObject>();
+	Map<Long, GObject> mapRunning = new ConcurrentHashMap<Long, GObject>();
+	List<GObject> lstEnd = new ArrayList<GObject>();
 
 	public String getName() {
 		return name;
@@ -44,8 +50,16 @@ public class Player extends BeanOrigin {
 		this.forage = forage;
 	}
 
-	public List<GObject> getlGobjRunning() {
-		return lGobjRunning;
+	public Player reInit(String name, String icon, int forage) {
+		this.name = name;
+		this.icon = icon;
+		this.forage = forage;
+
+		mapWait.clear();
+		mapRunning.clear();
+		lstEnd.clear();
+		lMap.clear();
+		return this;
 	}
 
 	public Player() {
@@ -54,31 +68,63 @@ public class Player extends BeanOrigin {
 
 	public Player(String name, String icon, int forage) {
 		super();
-		this.name = name;
-		this.icon = icon;
-		this.forage = forage;
+		reInit(name, icon, forage);
 	}
 
 	public Player(String name, String icon) {
-		this(name, icon, GObjConfig.N_Init_Forage);
+		this(name, icon, GObjConfig.NI_Forage);
 	}
 
-	public List<Map<String, Object>> listMap() {
+	public Map<String, Object> toMap(Map<String, Object> map) {
+		if (map == null)
+			map = new HashMap<String, Object>();
+		map.put("name", name);
+		map.put("icon", icon);
+		map.put("forage", forage);
+		map.put("listWait", listMap(mapWait.values()));
+		return map;
+	}
+
+	public GObject rndWaitOne(long beTo) {
+		ETGObj tmp = ETGObj.get(1 + RndEx.nextInt(3));
+		GObject obj = new GObject(tmp, beTo);
+		mapWait.put(obj.getId(), obj);
+		return obj;
+	}
+
+	public void rndWaitFirst(long beTo) {
+		for (int i = 0; i < GObjConfig.NI_Sheep_Wait; i++) {
+			rndWaitOne(beTo);
+		}
+	}
+
+	List<Map<String, Object>> listMap(Collection<GObject> list) {
 		lMap.clear();
-		for (GObject item : lGobjRunning) {
-			lMap.add(item.toMap());
+		for (GObject item : list) {
+			lMap.add(item.toMap(null));
 		}
 		return lMap;
 	}
 
-	public Map<String, Object> toMap() {
-		Map<String, Object> map = new HashMap<String, Object>();
-		map.put("name", name);
-		map.put("icon", icon);
-		map.put("forage", forage);
-		map.put("small", ETGObj.SheepSmall.toMap());
-		map.put("middle", ETGObj.SheepMiddle.toMap());
-		map.put("big", ETGObj.SheepBig.toMap());		
-		return map;
+	public List<Map<String, Object>> listMap() {
+		return listMap(mapRunning.values());
+	}
+
+	GObject getInWait(long sheepId) {
+		return mapWait.get(sheepId);
+	}
+
+	public boolean isInWait(long sheepId) {
+		return getInWait(sheepId) != null;
+	}
+
+	public boolean startRunning(long sheepId, int way, long runTo) {
+		GObject gobj = getInWait(sheepId);
+		if (gobj == null)
+			return false;
+		gobj.startRunning(runTo, way);
+		mapWait.remove(sheepId);
+		mapRunning.put(sheepId, gobj);
+		return true;
 	}
 }

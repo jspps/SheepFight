@@ -16,17 +16,16 @@ import com.sf.logic.LgcGame;
  * @version createtime：2018-11-11下午2:48:18
  */
 public class GObjRoom extends BeanOrigin implements Runnable {
-	static ScheduledExecutorService _ses = Toolkit.newScheduledThreadPool("GObjRoom", 2);
+	private ScheduledExecutorService _ses = null;
 	private static final long serialVersionUID = 1L;
 	private long roomid = 0;
 	private long psid1 = 0;
 	private long psid2 = 0;
 	private ETState state = ETState.None;
-	
-	//随机动物
-	private List<GObject> lstRnd = new ArrayList<GObject>();
 
-	private ScheduledFuture<?> sfMatching = null;
+	// 随机动物
+	private List<GObject> lstRnd = new ArrayList<GObject>();
+	private ScheduledFuture<?> objSF = null;
 
 	public long getRoomid() {
 		return roomid;
@@ -67,8 +66,9 @@ public class GObjRoom extends BeanOrigin implements Runnable {
 	public GObjRoom(long roomid) {
 		super();
 		this.roomid = roomid;
+		_ses = Toolkit.newScheduledThreadPool("GRoom_" + roomid, 2);
 	}
-	
+
 	public long getOther(long psid) {
 		return psid == psid1 ? psid2 : psid1;
 	}
@@ -113,24 +113,24 @@ public class GObjRoom extends BeanOrigin implements Runnable {
 
 	public void matching(GObjSession ses) {
 		synchronized (this) {
+			if (objSF != null) {
+				objSF.cancel(true);
+				objSF = null;
+			}
 			long id1 = ses.getId();
 			long id2 = getOther(id1);
 			GObjSession sesOther = LgcGame.targetSession(id2);
 			if (sesOther != null) {
-				if (sfMatching != null) {
-					sfMatching.cancel(true);
-					sfMatching = null;
-				}
-				starting(ses,false);
+				starting(ses, false);
 			} else {
 				ses.ready(0);
 				state = ETState.Matching;
-				sfMatching = Toolkit.scheduleMS(_ses, this, GObjConfig.LMS_Matching);
+				objSF = Toolkit.scheduleMS(_ses, this, GObjConfig.LMS_Matching);
 			}
 		}
 	}
 
-	public void starting(GObjSession ses,boolean isNdSelf) {
+	public void starting(GObjSession ses, boolean isNdSelf) {
 		synchronized (this) {
 			state = ETState.Running;
 			long id1 = ses.getId();
@@ -138,16 +138,19 @@ public class GObjRoom extends BeanOrigin implements Runnable {
 			GObjSession sesOther = LgcGame.targetSession(id2);
 			ses.start(id2);
 			sesOther.start(id1);
-			if(!sesOther.isRobot()){
+			if (!sesOther.isRobot()) {
 				sesOther.addNotify(ETNotify.Enemy_Matched);
 			}
-			if(isNdSelf && !ses.isRobot()){
+			if (isNdSelf && !ses.isRobot()) {
 				ses.addNotify(ETNotify.Enemy_Matched);
 			}
+			objSF = Toolkit.scheduled8FixedRate(_ses, this, 0, 100);
+			
+			
 		}
 	}
-	
-	public void remove(long sesid){
+
+	public void remove(long sesid) {
 		synchronized (this) {
 			changeOne(sesid, false);
 			if (isEmpty()) {
@@ -160,23 +163,31 @@ public class GObjRoom extends BeanOrigin implements Runnable {
 	public void run() {
 		synchronized (this) {
 			switch (state) {
+			case None:
+				if (objSF != null) {
+					objSF.cancel(true);
+					objSF = null;
+				}
+				break;
 			case Matching:
-				sfMatching = null;
+				objSF = null;
 				if (!isEmpty() && isFree()) {
 					long sid = psid1 > 0 ? psid1 : psid2;
 					GObjSession objSes = LgcGame.targetSession(sid);
-					if(objSes.isRobot()){
+					if (objSes.isRobot()) {
 						LgcGame.remove4Room(objSes);
 						return;
 					}
-					
+
 					// 添加一个机器人
 					String strRobot = String.format("robot_%s", RndEx.nextString09(9));
 					GObjSession robot = new GObjSession(strRobot, strRobot);
 					robot.ReLmtOver(0);
 					changeOne(robot.getId(), true);
-					starting(objSes,true);
+					starting(objSes, true);
 				}
+				break;
+			case Running:
 				break;
 			default:
 				break;

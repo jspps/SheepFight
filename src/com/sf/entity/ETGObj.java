@@ -10,8 +10,12 @@ import java.util.Map;
  * @version createtime：2018-11-11上午9:13:20
  */
 public enum ETGObj {
-	SheepSmall("小羊", 1, 1), SheepMiddle("中羊", 2, 2), SheepBig("大羊", 3, 4), SheepNeutral(
-			"叛变羊", 4), Wolf("狼", 5), Spinach("菠菜罐头", 6, 7), ;
+	SheepSmall("小羊", 1, 1), 
+	SheepMiddle("中羊", 2, 2), 
+	SheepBig("大羊", 3, 4), 
+	SheepNeutral("叛变羊", 4), 
+	Wolf("狼",5), 
+	Spinach("菠菜罐头", 6, 7),;
 	// 取得对象的方法
 	static public ETGObj get(int index) {
 		for (ETGObj got : ETGObj.values()) {
@@ -35,10 +39,10 @@ public enum ETGObj {
 	private String name; // 自定义名字
 	private int index; // 唯一标识int值
 	private int power;// 力量or总体时长(秒)
-	private int speed;// 速度单位Unit/秒 - 这个单位：可能是米，有可能是一个单元格
+	private double speed;// 速度单位Unit/秒 - 这个单位：可能是米，有可能是一个单元格
 
 	// 构造方法
-	private ETGObj(String name, int index, int power, int speed) {
+	private ETGObj(String name, int index, int power, double speed) {
 		this.name = name;
 		this.index = index;
 		this.power = power;
@@ -78,17 +82,16 @@ public enum ETGObj {
 		this.power = power;
 	}
 
-	public int getSpeed() {
+	public double getSpeed() {
 		return speed;
 	}
 
-	public void setSpeed(int speed) {
+	public void setSpeed(double speed) {
 		this.speed = speed;
 	}
 
 	public String toStr() {
-		return String.format("%s_%s_%s_%s_%s_%s", name(), ordinal(), index,
-				name, power, speed);
+		return String.format("%s_%s_%s_%s_%s_%s", name(), ordinal(), index,	name, power, speed);
 	}
 
 	public Map<String, Object> toMap(Map<String, Object> map) {
