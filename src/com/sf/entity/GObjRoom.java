@@ -28,9 +28,9 @@ public class GObjRoom extends BeanOrigin implements Runnable {
 	private long winSesid = 0;
 
 	// 随机动物
-	GObject gobjWolf = new GObject(ETGObj.Wolf);
-	GObject gobjNeutral1 = new GObject(ETGObj.SheepNeutral);
-	GObject gobjNeutral2 = new GObject(ETGObj.SheepNeutral);
+	GObject gobjWolf = new GObject(ETGObj.Wolf, 1, 0);
+	GObject gobjNeutral1 = new GObject(ETGObj.SheepNeutral, 2, 0);
+	GObject gobjNeutral2 = new GObject(ETGObj.SheepNeutral, 4, 0);
 	private CompGObjEnd comObj = new CompGObjEnd();
 	private List<GObject> listEnd = new ArrayList<GObject>();
 
@@ -146,19 +146,21 @@ public class GObjRoom extends BeanOrigin implements Runnable {
 			psid2 = 0;
 			state = ETState.None;
 			gobjWolf.stop();
+			gobjNeutral1.setBelongTo(0);
+			gobjNeutral2.setBelongTo(0);
 			gobjNeutral1.stop();
 			gobjNeutral2.stop();
 		}
 	}
-	
+
 	public List<Map<String, Object>> listMap(List<Map<String, Object>> lMap) {
-		if(gobjWolf.isRunning()){
+		if (gobjWolf.isRunning()) {
 			lMap.add(gobjWolf.toMap());
 		}
-		if(gobjNeutral1.isRunning()){
+		if (gobjNeutral1.isRunning()) {
 			lMap.add(gobjNeutral1.toMap());
 		}
-		if(gobjNeutral2.isRunning()){
+		if (gobjNeutral2.isRunning()) {
 			lMap.add(gobjNeutral2.toMap());
 		}
 		return lMap;
@@ -213,6 +215,11 @@ public class GObjRoom extends BeanOrigin implements Runnable {
 				runTo = RndEx.nextBoolean() ? id1 : id2;
 			}
 			rndStartWolf(runTo);
+
+			runTo = RndEx.nextBoolean() ? id1 : id2;
+			gobjNeutral1.startRunning(runTo, 2);
+			runTo = RndEx.nextBoolean() ? id1 : id2;
+			gobjNeutral2.startRunning(runTo, 4);
 		}
 	}
 
@@ -254,6 +261,29 @@ public class GObjRoom extends BeanOrigin implements Runnable {
 				tmp1.runBack();
 			}
 		}
+	}
+
+	private void handlerNeutral(GObjSession ses1, GObjSession ses2) {
+		GObject[] arrs = { gobjNeutral1, gobjNeutral2 };
+		GObject tmp1 = null;
+		GObject tmp2 = null;
+		GObject tmp3 = null;
+		int way = 0;
+		for (int i = 0; i < arrs.length; i++) {
+			tmp1 = arrs[i];
+			way = tmp1.getRunway();
+			if (tmp1.isEnd()) {
+				tmp1.setBelongTo(0);
+				tmp1.stop();
+			} else if(tmp1.isRunning()) {
+				tmp2 = ses1.getCurr().getFirst4Way(way);
+				tmp3 = ses2.getCurr().getFirst4Way(way);
+//				if (tmp1.isColliding(gobjWolf)) {
+//					tmp1.runBack();
+//				}
+			}
+		}
+		
 	}
 
 	private void handlerColliding(GObjSession ses1, GObjSession ses2) {
@@ -317,6 +347,7 @@ public class GObjRoom extends BeanOrigin implements Runnable {
 		// 处理狼数据
 		handlerWolf(ses1, ses2);
 		// 处理叛变羊
+		handlerNeutral(ses1, ses2);
 		// 处理相碰
 		handlerColliding(ses1, ses2);
 		// 处理终点
