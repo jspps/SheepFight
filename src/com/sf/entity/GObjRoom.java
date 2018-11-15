@@ -267,20 +267,38 @@ public class GObjRoom extends BeanOrigin implements Runnable {
 		GObject[] arrs = { gobjNeutral1, gobjNeutral2 };
 		GObject tmp1 = null;
 		GObject tmp2 = null;
-		GObject tmp3 = null;
+		GObjSession tmpSes = null;
+		long beTo = 0;
+		long runTo = 0;
 		int way = 0;
 		for (int i = 0; i < arrs.length; i++) {
 			tmp1 = arrs[i];
+			beTo = tmp1.getBelongTo();
+			runTo = tmp1.getRunTo();
 			way = tmp1.getRunway();
 			if (tmp1.isEnd()) {
 				tmp1.setBelongTo(0);
 				tmp1.stop();
 			} else if(tmp1.isRunning()) {
-				tmp2 = ses1.getCurr().getFirst4Way(way);
-				tmp3 = ses2.getCurr().getFirst4Way(way);
-//				if (tmp1.isColliding(gobjWolf)) {
-//					tmp1.runBack();
-//				}
+				if(beTo > 0){
+					tmpSes = beTo == ses1.getId() ? ses2 : ses1;
+				}else{
+					if(runTo == ses1.getId()){
+						tmpSes = ses1;
+						beTo = ses2.getId();
+					}else{
+						tmpSes = ses2;
+						beTo = ses1.getId();
+					}
+					
+				}
+				tmp2 = tmpSes.getCurr().getFirst4Way(way);
+				if (tmp1.isColliding(tmp2)) {
+					if(tmp1.getGobjType().getPower() < tmp2.getGobjType().getPower()){
+						tmp1.setBelongTo(tmpSes.getId());
+						tmp1.runBack(beTo,false);
+					}
+				}
 			}
 		}
 		
