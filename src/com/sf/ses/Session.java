@@ -40,10 +40,6 @@ public class Session extends BeanOrigin {
 		InitAll(id, limitMs);
 	}
 
-	long now() {
-		return System.currentTimeMillis();
-	}
-
 	public void InitAll(long id, long lmtMs) {
 		this.creattime = now();
 		this.id = id;

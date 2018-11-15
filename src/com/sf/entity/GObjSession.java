@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 
 import com.bowlong.lang.RndEx;
-import com.bowlong.util.CalendarEx;
 import com.sf.logic.LgcGame;
 import com.sf.ses.Session;
 
@@ -114,7 +113,7 @@ public class GObjSession extends Session {
 	@Override
 	public Map<String, Object> toMap(Map<String, Object> map) {
 		map = toMapMust(map);
-		map.put("lens_way", GObjConfig.LM_Runway);
+		map.put("lens_way", GObjConfig.LenMax_Runway);
 		map.put("player", curr.toMap(null));
 		lMap.clear();
 		lMap.addAll(curr.listMap());
@@ -134,7 +133,7 @@ public class GObjSession extends Session {
 		if (map == null)
 			map = new HashMap<String, Object>();
 		map.put(GObjConfig.K_SesID, id);
-		map.put("time_ms", CalendarEx.now());
+		map.put("time_ms", now());
 		map.put("roomid", roomid);
 //		map.put("state", state.ordinal());
 		return map;
@@ -156,7 +155,7 @@ public class GObjSession extends Session {
 	}
 
 	public void recordNetCount() {
-		long _now = CalendarEx.now();
+		long _now = now();
 		long diff = _now - lmtLastTime;
 		if (diff > GObjConfig.LMS_Net) {
 			lmtLastTime = _now;
@@ -167,7 +166,7 @@ public class GObjSession extends Session {
 	}
 
 	public boolean isNetMore() {
-		return netCount >= GObjConfig.LN_Net;
+		return netCount >= GObjConfig.LmtN_Net;
 	}
 
 	public void resetRoomId(long roomId) {
@@ -198,10 +197,24 @@ public class GObjSession extends Session {
 			state = ETState.None;
 			enemySesId = 0;
 			lNotify.clear();
+			curr.clear();
 		}
 	}
 
-	public boolean isReady() {
-		return state == ETState.Matching;
+	public void reduceForage(int reduce) {
+		int curr = this.curr.getForage();
+		int nCurr = curr - reduce;
+		nCurr = nCurr <= 0 ? 0 : nCurr;
+		this.curr.setForage(nCurr);
+		if(nCurr <= 0)
+			this.state = ETState.Fail;
+	}
+	
+	public boolean isFails(){
+		return this.state == ETState.Fail;
+	}
+	
+	public boolean isWin(){
+		return this.state == ETState.Win;
 	}
 }

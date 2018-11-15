@@ -3,6 +3,8 @@ package com.sf.test;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.json.JSONObject;
 
@@ -11,12 +13,20 @@ import com.bowlong.net.http.urlcon.HttpUrlConEx;
 import com.bowlong.reflect.JsonHelper;
 import com.sf.entity.ETGObj;
 import com.sf.entity.GObjConfig;
+import com.sf.entity.GObject;
 
 public class SFTest {
 	public static void main(String[] args) {
 		// test_swids();
 		// test_enum();
-		test_net(true);
+		// test_net(true);
+		test_queue();
+	}
+	
+	static void test_queue(){
+		Queue<GObject> queEnd = new ConcurrentLinkedQueue<GObject>();
+		GObject poll = queEnd.poll();
+		System.out.println(poll);
 	}
 
 	static void test_net(boolean isUrl) {

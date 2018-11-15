@@ -23,7 +23,6 @@ import com.sf.ses.MgrSession;
  */
 class LgcRoom extends MgrSession {
 	private static final long serialVersionUID = 1L;
-	static final public Object objLock = new Object();
 	static final Map<Long, GObjRoom> mapRoom = new ConcurrentHashMap<Long, GObjRoom>();
 	static final List<Long> list = new ArrayList<Long>();
 	static final public Ref<String> objMsgValid = new Ref<String>("");
@@ -119,7 +118,7 @@ class LgcRoom extends MgrSession {
 	}
 
 	static protected GObjRoom alloterRoom(GObjSession ses) {
-		synchronized (objLock) {
+		synchronized (mapRoom) {
 			long sesid = ses.getId();
 			GObjRoom room = getFreeRoom();
 			room.changeOne(sesid, true);
@@ -131,7 +130,7 @@ class LgcRoom extends MgrSession {
 	}
 
 	static public void remove4Room(GObjSession ses) {
-		synchronized (objLock) {
+		synchronized (mapRoom) {
 			rmSession(ses);
 			long roomid = ses.getRoomid();
 			GObjRoom room = getRoom(roomid);

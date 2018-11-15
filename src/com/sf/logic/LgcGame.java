@@ -87,7 +87,7 @@ public class LgcGame extends LgcRoom {
 		int runway = MapEx.getInt(pars, "runway");
 		long sheepId = MapEx.getLong(pars, "sheepId");
 		pars.clear();
-		if (runway < 0 || runway > GObjConfig.NM_Runway) {
+		if (runway < 0 || runway > GObjConfig.NMax_Runway) {
 			pars.put("tip", "超出了跑道[1-5]");
 			return msg(GObjConfig.S_Fails, pars, isEncode);
 		}

@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.bowlong.lang.RndEx;
-import com.bowlong.util.CalendarEx;
 
 /**
  * 游戏对象
@@ -22,7 +21,7 @@ public class GObject extends BeanOrigin {
 	private long belongTo = 0; // 拥有者
 	private long runTo = 0; // 跑向的人
 	private boolean isRunning = false;
-	private double distance = 0.0;
+	private double endDistance = 0; // 目的距离
 
 	public long getId() {
 		return id;
@@ -93,20 +92,15 @@ public class GObject extends BeanOrigin {
 	}
 
 	public GObject(ETGObj gobjType, int runway, long belongTo) {
-		super();
-		this.id = GObjConfig.SW_GID.nextId();
-		this.gobjType = gobjType;
-		this.runway = runway;
-		this.belongTo = belongTo;
-		this.createtime = CalendarEx.now();
+		reInit(gobjType, runway, belongTo);
 	}
 
 	public GObject(ETGObj gobjType, long belongTo) {
-		this(gobjType, 0, belongTo);
+		reInit(gobjType, 0, belongTo);
 	}
 
 	public GObject(ETGObj gobjType) {
-		this(gobjType, 1 + RndEx.nextInt(GObjConfig.NM_Runway), 0);
+		reInit(gobjType, 1 + RndEx.nextInt(GObjConfig.NMax_Runway), 0);
 	}
 
 	@Override
@@ -124,8 +118,33 @@ public class GObject extends BeanOrigin {
 		return map;
 	}
 
+	public GObject reInit(ETGObj gobjType, int runway, long belongTo) {
+		this.stop();
+		this.id = GObjConfig.SW_GID.nextId();
+		this.gobjType = gobjType;
+		this.runway = runway;
+		this.belongTo = belongTo;
+		this.createtime = now();
+		return this;
+	}
+
+	public GObject reInit(ETGObj gobjType, long belongTo) {
+		return reInit(gobjType, 0, belongTo);
+	}
+
+	public GObject reInit(ETGObj gobjType) {
+		return reInit(gobjType, currWay(), 0);
+	}
+
+	public int currWay(boolean isRnd) {
+		if (isRnd) {
+			this.runway = 1 + RndEx.nextInt(GObjConfig.NMax_Runway);
+		}
+		return this.runway;
+	}
+
 	public int currWay() {
-		return this.runway > 0 ? this.runway : 1 + RndEx.nextInt(GObjConfig.NM_Runway);
+		return currWay(this.runway <= 0);
 	}
 
 	public void stop() {
@@ -135,31 +154,67 @@ public class GObject extends BeanOrigin {
 		this.isRunning = false;
 	}
 
-	public void startRunning(long runTo, int runway) {
+	private void reRunning(long runTo, int runway, double endDis) {
 		this.runway = runway;
 		this.runTo = runTo;
-		this.startRunTime = CalendarEx.now();
+		this.endDistance = endDis;
+		this.startRunTime = now();
 		this.isRunning = true;
+	}
+
+	public void startRunning(long runTo, int runway) {
+		reRunning(runTo, runway, GObjConfig.LenMax_Runway);
 	}
 
 	public void startRunning(long runTo) {
 		startRunning(runTo, currWay());
 	}
 
-	public boolean isWolf() {
-		return this.gobjType == ETGObj.Wolf;
+	public void runBack(long runTo, boolean isRndWay) {
+		reRunning(runTo, currWay(isRndWay), calcDistance());
 	}
 
-	public boolean isNeutral() {
-		return this.gobjType == ETGObj.SheepNeutral;
+	public void runBack() {
+		double speed = this.gobjType.getSpeed();
+		this.gobjType.setSpeed(speed * 2);
+		runBack(this.belongTo, false);
 	}
 
 	public double calcDistance() {
-		distance = 0;
 		if (isRunning) {
-			distance = CalendarEx.now() - this.startRunTime;
-			distance *= gobjType.getSpeed() * 0.001;
+			return (now() - this.startRunTime) * gobjType.getSpeed() * 0.001;
 		}
-		return distance;
+		return 0;
+	}
+
+	// 是否移动到终点
+	private boolean isEnd(double otherDis) {
+		double mvDis = calcDistance() + otherDis;
+		double diff = Math.abs(this.endDistance - mvDis);
+		return diff <= 0.1;
+	}
+
+	public boolean isColliding(GObject gobj) {
+		return isEnd(gobj.calcDistance());
+	}
+	
+	public int comPower(GObject gobj){
+		if(this.gobjType.getPower() > gobj.getGobjType().getPower()){
+			return 1;
+		}
+		
+		if(this.gobjType.getPower() < gobj.getGobjType().getPower()){
+			return -1;
+		}
+		return 0;
+	}
+
+	// 是否移动到终点
+	public boolean isEnd() {
+		return isEnd(0);
+	}
+	
+	public boolean isMvEnemy(){
+		return this.belongTo != this.runTo;
 	}
 }

@@ -1,5 +1,8 @@
 package com.sf.entity;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 
@@ -21,9 +24,15 @@ public class GObjRoom extends BeanOrigin implements Runnable {
 	private long psid2 = 0;
 	private ETState state = ETState.None;
 	private ScheduledFuture<?> objSF = null;
+	private long winSesid = 0;
 
 	// 随机动物
 	GObject gobjWolf = new GObject(ETGObj.Wolf);
+	GObject gobjNeutral1 = new GObject(ETGObj.SheepNeutral);
+	GObject gobjNeutral2 = new GObject(ETGObj.SheepNeutral);
+	private CompGObjEnd comObj = new CompGObjEnd();
+	private List<GObject> listEnd = new ArrayList<GObject>();
+
 	public long getRoomid() {
 		return roomid;
 	}
@@ -107,18 +116,22 @@ public class GObjRoom extends BeanOrigin implements Runnable {
 	public boolean isFree() {
 		return psid1 <= 0 || psid2 <= 0;
 	}
-	
-	public boolean isHas(long sesid){
-		return psid1 == sesid || psid2 == sesid; 
+
+	public boolean isHas(long sesid) {
+		return psid1 == sesid || psid2 == sesid;
+	}
+
+	void stopSF() {
+		if (objSF != null) {
+			objSF.cancel(true);
+			objSF = null;
+		}
 	}
 
 	public void clear() {
 		synchronized (this) {
-			if (objSF != null) {
-				objSF.cancel(true);
-				objSF = null;
-			}
-
+			stopSF();
+			listEnd.clear();
 			GObjSession ses1 = LgcGame.targetSession(psid1);
 			if (ses1 != null) {
 				ses1.clear();
@@ -131,15 +144,15 @@ public class GObjRoom extends BeanOrigin implements Runnable {
 			psid1 = 0;
 			psid2 = 0;
 			state = ETState.None;
+			gobjWolf.stop();
+			gobjNeutral1.stop();
+			gobjNeutral2.stop();
 		}
 	}
 
 	public void matching(GObjSession ses) {
 		synchronized (this) {
-			if (objSF != null) {
-				objSF.cancel(true);
-				objSF = null;
-			}
+			stopSF();
 			long id1 = ses.getId();
 			long id2 = getOther(id1);
 			GObjSession sesOther = LgcGame.targetSession(id2);
@@ -148,7 +161,7 @@ public class GObjRoom extends BeanOrigin implements Runnable {
 			} else {
 				ses.ready(0);
 				state = ETState.Matching;
-				objSF = Toolkit.scheduleMS(_ses, this, GObjConfig.LMS_Matching);
+				objSF = Toolkit.scheduleMS(_ses, this, GObjConfig.LMS_RoomMatching);
 			}
 		}
 	}
@@ -156,7 +169,7 @@ public class GObjRoom extends BeanOrigin implements Runnable {
 	public void starting(GObjSession ses, boolean isNdSelf) {
 		synchronized (this) {
 			long id1 = ses.getId();
-			if(!isHas(id1)){
+			if (!isHas(id1)) {
 				return;
 			}
 			long id2 = getOther(id1);
@@ -175,8 +188,8 @@ public class GObjRoom extends BeanOrigin implements Runnable {
 			if (isNdSelf && !ses.isRobot()) {
 				ses.addNotify(ETNotify.Enemy_Matched);
 			}
-			objSF = Toolkit.scheduled8FixedRate(_ses, this, 0, 100);
-			
+			objSF = Toolkit.scheduled8FixedRate(_ses, this, GObjConfig.LMS_RoomUpFirst, GObjConfig.LMS_RoomUpDelay);
+
 			long runTo = 0;
 			if (ses.isRobot()) {
 				runTo = id2;
@@ -185,7 +198,7 @@ public class GObjRoom extends BeanOrigin implements Runnable {
 			} else {
 				runTo = RndEx.nextBoolean() ? id1 : id2;
 			}
-			gobjWolf.startRunning(runTo);
+			rndStartWolf(runTo);
 		}
 	}
 
@@ -193,8 +206,118 @@ public class GObjRoom extends BeanOrigin implements Runnable {
 		synchronized (this) {
 			changeOne(sesid, false);
 			if (isEmpty()) {
-				state = ETState.None;
+				clear();
 			}
+		}
+	}
+
+	private void rndStartWolf(long runTo) {
+		double speed = GObjConfig.NMin_SpeedWolf;
+		if (GObjConfig.NMax_SpeedWolf > speed) {
+			double diff = GObjConfig.NMax_SpeedWolf - GObjConfig.NMin_SpeedWolf;
+			int nx = (int) (diff * 100);
+			speed = GObjConfig.NMin_SpeedWolf + RndEx.nextInt(nx) * 0.01;
+		}
+		gobjWolf.getGobjType().setSpeed(speed);
+		gobjWolf.setRunway(0);
+		gobjWolf.startRunning(runTo);
+	}
+
+	private void handlerRobotDownSheep(GObjSession ses1, GObjSession ses2) {
+
+	}
+
+	private void handlerWolf(GObjSession ses1, GObjSession ses2) {
+		int way = gobjWolf.getRunway();
+		GObject tmp1 = null;
+		if (gobjWolf.isEnd()) {
+			long runTo = getOther(gobjWolf.getRunTo());
+			rndStartWolf(runTo);
+		} else {
+			ses1 = gobjWolf.getRunTo() == psid1 ? ses1 : ses2;
+			tmp1 = ses1.getCurr().getFirst4Way(way);
+			if (tmp1.isColliding(gobjWolf)) {
+				tmp1.runBack();
+			}
+		}
+	}
+
+	private void handlerColliding(GObjSession ses1, GObjSession ses2) {
+		int powerState = 0;
+		GObject tmp1 = null;
+		GObject tmp2 = null;
+		for (int i = 1; i <= GObjConfig.NMax_Runway; i++) {
+			tmp1 = ses1.getCurr().getFirst4Way(i);
+			tmp2 = ses2.getCurr().getFirst4Way(i);
+			if (tmp1 != null && tmp2 != null) {
+				if (tmp1.isColliding(tmp2)) {
+					powerState = tmp1.comPower(tmp2);
+					switch (powerState) {
+					case 1:
+						tmp2.runBack();
+						break;
+					case -1:
+						tmp1.runBack();
+						break;
+					default:
+						break;
+					}
+				}
+			}
+		}
+	}
+
+	private boolean handlerEnd(GObjSession ses1, GObjSession ses2) {
+		listEnd.clear();
+		int lens = 0;
+		boolean isEnd = false;
+		GObject tmp1 = null;
+		GObjSession tmp = null;
+		listEnd.addAll(ses1.getCurr().jugdeEnd());
+		listEnd.addAll(ses2.getCurr().jugdeEnd());
+		Collections.sort(listEnd, comObj);
+		lens = listEnd.size();
+		for (int i = 0; i < lens; i++) {
+			tmp1 = listEnd.get(i);
+			if (tmp1.isMvEnemy()) {
+				tmp = tmp1.getBelongTo() == ses1.getId() ? ses2 : ses1;
+				tmp.reduceForage(tmp1.getGobjType().getPower());
+			}
+			if (tmp.isFails()) {
+				isEnd = true;
+				winSesid = tmp1.getBelongTo();
+				break;
+			}
+			tmp = tmp1.getBelongTo() == ses1.getId() ? ses1 : ses2;
+			tmp.getCurr().arriveEnd(tmp1);
+		}
+		listEnd.clear();
+		return isEnd;
+	}
+
+	public void upRunning() {
+		GObjSession ses1 = LgcGame.targetSession(psid1);
+		GObjSession ses2 = LgcGame.targetSession(psid2);
+		// 处理机器人 放羊
+		handlerRobotDownSheep(ses1, ses2);
+		// 处理狼数据
+		handlerWolf(ses1, ses2);
+		// 处理叛变羊
+		// 处理相碰
+		handlerColliding(ses1, ses2);
+		// 处理终点
+		boolean isEnd = handlerEnd(ses1, ses2);
+		if (isEnd) {
+			stopSF();
+			if (winSesid == ses1.getId()) {
+				ses1.setState(ETState.Win);
+				ses2.setState(ETState.Fail);
+			} else {
+				ses1.setState(ETState.Fail);
+				ses2.setState(ETState.Win);
+			}
+			this.state = ETState.End;
+			objSF = Toolkit.scheduleMS(_ses, this, GObjConfig.LMS_RoomEnd);
 		}
 	}
 
@@ -203,10 +326,11 @@ public class GObjRoom extends BeanOrigin implements Runnable {
 		synchronized (this) {
 			switch (state) {
 			case None:
+			case End:
 				clear();
 				break;
 			case Matching:
-				objSF = null;
+				stopSF();
 				if (!isEmpty() && isFree()) {
 					long sid = psid1 > 0 ? psid1 : psid2;
 					GObjSession objSes = LgcGame.targetSession(sid);
@@ -224,6 +348,7 @@ public class GObjRoom extends BeanOrigin implements Runnable {
 				}
 				break;
 			case Running:
+				upRunning();
 				break;
 			default:
 				break;

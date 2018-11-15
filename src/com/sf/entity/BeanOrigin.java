@@ -6,6 +6,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Map;
+
+import com.bowlong.util.CalendarEx;
+
 import java.sql.Connection;
 
 /**
@@ -55,5 +58,9 @@ public class BeanOrigin implements Serializable {
 	
 	public Map<String, Object> toMap(Map<String, Object> map) {
 		return map;
+	}
+	
+	public long now(){
+		return CalendarEx.now();
 	}
 }
