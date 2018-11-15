@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.HashMap;
 import java.util.Map;
 
 import com.bowlong.util.CalendarEx;
@@ -22,14 +23,12 @@ public class BeanOrigin implements Serializable {
 	public static String insVal = "INSERT INTO `%s` (%s) VALUES (%s)";
 	public static String selectHead = "SELECT * FROM `%s` WHERE 1 = 1 ";
 
-	protected int Insert(String tbName, String column, String vals,
-			Object[] objs, Connection connection) {
+	protected int Insert(String tbName, String column, String vals, Object[] objs, Connection connection) {
 		PreparedStatement pstmt = null;
 		try {
 			String sql = String.format(insVal, tbName, column, vals);
 
-			pstmt = connection.prepareStatement(sql,
-					Statement.RETURN_GENERATED_KEYS);
+			pstmt = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
 
 			for (int i = 0; i < objs.length; i++) {
 				pstmt.setObject(i + 1, objs[i]);
@@ -55,12 +54,19 @@ public class BeanOrigin implements Serializable {
 		}
 		return -1;
 	}
-	
+
+	protected Map<String, Object> map = new HashMap<String, Object>();
+
 	public Map<String, Object> toMap(Map<String, Object> map) {
 		return map;
 	}
-	
-	public long now(){
+
+	public Map<String, Object> toMap() {
+		map.clear();
+		return toMap(map);
+	}
+
+	public long now() {
 		return CalendarEx.now();
 	}
 }

@@ -31,6 +31,7 @@ public class Player extends BeanOrigin {
 	private Queue<GObject> queEnd = new ConcurrentLinkedQueue<GObject>();
 	private List<GObject> listWay = new ArrayList<GObject>();
 	private List<GObject> listEnd = new ArrayList<GObject>();
+	List<Map<String, Object>> lmWait = new ArrayList<Map<String, Object>>();
 
 	public String getName() {
 		return name;
@@ -71,6 +72,7 @@ public class Player extends BeanOrigin {
 		queEnd.clear();
 		listWay.clear();
 		listEnd.clear();
+		lmWait.clear();
 		return this;
 	}
 
@@ -94,7 +96,8 @@ public class Player extends BeanOrigin {
 		map.put("name", name);
 		map.put("icon", icon);
 		map.put("forage", forage);
-		map.put("listWait", listMap(mapWait.values()));
+		lmWait.clear();
+		map.put("listWait", listMap(lmWait,mapWait.values()));
 		return map;
 	}
 
@@ -117,16 +120,17 @@ public class Player extends BeanOrigin {
 		}
 	}
 
-	List<Map<String, Object>> listMap(Collection<GObject> list) {
-		List<Map<String, Object>> lMap = new ArrayList<Map<String, Object>>();
+	List<Map<String, Object>> listMap(List<Map<String, Object>> lMap, Collection<GObject> list) {
+		if (lMap == null)
+			lMap = new ArrayList<Map<String, Object>>();
 		for (GObject item : list) {
-			lMap.add(item.toMap(null));
+			lMap.add(item.toMap());
 		}
 		return lMap;
 	}
 
-	public List<Map<String, Object>> listMap() {
-		return listMap(listRunning);
+	public List<Map<String, Object>> listMap(List<Map<String, Object>> lMap) {
+		return listMap(lMap,listRunning);
 	}
 
 	GObject getInWait(long sheepId) {
@@ -135,6 +139,10 @@ public class Player extends BeanOrigin {
 
 	public boolean isInWait(long sheepId) {
 		return getInWait(sheepId) != null;
+	}
+
+	public GObject getInRunning(long sheepId) {
+		return mapRunning.get(sheepId);
 	}
 
 	public void jugdeRndSheep() {
@@ -201,8 +209,8 @@ public class Player extends BeanOrigin {
 		listRunning.remove(gobj);
 		queEnd.add(gobj);
 	}
-	
-	public void clear(){
+
+	public void clear() {
 		GObject item = null;
 		int lens = 0;
 		listEnd.clear();

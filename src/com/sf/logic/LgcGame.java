@@ -75,7 +75,7 @@ public class LgcGame extends LgcRoom {
 		if (ses == null) {
 			ses = new GObjSession(lgid, lgpwd);
 		}
-		
+
 		pars = matching(ses, pars);
 		return msg(GObjConfig.S_Success, pars, isEncode);
 	}
@@ -91,7 +91,7 @@ public class LgcGame extends LgcRoom {
 			pars.put("tip", "超出了跑道[1-5]");
 			return msg(GObjConfig.S_Fails, pars, isEncode);
 		}
-		
+
 		GObjSession sesOther = enemySession(ses);
 		if (sesOther == null || !sesOther.IsValid()) {
 			pars.put("tip", "对手已经掉线");
@@ -100,18 +100,18 @@ public class LgcGame extends LgcRoom {
 
 		Player currPlay = ses.getCurr();
 		if (!currPlay.isInWait(sheepId)) {
-			pars.put("tip", "放置的羊ID不正确;错误 id = "+sheepId);
+			pars.put("tip", "放置的羊ID不正确;错误 id = " + sheepId);
 			return msg(GObjConfig.S_Fails, pars, isEncode);
 		}
-		
-		currPlay.startRunning(sheepId, runway,sesOther.getId());
+
+		currPlay.startRunning(sheepId, runway, sesOther.getId());
 		// 自身数据
 		pars.put("sesid", ses.getId());
-		pars.put("listRunning", currPlay.listMap());
+		pars.put("addSheep", currPlay.getInRunning(sheepId));
 		String outVal = msg(GObjConfig.S_Success, pars, isEncode);
 
 		// 推送给别的数据
-		sesOther.addNotify(ETNotify.Enemy_DownSheep);
+		sesOther.addNotify(ETNotify.Update);
 		return outVal;
 	}
 }

@@ -3,6 +3,7 @@ package com.sf.entity;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 
@@ -148,6 +149,19 @@ public class GObjRoom extends BeanOrigin implements Runnable {
 			gobjNeutral1.stop();
 			gobjNeutral2.stop();
 		}
+	}
+	
+	public List<Map<String, Object>> listMap(List<Map<String, Object>> lMap) {
+		if(gobjWolf.isRunning()){
+			lMap.add(gobjWolf.toMap());
+		}
+		if(gobjNeutral1.isRunning()){
+			lMap.add(gobjNeutral1.toMap());
+		}
+		if(gobjNeutral2.isRunning()){
+			lMap.add(gobjNeutral2.toMap());
+		}
+		return lMap;
 	}
 
 	public void matching(GObjSession ses) {
@@ -318,6 +332,11 @@ public class GObjRoom extends BeanOrigin implements Runnable {
 			}
 			this.state = ETState.End;
 			objSF = Toolkit.scheduleMS(_ses, this, GObjConfig.LMS_RoomEnd);
+			ses1.addNotify(ETNotify.FightEnd);
+			ses2.addNotify(ETNotify.FightEnd);
+		} else {
+			ses1.addNotify(ETNotify.Update);
+			ses2.addNotify(ETNotify.Update);
 		}
 	}
 

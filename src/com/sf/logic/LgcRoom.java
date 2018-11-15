@@ -13,7 +13,6 @@ import com.sf.entity.ETNotify;
 import com.sf.entity.GObjConfig;
 import com.sf.entity.GObjRoom;
 import com.sf.entity.GObjSession;
-import com.sf.entity.Player;
 import com.sf.ses.MgrSession;
 
 /**
@@ -38,12 +37,12 @@ class LgcRoom extends MgrSession {
 	static final public GObjSession targetSession(long sesid) {
 		return (GObjSession) getSession(sesid);
 	}
-	
+
 	static final GObjSession mySession(Map<String, ?> pars) {
 		long sessionId = MapEx.getLong(pars, GObjConfig.K_SesID);
 		return targetSession(sessionId);
 	}
-	
+
 	static final GObjSession enemySession(GObjSession ses) {
 		GObjRoom room = getRoom(ses.getRoomid());
 		long sesid = room.getOther(ses.getId());
@@ -162,12 +161,7 @@ class LgcRoom extends MgrSession {
 
 	static public Map<String, Object> roomHeart(GObjSession ses, Map<String, Object> pars) {
 		pars = ses.toMapMust(pars);
-		Player plEnemy = null;
 		GObjSession enemy = enemySession(ses);
-		if (enemy != null) {
-			plEnemy = enemy.getCurr();
-		}
-
 		List<ETNotify> _list = new ArrayList<ETNotify>();
 		_list.addAll(ses.getListNotify());
 		int lens = _list.size();
@@ -178,13 +172,13 @@ class LgcRoom extends MgrSession {
 				ses.rmNotify(notifyType);
 				switch (notifyType) {
 				case Enemy_Matched:
-					pars.put("enemy", plEnemy.toMap(null));
+					pars.put("enemy", enemy.getCurr().toMap());
 					break;
-				case Enemy_State:
-					pars.put("enemy_state", enemy.getState().ordinal());
+				case Update:
+					pars.put("listRunning", ses.toLMRunning());
 					break;
-				case Enemy_DownSheep:
-					pars.put("listRunning",plEnemy.listMap());
+				case FightEnd:
+					pars.put("isWin", ses.isWin());
 					break;
 				default:
 					break;

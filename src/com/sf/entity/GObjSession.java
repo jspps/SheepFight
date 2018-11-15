@@ -86,7 +86,7 @@ public class GObjSession extends Session {
 	public void setState(ETState state) {
 		this.state = state;
 	}
-	
+
 	public boolean isRobot() {
 		return isRobot;
 	}
@@ -114,18 +114,12 @@ public class GObjSession extends Session {
 	public Map<String, Object> toMap(Map<String, Object> map) {
 		map = toMapMust(map);
 		map.put("lens_way", GObjConfig.LenMax_Runway);
-		map.put("player", curr.toMap(null));
-		lMap.clear();
-		lMap.addAll(curr.listMap());
-
+		map.put("player", curr.toMap());
 		GObjSession enemy = LgcGame.targetSession(enemySesId);
 		if (enemy != null) {
-			Player _pl = enemy.getCurr();
-			map.put("enemy", _pl.toMap(null));
-//			map.put("enemy_state", enemy.getState().ordinal());
-			lMap.addAll(_pl.listMap());
+			map.put("enemy", enemy.getCurr().toMap());
 		}
-		map.put("listRunning", lMap);
+		map.put("listRunning", toLMRunning());
 		return map;
 	}
 
@@ -135,8 +129,21 @@ public class GObjSession extends Session {
 		map.put(GObjConfig.K_SesID, id);
 		map.put("time_ms", now());
 		map.put("roomid", roomid);
-//		map.put("state", state.ordinal());
+		// map.put("state", state.ordinal());
 		return map;
+	}
+
+	public List<Map<String, Object>> toLMRunning() {
+		lMap.clear();
+		curr.listMap(lMap);
+		GObjSession enemy = LgcGame.targetSession(enemySesId);
+		if (enemy != null) {
+			enemy.getCurr().listMap(lMap);
+			// room
+			GObjRoom room = LgcGame.getRoom(roomid);
+			room.listMap(lMap);
+		}
+		return lMap;
 	}
 
 	public void addNotify(ETNotify notifyType) {
@@ -172,7 +179,7 @@ public class GObjSession extends Session {
 	public void resetRoomId(long roomId) {
 		setRoomid(roomId);
 	}
-	
+
 	public void ready(long enemyID) {
 		synchronized (this) {
 			lNotify.clear();
@@ -206,15 +213,15 @@ public class GObjSession extends Session {
 		int nCurr = curr - reduce;
 		nCurr = nCurr <= 0 ? 0 : nCurr;
 		this.curr.setForage(nCurr);
-		if(nCurr <= 0)
+		if (nCurr <= 0)
 			this.state = ETState.Fail;
 	}
-	
-	public boolean isFails(){
+
+	public boolean isFails() {
 		return this.state == ETState.Fail;
 	}
-	
-	public boolean isWin(){
+
+	public boolean isWin() {
 		return this.state == ETState.Win;
 	}
 }
