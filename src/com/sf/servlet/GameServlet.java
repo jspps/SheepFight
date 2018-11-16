@@ -9,6 +9,7 @@ import com.bowlong.third.jsp.AbsDispatcherServlet;
 import com.bowlong.tool.TkitJsp;
 import com.bowlong.util.DateEx;
 import com.bowlong.util.MapEx;
+import com.sf.entity.GObjConfig;
 import com.sf.logic.LgcGame;
 
 /**
@@ -61,9 +62,9 @@ public class GameServlet extends AbsDispatcherServlet {
 				break;
 			}
 			default:
-				if(LgcGame.isVerifySession(pars, LgcGame.objMsgValid)){
-					outVal = dispGame(cmd,pars);
-				}else{
+				if (LgcGame.isVerifySession(pars, LgcGame.objMsgValid)) {
+					outVal = dispGame(cmd, pars);
+				} else {
 					outVal = LgcGame.objMsgValid.val;
 				}
 				break;
@@ -84,6 +85,8 @@ public class GameServlet extends AbsDispatcherServlet {
 			break;
 		}
 		default:
+			pars.put("tip", "无效请求,cmd = " + cmd);
+			outVal = LgcGame.msg(GObjConfig.S_Fails, pars);
 			break;
 		}
 		return outVal;
