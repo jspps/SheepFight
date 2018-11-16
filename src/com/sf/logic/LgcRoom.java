@@ -44,7 +44,10 @@ class LgcRoom extends MgrSession {
 	}
 
 	static final GObjSession enemySession(GObjSession ses) {
-		GObjRoom room = getRoom(ses.getRoomid());
+		GObjRoom room = null;
+		if (ses != null)
+			room = getRoom(ses.getRoomid());
+		
 		if (room != null) {
 			long sesid = room.getOther(ses.getId());
 			GObjSession enemy = targetSession(sesid);
