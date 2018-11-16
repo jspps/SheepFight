@@ -173,10 +173,12 @@ public class GObject extends BeanOrigin {
 	public void runBack(long runTo, boolean isRndWay) {
 		reRunning(runTo, currWay(isRndWay), calcDistance());
 	}
-
-	public void runBack() {
-		double speed = this.gobjType.getSpeed();
-		this.gobjType.setSpeed(speed * 2);
+	
+	public void runBack(double multiples) {
+		if(multiples > 0){
+			double speed = this.gobjType.getSpeed();
+			this.gobjType.setSpeed(speed * multiples);
+		}
 		runBack(this.belongTo, false);
 	}
 

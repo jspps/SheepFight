@@ -104,6 +104,10 @@ public class GObjSession extends Session {
 		this.lgid = lgid;
 		this.lgpwd = lgpwd;
 		isRobot = lgid.contains("robot_");
+		if(isRobot){
+			ReLmtOver(0);
+		}
+		
 		String rndVal = RndEx.nextString09(9);
 		curr = new Player(rndVal, rndVal);
 		curr.rndWaitFirst(id);
@@ -176,10 +180,6 @@ public class GObjSession extends Session {
 		return netCount >= GObjConfig.LmtN_Net;
 	}
 
-	public void resetRoomId(long roomId) {
-		setRoomid(roomId);
-	}
-
 	public void ready(long enemyID) {
 		synchronized (this) {
 			lNotify.clear();
@@ -198,7 +198,7 @@ public class GObjSession extends Session {
 
 	public void clear() {
 		synchronized (this) {
-			resetRoomId(0);
+			roomid = 0;
 			lmtLastTime = 0;
 			netCount = 0;
 			state = ETState.None;
@@ -223,5 +223,13 @@ public class GObjSession extends Session {
 
 	public boolean isWin() {
 		return this.state == ETState.Win;
+	}
+	
+	public boolean isStart(){
+		return this.state == ETState.Running;
+	}
+	
+	public boolean isEmptyWait(){
+		return this.curr.isEmptyWait();
 	}
 }

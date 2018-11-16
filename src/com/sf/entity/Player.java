@@ -2,6 +2,7 @@ package com.sf.entity;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -26,12 +27,14 @@ public class Player extends BeanOrigin {
 	long belongTo = 0;
 	long nextRndWait = 0; // 下一次随机产生的羊
 	private Map<Long, GObject> mapWait = new ConcurrentHashMap<Long, GObject>();
+	private List<GObject> listWait = new ArrayList<GObject>();
 	private Map<Long, GObject> mapRunning = new ConcurrentHashMap<Long, GObject>();
 	private List<GObject> listRunning = new ArrayList<GObject>();
 	private Queue<GObject> queEnd = new ConcurrentLinkedQueue<GObject>();
 	private List<GObject> listWay = new ArrayList<GObject>();
 	private List<GObject> listEnd = new ArrayList<GObject>();
 	List<Map<String, Object>> lmWait = new ArrayList<Map<String, Object>>();
+	CompGObjPower objPower = new CompGObjPower();
 
 	public String getName() {
 		return name;
@@ -67,6 +70,7 @@ public class Player extends BeanOrigin {
 		this.forage = forage;
 
 		mapWait.clear();
+		listWait.clear();
 		mapRunning.clear();
 		listRunning.clear();
 		queEnd.clear();
@@ -97,7 +101,7 @@ public class Player extends BeanOrigin {
 		map.put("icon", icon);
 		map.put("forage", forage);
 		lmWait.clear();
-		map.put("listWait", listMap(lmWait,mapWait.values()));
+		map.put("listWait", listMap(lmWait, listWait));
 		return map;
 	}
 
@@ -110,6 +114,7 @@ public class Player extends BeanOrigin {
 		}
 		obj.reInit(tmp, beTo);
 		mapWait.put(obj.getId(), obj);
+		listWait.add(obj);
 		return obj;
 	}
 
@@ -130,7 +135,7 @@ public class Player extends BeanOrigin {
 	}
 
 	public List<Map<String, Object>> listMap(List<Map<String, Object>> lMap) {
-		return listMap(lMap,listRunning);
+		return listMap(lMap, listRunning);
 	}
 
 	GObject getInWait(long sheepId) {
@@ -141,12 +146,26 @@ public class Player extends BeanOrigin {
 		return getInWait(sheepId) != null;
 	}
 
+	public boolean isEmptyWait() {
+		return listWait.size() <= 0;
+	}
+
+	public GObject getMaxPowerInWait() {
+		int size = listWait.size();
+		if (size > 1) {
+			Collections.sort(listWait, objPower);
+		}
+		if (size > 0)
+			return listWait.get(0);
+		return null;
+	}
+
 	public GObject getInRunning(long sheepId) {
 		return mapRunning.get(sheepId);
 	}
 
 	public void jugdeRndSheep() {
-		if (this.mapWait.size() >= GObjConfig.NMax_Sheep_Wait)
+		if (this.listWait.size() >= GObjConfig.NMax_Sheep_Wait)
 			return;
 		long now = now();
 		if (nextRndWait <= 0) {
@@ -163,6 +182,7 @@ public class Player extends BeanOrigin {
 			return false;
 		gobj.startRunning(runTo, way);
 		mapWait.remove(sheepId);
+		listWait.remove(gobj);
 		mapRunning.put(sheepId, gobj);
 		listRunning.add(gobj);
 		jugdeRndSheep();
@@ -215,11 +235,19 @@ public class Player extends BeanOrigin {
 		int lens = 0;
 		listEnd.clear();
 		listEnd.addAll(listRunning);
-		listEnd.addAll(mapWait.values());
+		listEnd.addAll(listWait);
 		lens = listEnd.size();
 		for (int i = 0; i < lens; i++) {
 			item = listEnd.get(i);
 			arriveEnd(item);
 		}
+		listEnd.clear();
+		mapWait.clear();
+		listWait.clear();
+		listWay.clear();
+		lmWait.clear();
+		belongTo = 0;
+		nextRndWait = 0;
+		forage = GObjConfig.NI_Forage;
 	}
 }

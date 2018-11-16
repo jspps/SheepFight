@@ -122,7 +122,7 @@ class LgcRoom extends MgrSession {
 			GObjRoom room = getFreeRoom();
 			room.changeOne(sesid, true);
 
-			ses.resetRoomId(room.getRoomid());
+			ses.setRoomid(room.getRoomid());
 			addSession(ses.getLgid(), ses.getLgpwd(), ses);
 			return room;
 		}
@@ -160,8 +160,9 @@ class LgcRoom extends MgrSession {
 	}
 
 	static public Map<String, Object> roomHeart(GObjSession ses, Map<String, Object> pars) {
-		pars = ses.toMapMust(pars);
 		GObjSession enemy = enemySession(ses);
+		GObjRoom room = getRoom(ses.getRoomid());
+		pars = ses.toMapMust(pars);
 		List<ETNotify> _list = new ArrayList<ETNotify>();
 		_list.addAll(ses.getListNotify());
 		int lens = _list.size();
@@ -179,6 +180,7 @@ class LgcRoom extends MgrSession {
 					break;
 				case FightEnd:
 					pars.put("isWin", ses.isWin());
+					room.notifyEnd();
 					break;
 				default:
 					break;
