@@ -46,11 +46,11 @@ class LgcRoom extends MgrSession {
 	static final GObjSession enemySession(GObjSession ses) {
 		GObjRoom room = getRoom(ses.getRoomid());
 		long sesid = room.getOther(ses.getId());
-		return targetSession(sesid);
-	}
-
-	static final protected GObjSession otherSession(Map<String, ?> pars) {
-		return enemySession(mySession(pars));
+		GObjSession enemy = targetSession(sesid);
+		if(enemy == null && !room.isFree()){
+			return room.getRobot();
+		}
+		return enemy;
 	}
 
 	static final protected String base64(String src, boolean encode) {
@@ -160,8 +160,8 @@ class LgcRoom extends MgrSession {
 	}
 
 	static public Map<String, Object> roomHeart(GObjSession ses, Map<String, Object> pars) {
-		GObjSession enemy = enemySession(ses);
 		GObjRoom room = getRoom(ses.getRoomid());
+		GObjSession enemy = enemySession(ses);
 		pars = ses.toMapMust(pars);
 		List<ETNotify> _list = new ArrayList<ETNotify>();
 		_list.addAll(ses.getListNotify());
@@ -173,8 +173,10 @@ class LgcRoom extends MgrSession {
 				ses.rmNotify(notifyType);
 				switch (notifyType) {
 				case Enemy_Matched:
-					pars.put("enemy", enemy.getCurr().toMap());
-					pars.put("roomOverTimeMs", room.getOvertime_ms());
+					if(enemy != null){
+						pars.put("enemy", enemy.getCurr().toMap());
+						pars.put("roomOverTimeMs", room.getOvertime_ms());
+					}
 					break;
 				case Update:
 					pars.put("listRunning", ses.toLMRunning());

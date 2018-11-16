@@ -74,6 +74,7 @@ public class LgcGame extends LgcRoom {
 		GObjSession ses = (GObjSession) getSession(lgid, lgpwd);
 		if (ses == null) {
 			ses = new GObjSession(lgid, lgpwd);
+			ses.ReLmtOver1Min();
 		}
 
 		pars = matching(ses, pars);

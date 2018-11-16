@@ -136,9 +136,13 @@ public class GObject extends BeanOrigin {
 		return reInit(gobjType, currWay(), 0);
 	}
 
+	private int rndWay() {
+		return 1 + RndEx.nextInt(GObjConfig.NMax_Runway);
+	}
+
 	public int currWay(boolean isRnd) {
 		if (isRnd) {
-			this.runway = 1 + RndEx.nextInt(GObjConfig.NMax_Runway);
+			this.runway = rndWay();
 		}
 		return this.runway;
 	}
@@ -163,6 +167,9 @@ public class GObject extends BeanOrigin {
 	}
 
 	public void startRunning(long runTo, int runway) {
+		if (runway <= 0) {
+			runway = rndWay();
+		}
 		reRunning(runTo, runway, GObjConfig.LenMax_Runway);
 	}
 
@@ -173,9 +180,9 @@ public class GObject extends BeanOrigin {
 	public void runBack(long runTo, boolean isRndWay) {
 		reRunning(runTo, currWay(isRndWay), calcDistance());
 	}
-	
+
 	public void runBack(double multiples) {
-		if(multiples > 0){
+		if (multiples > 0) {
 			double speed = this.gobjType.getSpeed();
 			this.gobjType.setSpeed(speed * multiples);
 		}
@@ -199,13 +206,13 @@ public class GObject extends BeanOrigin {
 	public boolean isColliding(GObject gobj) {
 		return isEnd(gobj.calcDistance());
 	}
-	
-	public int comPower(GObject gobj){
-		if(this.gobjType.getPower() > gobj.getGobjType().getPower()){
+
+	public int comPower(GObject gobj) {
+		if (this.gobjType.getPower() > gobj.getGobjType().getPower()) {
 			return 1;
 		}
-		
-		if(this.gobjType.getPower() < gobj.getGobjType().getPower()){
+
+		if (this.gobjType.getPower() < gobj.getGobjType().getPower()) {
 			return -1;
 		}
 		return 0;
@@ -215,8 +222,8 @@ public class GObject extends BeanOrigin {
 	public boolean isEnd() {
 		return isEnd(0);
 	}
-	
-	public boolean isMvEnemy(){
+
+	public boolean isMvEnemy() {
 		return this.belongTo != this.runTo;
 	}
 }

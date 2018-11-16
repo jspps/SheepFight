@@ -10,7 +10,8 @@ import com.sf.entity.BeanOrigin;
 public class Session extends BeanOrigin {
 	private static final long serialVersionUID = 1L;
 	static long minLmt = 100;
-	static protected long defMs = 600000; // 10分钟
+	static private long defMs1Min = 60000; // 1分钟
+	static private long defMs = defMs1Min * 10; // 10分钟
 
 	protected long lmsOver = 0;
 	protected long id;
@@ -54,6 +55,10 @@ public class Session extends BeanOrigin {
 	public void ReLmtOver(long lmtMs) {
 		lmsOver = lmtMs;
 		ResetTimeOverdue();
+	}
+	
+	public void ReLmtOver1Min() {
+		ReLmtOver(defMs1Min);
 	}
 
 	public void ResetTimeOverdue() {
