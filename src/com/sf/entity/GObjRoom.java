@@ -378,8 +378,8 @@ public class GObjRoom extends BeanOrigin implements Runnable {
 		boolean isEnd = false;
 		GObject tmp1 = null;
 		GObjSession tmp = null;
-		listEnd.addAll(ses1.getCurr().jugdeEnd());
-		listEnd.addAll(ses2.getCurr().jugdeEnd());
+		listEnd.addAll(ses1.getCurr().jugdeArrive());
+		listEnd.addAll(ses2.getCurr().jugdeArrive());
 		Collections.sort(listEnd, comObj);
 		lens = listEnd.size();
 		for (int i = 0; i < lens; i++) {
@@ -394,7 +394,7 @@ public class GObjRoom extends BeanOrigin implements Runnable {
 				break;
 			}
 			tmp = tmp1.getBelongTo() == ses1.getId() ? ses1 : ses2;
-			tmp.getCurr().arriveEnd(tmp1);
+			tmp.getCurr().onArrive(tmp1);
 		}
 		listEnd.clear();
 		return isEnd;

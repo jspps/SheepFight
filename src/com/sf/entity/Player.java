@@ -210,7 +210,7 @@ public class Player extends BeanOrigin {
 		return null;
 	}
 
-	public List<GObject> jugdeEnd() {
+	public List<GObject> jugdeArrive() {
 		listEnd.clear();
 		int lens = listRunning.size();
 		GObject item = null;
@@ -223,7 +223,7 @@ public class Player extends BeanOrigin {
 		return listEnd;
 	}
 
-	public void arriveEnd(GObject gobj) {
+	public void onArrive(GObject gobj) {
 		gobj.stop();
 		mapRunning.remove(gobj.getId());
 		listRunning.remove(gobj);
@@ -239,7 +239,7 @@ public class Player extends BeanOrigin {
 		lens = listEnd.size();
 		for (int i = 0; i < lens; i++) {
 			item = listEnd.get(i);
-			arriveEnd(item);
+			onArrive(item);
 		}
 		listEnd.clear();
 		mapWait.clear();
