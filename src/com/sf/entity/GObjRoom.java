@@ -26,17 +26,17 @@ public class GObjRoom extends BeanOrigin implements Runnable {
 	private ETState state = ETState.None;
 	private ScheduledFuture<?> objSF = null;
 	private long winSesid = 0;
+	private int notifyCount = 0; // 结束后需要通知的人数
+	private long ms_over = 0; // 房间结束时间点
+	private long ms_start = 0; // 开始时间
+	private boolean isMatchRobot = false;
 	// 随机动物
-	private GObject gobjWolf = new GObject(ETGObj.Wolf, 1, 0);
-	private int NMutiny1 = 0, NMutiny2 = 0; // 叛变次数
-	private GObject gobjNeutral1 = new GObject(ETGObj.SheepNeutral, 2, 0);
-	private GObject gobjNeutral2 = new GObject(ETGObj.SheepNeutral, 4, 0);
 	private CompGObjEnd comObj = new CompGObjEnd();
+	private GObjRobot robot = new GObjRobot(); // 机器人
+	private GObject wolf = new GObject(ETGObj.Wolf, 1, 0);
+	private GObjNeutral neutral1 = new GObjNeutral(ETGObj.SheepNeutral, 2, 0);
+	private GObjNeutral neutral2 = new GObjNeutral(ETGObj.SheepNeutral, 4, 0);
 	private List<GObject> listEnd = new ArrayList<GObject>();
-	private long overtime_ms = 0;
-	private int robot_ai = -1; // 放羊ai
-	private GObjSession gsesRobot = new GObjSession(); // 机器人
-	private int notifyCount = 0;
 
 	public long getRoomid() {
 		return roomid;
@@ -51,7 +51,11 @@ public class GObjRoom extends BeanOrigin implements Runnable {
 	}
 
 	public long getOvertime_ms() {
-		return overtime_ms;
+		return ms_over;
+	}
+
+	public boolean isMatchRobot() {
+		return isMatchRobot;
 	}
 
 	public GObjRoom() {
@@ -107,7 +111,7 @@ public class GObjRoom extends BeanOrigin implements Runnable {
 	}
 
 	public GObjSession getRobot() {
-		return gsesRobot;
+		return robot;
 	}
 
 	public boolean isHas(long sesid) {
@@ -125,9 +129,9 @@ public class GObjRoom extends BeanOrigin implements Runnable {
 		synchronized (this) {
 			stopSF();
 			state = ETState.None;
-			robot_ai = -1;
 			notifyCount = 0;
-			overtime_ms = 0;
+			ms_over = 0;
+			ms_start = 0;
 			listEnd.clear();
 			GObjSession ses1 = LgcGame.targetSession(sesid1);
 			if (ses1 != null) {
@@ -137,29 +141,25 @@ public class GObjRoom extends BeanOrigin implements Runnable {
 			if (ses1 != null) {
 				ses1.clear();
 			}
-			gsesRobot.clear();
-
 			sesid1 = 0;
 			sesid2 = 0;
-			gobjWolf.stop();
-			NMutiny1 = 0;
-			NMutiny2 = 0;
-			gobjNeutral1.setBelongTo(0);
-			gobjNeutral2.setBelongTo(0);
-			gobjNeutral1.stop();
-			gobjNeutral2.stop();
+			isMatchRobot = false;
+			robot.clear();
+			wolf.stop();
+			neutral1.disappear(false);
+			neutral2.disappear(false);
 		}
 	}
 
 	public List<Map<String, Object>> listMap(List<Map<String, Object>> lMap) {
-		if (gobjWolf.isRunning()) {
-			lMap.add(gobjWolf.toMap());
+		if (wolf.isRunning()) {
+			lMap.add(wolf.toMap());
 		}
-		if (gobjNeutral1.isRunning()) {
-			lMap.add(gobjNeutral1.toMap());
+		if (neutral1.isRunning()) {
+			lMap.add(neutral1.toMap());
 		}
-		if (gobjNeutral2.isRunning()) {
-			lMap.add(gobjNeutral2.toMap());
+		if (neutral2.isRunning()) {
+			lMap.add(neutral2.toMap());
 		}
 		return lMap;
 	}
@@ -207,11 +207,12 @@ public class GObjRoom extends BeanOrigin implements Runnable {
 			rndStartWolf(runTo);
 
 			runTo = RndEx.nextBoolean() ? id1 : id2;
-			rndStartNeutral(gobjNeutral1, runTo);
+			rndStartNeutral(neutral1, runTo);
 
 			runTo = RndEx.nextBoolean() ? id1 : id2;
-			rndStartNeutral(gobjNeutral2, runTo);
-			overtime_ms = now() + GObjConfig.NMax_RoomAllTime;
+			rndStartNeutral(neutral2, runTo);
+			ms_start = now();
+			ms_over = ms_start + GObjConfig.NMax_RoomTime;
 
 			state = ETState.Running;
 			if (!sesOther.isRobot()) {
@@ -251,8 +252,8 @@ public class GObjRoom extends BeanOrigin implements Runnable {
 	}
 
 	void rndStartWolf(long runTo) {
-		gobjWolf.setRunway(0);
-		rndStartGobj(gobjWolf, runTo, GObjConfig.NMin_SpeedWolf, GObjConfig.NMax_SpeedWolf);
+		wolf.setRunway(0);
+		rndStartGobj(wolf, runTo, GObjConfig.NMin_SpeedWolf, GObjConfig.NMax_SpeedWolf);
 	}
 
 	void rndStartNeutral(GObject gobj, long runTo) {
@@ -260,8 +261,8 @@ public class GObjRoom extends BeanOrigin implements Runnable {
 	}
 
 	private void handlerWaitSheep(GObjSession ses1, GObjSession ses2) {
-		boolean isOkey1 = ses1.getCurr().jugdeRndSheep();
-		boolean isOkey2 = ses2.getCurr().jugdeRndSheep();
+		boolean isOkey1 = ses1.jugdeRndSheep();
+		boolean isOkey2 = ses2.jugdeRndSheep();
 		if (isOkey1) {
 			ses1.addNotify(ETNotify.WaitSelf);
 			ses2.addNotify(ETNotify.WaitEnemy);
@@ -274,23 +275,20 @@ public class GObjRoom extends BeanOrigin implements Runnable {
 	}
 
 	private void handlerRobotDownSheep(GObjSession ses1, GObjSession ses2) {
-		if (!gsesRobot.isStart()) {
+		if (robot.isNoCanDown()) {
 			return;
 		}
 
-		if (gsesRobot.isEmptyWait()) {
-			return;
-		}
-		ses1 = gsesRobot == ses1 ? ses2 : ses1;
+		ses1 = robot == ses1 ? ses2 : ses1;
 		long runTo = ses1.getId();
-		long sheepId = gsesRobot.getCurr().getMaxPowerInWait().getId();
+		long sheepId = robot.getMaxPowerInWait().getId();
 		int runway = 0;
 		int power1 = 1, power2 = 0;
-		switch (robot_ai) {
+		switch (robot.getAiDown()) {
 		case 1:
 			for (int i = 1; i <= GObjConfig.NMax_Runway; i++) {
-				power1 = gsesRobot.getCurr().getAllPower4Way(i);
-				power2 = ses1.getCurr().getAllPower4Way(i);
+				power1 = robot.getAllPower4Way(i);
+				power2 = ses1.getAllPower4Way(i);
 				if (power2 >= power1 + 2) {
 					runway = i;
 					break;
@@ -298,8 +296,8 @@ public class GObjRoom extends BeanOrigin implements Runnable {
 			}
 			if (runway == 0) {
 				for (int i = 1; i <= GObjConfig.NMax_Runway; i++) {
-					power1 = gsesRobot.getCurr().getAllPower4Way(i);
-					power2 = ses1.getCurr().getAllPower4Way(i);
+					power1 = robot.getAllPower4Way(i);
+					power2 = ses1.getAllPower4Way(i);
 					if (power1 > 0 && power2 <= power1) {
 						runway = i;
 						break;
@@ -308,27 +306,27 @@ public class GObjRoom extends BeanOrigin implements Runnable {
 			}
 			break;
 		}
-		gsesRobot.getCurr().startRunning(sheepId, runway, runTo);
+		robot.downSheep(sheepId, runway, runTo);
 	}
 
 	private void handlerWolf(GObjSession ses1, GObjSession ses2) {
-		int way = gobjWolf.getRunway();
+		int way = wolf.getRunway();
 		GObject tmp1 = null;
-		if (gobjWolf.isEnd()) {
-			long runTo = getOther(gobjWolf.getRunTo());
+		if (wolf.isEnd()) {
+			long runTo = getOther(wolf.getRunTo());
 			rndStartWolf(runTo);
 		} else {
-			ses1 = gobjWolf.getRunTo() == sesid1 ? ses1 : ses2;
-			tmp1 = ses1.getCurr().getFirst4Way(way);
-			if (tmp1 != null && tmp1.isColliding(gobjWolf)) {
+			ses1 = wolf.getRunTo() == sesid1 ? ses1 : ses2;
+			tmp1 = ses1.getFirst4Way(way);
+			if (tmp1 != null && tmp1.isColliding(wolf)) {
 				tmp1.runBack(2);
 			}
 		}
 	}
 
 	private void handlerNeutral(GObjSession ses1, GObjSession ses2) {
-		GObject[] arrs = { gobjNeutral1, gobjNeutral2 };
-		GObject tmp1 = null;
+		GObjNeutral[] arrs = { neutral1, neutral2 };
+		GObjNeutral tmp1 = null;
 		GObject tmp2 = null;
 		GObjSession tmpSes = null;
 		long beTo = 0;
@@ -342,8 +340,7 @@ public class GObjRoom extends BeanOrigin implements Runnable {
 			runTo = tmp1.getRunTo();
 			way = tmp1.getRunway();
 			if (tmp1.isEnd()) {
-				tmp1.setBelongTo(0);
-				tmp1.stop();
+				tmp1.disappear(true);
 			} else if (tmp1.isRunning()) {
 				if (beTo > 0) {
 					tmpSes = beTo == ses1.getId() ? ses2 : ses1;
@@ -357,23 +354,16 @@ public class GObjRoom extends BeanOrigin implements Runnable {
 					}
 
 				}
-				tmp2 = tmpSes.getCurr().getFirst4Way(way);
+				tmp2 = tmpSes.getFirst4Way(way);
 				if (tmp2 != null && tmp1.isColliding(tmp2)) {
-					if ((i == 0 && NMutiny1 >= GObjConfig.NMax_Mutiny)
-							|| (i == 1 && NMutiny2 >= GObjConfig.NMax_Mutiny)) {
-						tmp1.setBelongTo(0);
-						tmp1.stop();
+					if (tmp1.isOverMutiny()) {
+						tmp1.disappear(true);
 						continue;
 					}
 					power1 = tmp1.getGobjType().getPower();
 					power2 = tmp2.getGobjType().getPower();
 					if (power1 < power2) {
-						tmp1.setBelongTo(tmpSes.getId());
-						tmp1.runBack(beTo, false);
-						if (i == 0)
-							NMutiny1++;
-						else
-							NMutiny2++;
+						tmp1.doMutiny(tmpSes.getId(), beTo);
 					} else if (power1 > power2) {
 						tmp2.runBack(0);
 					}
@@ -388,8 +378,8 @@ public class GObjRoom extends BeanOrigin implements Runnable {
 		GObject tmp1 = null;
 		GObject tmp2 = null;
 		for (int i = 1; i <= GObjConfig.NMax_Runway; i++) {
-			tmp1 = ses1.getCurr().getFirst4Way(i);
-			tmp2 = ses2.getCurr().getFirst4Way(i);
+			tmp1 = ses1.getFirst4Way(i);
+			tmp2 = ses2.getFirst4Way(i);
 			if (tmp1 != null && tmp2 != null) {
 				if (tmp1.isColliding(tmp2)) {
 					powerState = tmp1.comPower(tmp2);
@@ -414,8 +404,8 @@ public class GObjRoom extends BeanOrigin implements Runnable {
 		boolean isEnd = false;
 		GObject tmp1 = null;
 		GObjSession tmp = null;
-		listEnd.addAll(ses1.getCurr().jugdeArrive());
-		listEnd.addAll(ses2.getCurr().jugdeArrive());
+		listEnd.addAll(ses1.jugdeArrive());
+		listEnd.addAll(ses2.jugdeArrive());
 		Collections.sort(listEnd, comObj);
 		lens = listEnd.size();
 		for (int i = 0; i < lens; i++) {
@@ -430,7 +420,7 @@ public class GObjRoom extends BeanOrigin implements Runnable {
 				}
 			}
 			tmp = tmp1.getBelongTo() == ses1.getId() ? ses1 : ses2;
-			tmp.getCurr().onArrive(tmp1);
+			tmp.onArrive(tmp1);
 		}
 		listEnd.clear();
 		return isEnd;
@@ -445,8 +435,9 @@ public class GObjRoom extends BeanOrigin implements Runnable {
 			ses1.setState(ETState.Fail);
 			ses2.setState(ETState.Win);
 		}
+		boolean isHasRobot = ses1.isRobot() || ses2.isRobot();
 		objSF = Toolkit.scheduleMS(_ses, this, GObjConfig.LMS_RoomWaitEnd);
-		notifyCount = robot_ai != -1 ? 1 : 2;
+		notifyCount = isHasRobot ? 1 : 2;
 		this.state = ETState.End;
 		ses1.addNotify(ETNotify.FightEnd);
 		ses2.addNotify(ETNotify.FightEnd);
@@ -459,15 +450,30 @@ public class GObjRoom extends BeanOrigin implements Runnable {
 
 		GObjSession ses1 = LgcGame.targetSession(sesid1);
 		GObjSession ses2 = LgcGame.targetSession(sesid2);
-		ses1 = ses1 == null ? gsesRobot : ses1;
-		ses2 = ses2 == null ? gsesRobot : ses2;
+		if (isMatchRobot) {
+			ses1 = ses1 == null ? robot : ses1;
+			ses2 = ses2 == null ? robot : ses2;
+		}
+
 		if (ses1 == ses2) {
 			this.state = ETState.End;
 			return;
 		}
 
-		if (overtime_ms < now()) {
-			if (ses1.getCurr().getForage() >= ses2.getCurr().getForage()) {
+		long _now = now();
+		if (ses1 == null || ses2 == null) {
+			this.state = ETState.End;
+			ses1 = ses1 == null ? ses2 : ses1;
+			long min = ms_start + GObjConfig.NMin_RoomTime;
+			if (min <= _now) {
+				ses1.setState(ETState.Win);
+			}
+			ses1.addNotify(ETNotify.FightEnd);
+			return;
+		}
+
+		if (ms_over < _now) {
+			if (ses1.getForage() >= ses2.getForage()) {
 				winSesid = ses1.getId();
 			} else {
 				winSesid = ses2.getId();
@@ -516,12 +522,10 @@ public class GObjRoom extends BeanOrigin implements Runnable {
 					stopSF();
 					if (!isEmpty() && isFree()) {
 						// 添加一个机器人
-						robot_ai = RndEx.nextInt(2);
-						String strRobot = String.format("robot_%s", RndEx.nextString09(9));
-						gsesRobot.reInit(strRobot, strRobot);
-						gsesRobot.setRoomid(roomid);
-						changeOne(gsesRobot.getId(), true);
-						starting(gsesRobot, true);
+						isMatchRobot = true;
+						robot.reRobot(roomid);
+						changeOne(robot.getId(), true);
+						starting(robot, true);
 					}
 					break;
 				case Running:

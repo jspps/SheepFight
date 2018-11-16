@@ -21,14 +21,16 @@ public class GObjConfig {
 	static final public String K_SesID = "sesid"; // sessionID的key值
 	static final public int LMS_Net = 5 * 1000; // 5秒
 	static final public int LmtN_Net = 60; // 每个session对象每 LMS_Net 秒限定最多请求数
-	static final public int LMS_RoomMatching = 15 * 1000; // 匹配玩家倒计时 - 15秒
-	static final public int LMS_RoomUpFirst = 10 * 2; // 房间数据首次更新 - 20 毫秒
-	static final public int LMS_RoomUpDelay = 100 * 1; // 房间数据间隔更新 - 100 毫秒
-	static final public int LMS_RoomWaitEnd = 2 * 1000; // 房间战斗结束倒计时 - 2秒
-	static final public int NMax_RoomAllTime = 10 * 60 * 1000; // 房间战斗最长时间为 10 分钟
-	static final public int LMS_NextNewSheep = 5 * 1000; // 下一次随机得羊的时间
 	static final public int NMax_OnLine = 100000; // 同时在线人数(超过了就排队)
-	static final public int NMax_Room = 2; // 一个房间最大人数
+	static final public int LMS_RoomMatching = 15 * 1000; // 匹配玩家倒计时 - 15秒
+	static final public int LMS_RoomUpFirst = 10 * 2; // 房间 首次更新 - 20 毫秒
+	static final public int LMS_RoomUpDelay = 100 * 1; // 房间 间隔更新 - 100 毫秒
+	static final public int LMS_RoomWaitEnd = 2 * 1000; // 房间战斗结束倒计时 - 2秒
+	static final public int NMax_RoomTime = 10 * 60 * 1000; // 房间战斗最长时间为 10 分钟
+	static final public int NMin_RoomTime = 30 * 1000; // 判断胜负的最小时间
+	static final public int LMS_NextNewSheep = 5000; // 下一次随机得羊的时间
+	static final public int LMS_FirstRobotDownSheep = 1000; // 首次 机器人 放羊時間
+	static final public int LMS_NextRobotDownSheep = 1500; // 机器人 放羊時間 间隔
 	static final public int NMax_Runway = 5; // 总共有多少跑道(N = Num)
 	static final public int LenMax_Runway = 10; // 跑道总长度
 	static final public int NI_Forage = 100; // 初始草料值
@@ -39,4 +41,5 @@ public class GObjConfig {
 	static final public double NMin_SpeedNeutral = 0.8; // 叛变羊最小随机速度
 	static final public double NMax_SpeedNeutral = 2.0; // 叛变羊最大随机速度
 	static final public int NMax_Mutiny = 3; // 最大叛变次数
+	static final public int LMS_Neutral_NextLive = 1500; // 叛变羊消失后，下次刷新间隔
 }

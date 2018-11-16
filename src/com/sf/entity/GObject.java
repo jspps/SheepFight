@@ -191,7 +191,8 @@ public class GObject extends BeanOrigin {
 
 	public double calcDistance() {
 		if (isRunning) {
-			return (now() - this.startRunTime) * gobjType.getSpeed() * 0.001;
+			double val = (now() - this.startRunTime) * gobjType.getSpeed() * 0.001;
+			return round(val, 3);
 		}
 		return 0;
 	}

@@ -9,7 +9,6 @@ import com.sf.entity.ETNotify;
 import com.sf.entity.GObjConfig;
 import com.sf.entity.GObjRoom;
 import com.sf.entity.GObjSession;
-import com.sf.entity.Player;
 
 /**
  * 游戏逻辑
@@ -74,7 +73,6 @@ public class LgcGame extends LgcRoom {
 		GObjSession ses = (GObjSession) getSession(lgid, lgpwd);
 		if (ses == null) {
 			ses = new GObjSession(lgid, lgpwd);
-			ses.ReLmtOver1Min();
 		}
 
 		pars = matching(ses, pars);
@@ -99,16 +97,15 @@ public class LgcGame extends LgcRoom {
 			return msg(GObjConfig.S_Fails, pars, isEncode);
 		}
 
-		Player currPlay = ses.getCurr();
-		if (!currPlay.isInWait(sheepId)) {
+		if (!ses.isInWait(sheepId)) {
 			pars.put("tip", "放置的羊ID不正确;错误 id = " + sheepId);
 			return msg(GObjConfig.S_Fails, pars, isEncode);
 		}
 
-		currPlay.startRunning(sheepId, runway, sesOther.getId());
+		ses.downSheep(sheepId, runway, sesOther.getId());
 		// 自身数据
 		pars.put("sesid", ses.getId());
-		pars.put("addSheep", currPlay.getInRunning(sheepId));
+		pars.put("addSheep", ses.getInRunning(sheepId));
 		String outVal = msg(GObjConfig.S_Success, pars, isEncode);
 
 		// 推送给别的数据

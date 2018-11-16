@@ -7,7 +7,6 @@ import java.util.Map;
 
 import com.bowlong.lang.RndEx;
 import com.sf.logic.LgcGame;
-import com.sf.ses.Session;
 
 /**
  * 游戏对象Session
@@ -15,12 +14,11 @@ import com.sf.ses.Session;
  * @author Canyon
  * @version createtime：2018-11-11下午12:00:38
  */
-public class GObjSession extends Session {
+public class GObjSession extends GObjSPlayer {
 	private static final long serialVersionUID = 1L;
 	private long roomid;
 	private String lgid;
 	private String lgpwd;
-	private Player curr;
 	private long enemySesId;
 	private boolean isRobot;
 
@@ -37,14 +35,6 @@ public class GObjSession extends Session {
 
 	public void setRoomid(long roomid) {
 		this.roomid = roomid;
-	}
-
-	public Player getCurr() {
-		return curr;
-	}
-
-	public void setCurr(Player currPlay) {
-		this.curr = currPlay;
 	}
 
 	public String getLgid() {
@@ -96,21 +86,20 @@ public class GObjSession extends Session {
 	}
 
 	public GObjSession(String lgid, String lgpwd) {
-		reInit(lgid, lgpwd);
+		initSes(lgid, lgpwd);
 	}
 
-	public GObjSession reInit(String lgid, String lgpwd) {
-		InitSesID(GObjConfig.SW_SID.nextId());
+	public GObjSession initSes(String lgid, String lgpwd) {
 		this.lgid = lgid;
 		this.lgpwd = lgpwd;
-		isRobot = lgid.contains("robot_");
-		if(isRobot){
+		this.isRobot = lgid.contains("robot_");
+		InitSesID(GObjConfig.SW_SID.nextId());
+		if (this.isRobot) {
 			ReLmtOver(0);
 		}
-		
+
 		String rndVal = RndEx.nextString09(9);
-		curr = new Player(rndVal, rndVal);
-		curr.rndWaitFirst(id);
+		initPlayer(rndVal, rndVal);
 		return this;
 	}
 
@@ -118,10 +107,10 @@ public class GObjSession extends Session {
 	public Map<String, Object> toMap(Map<String, Object> map) {
 		map = toMapMust(map);
 		map.put("lens_way", GObjConfig.LenMax_Runway);
-		map.put("player", curr.toMap());
+		map.put("player", toPlayMap(null));
 		GObjSession enemy = LgcGame.enemySession(getId());
 		if (enemy != null) {
-			map.put("enemy", enemy.getCurr().toMap());
+			map.put("enemy", enemy.toPlayMap(null));
 		}
 		map.put("listRunning", toLMRunning());
 		return map;
@@ -139,10 +128,10 @@ public class GObjSession extends Session {
 
 	public List<Map<String, Object>> toLMRunning() {
 		lMap.clear();
-		curr.lmRunning(lMap);
+		lmRunning(lMap);
 		GObjSession enemy = LgcGame.enemySession(getId());
 		if (enemy != null) {
-			enemy.getCurr().lmRunning(lMap);
+			enemy.lmRunning(lMap);
 			// room
 			GObjRoom room = LgcGame.getRoom(roomid);
 			room.listMap(lMap);
@@ -204,17 +193,8 @@ public class GObjSession extends Session {
 			state = ETState.None;
 			enemySesId = 0;
 			lNotify.clear();
-			curr.clear();
+			super.clear();
 		}
-	}
-
-	public void reduceForage(int reduce) {
-		int curr = this.curr.getForage();
-		int nCurr = curr - reduce;
-		nCurr = nCurr <= 0 ? 0 : nCurr;
-		this.curr.setForage(nCurr);
-		if (nCurr <= 0)
-			this.state = ETState.Fail;
 	}
 
 	public boolean isFails() {
@@ -224,12 +204,8 @@ public class GObjSession extends Session {
 	public boolean isWin() {
 		return this.state == ETState.Win;
 	}
-	
-	public boolean isStart(){
+
+	public boolean isStart() {
 		return this.state == ETState.Running;
-	}
-	
-	public boolean isEmptyWait(){
-		return this.curr.isEmptyWait();
 	}
 }

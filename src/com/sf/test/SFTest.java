@@ -41,8 +41,8 @@ public class SFTest extends BeanOrigin implements Runnable {
 	static void test_game(boolean isUrl) {
 		gameLogin(isUrl);
 		if (sesid > 0) {
-			end = GObjConfig.NMax_RoomAllTime + now();
-			 objSF = com.bowlong.lang.task.SchedulerEx.fixedRateMS(new SFTest(),200,500);
+			end = GObjConfig.NMax_RoomTime + now();
+			objSF = com.bowlong.lang.task.SchedulerEx.fixedRateMS(new SFTest(), 200, 500);
 		}
 	}
 
@@ -69,7 +69,7 @@ public class SFTest extends BeanOrigin implements Runnable {
 			ins = HttpUriPostEx.postMap(host, params, "utf-8");
 		}
 		String strJson = HttpUriPostEx.inps2Str(ins, "utf-8");
-		System.out.println(String.format("== lg ==[%s]", strJson));
+		System.out.println(String.format("lg =[%s]", strJson));
 		try {
 			ins.close();
 			JSONObject json = JsonHelper.toJSON(strJson);
@@ -93,11 +93,11 @@ public class SFTest extends BeanOrigin implements Runnable {
 				ins = HttpUriPostEx.postMap(host, params, "utf-8");
 			}
 			strJson = HttpUriPostEx.inps2Str(ins, "utf-8");
-			System.out.println(String.format("== heart ==[%s]", strJson));
+			System.out.println(String.format("heart =[%s]", strJson));
 			ins.close();
 			JSONObject json = JsonHelper.toJSON(strJson);
 			JSONObject jsonMsg = json.getJSONObject("msg");
-			if(jsonMsg.has("isWin")){
+			if (jsonMsg.has("isWin")) {
 				isEnd = true;
 				nEnd = 3;
 			}
@@ -141,7 +141,7 @@ public class SFTest extends BeanOrigin implements Runnable {
 
 	@Override
 	public void run() {
-		if ((isEnd && nEnd <= 0)|| (end < now())) {
+		if ((isEnd && nEnd <= 0) || (end < now())) {
 			if (objSF != null) {
 				objSF.cancel(true);
 				objSF = null;

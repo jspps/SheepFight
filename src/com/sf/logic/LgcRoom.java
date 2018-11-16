@@ -47,11 +47,11 @@ class LgcRoom extends MgrSession {
 		GObjRoom room = null;
 		if (ses != null)
 			room = getRoom(ses.getRoomid());
-		
+
 		if (room != null) {
 			long sesid = room.getOther(ses.getId());
 			GObjSession enemy = targetSession(sesid);
-			if (enemy == null && !room.isFree()) {
+			if (enemy == null && room.isMatchRobot()) {
 				return room.getRobot();
 			}
 			return enemy;
@@ -185,7 +185,7 @@ class LgcRoom extends MgrSession {
 				switch (notifyType) {
 				case MatchedEnemy:
 					if (enemy != null) {
-						pars.put("enemy", enemy.getCurr().toMap());
+						pars.put("enemy", enemy.toPlayMap(null));
 						pars.put("roomOverTimeMs", room.getOvertime_ms());
 					}
 					break;
@@ -197,11 +197,11 @@ class LgcRoom extends MgrSession {
 					room.notifyEnd();
 					break;
 				case WaitSelf:
-					pars.put("waitListSelf", ses.getCurr().lmWait());
+					pars.put("waitListSelf", ses.lmWait());
 					break;
 				case WaitEnemy:
 					if (enemy != null) {
-						pars.put("waitListEnemy", enemy.getCurr().lmWait());
+						pars.put("waitListEnemy", enemy.lmWait());
 					}
 					break;
 				default:

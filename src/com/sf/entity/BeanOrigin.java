@@ -69,4 +69,14 @@ public class BeanOrigin implements Serializable {
 	static final public long now() {
 		return CalendarEx.now();
 	}
+
+	static final public double round(double org, int acc) {
+		double pow = 1;
+		for (int i = 0; i < acc; i++) {
+			pow *= 10;
+		}
+
+		double temp = (int) (org * pow + 0.5);
+		return temp / pow;
+	}
 }

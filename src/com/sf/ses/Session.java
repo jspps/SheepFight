@@ -10,8 +10,9 @@ import com.sf.entity.BeanOrigin;
 public class Session extends BeanOrigin {
 	private static final long serialVersionUID = 1L;
 	static long minLmt = 100;
-	static private long defMs1Min = 60000; // 1分钟
-	static private long defMs = defMs1Min * 10; // 10分钟
+	static private long defMs1Sec = 1000; // 1秒
+	static private long defMs1Min = 60 * defMs1Sec; // 1分钟
+	static private long defMs = defMs1Sec * 10;
 
 	protected long lmsOver = 0;
 	protected long id;
