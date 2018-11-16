@@ -174,6 +174,7 @@ class LgcRoom extends MgrSession {
 				switch (notifyType) {
 				case Enemy_Matched:
 					pars.put("enemy", enemy.getCurr().toMap());
+					pars.put("roomOverTimeMs", room.getOvertime_ms());
 					break;
 				case Update:
 					pars.put("listRunning", ses.toLMRunning());

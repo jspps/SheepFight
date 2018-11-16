@@ -50,6 +50,10 @@ public class GObjRoom extends BeanOrigin implements Runnable {
 		return state;
 	}
 
+	public long getOvertime_ms() {
+		return overtime_ms;
+	}
+
 	public GObjRoom() {
 		super();
 	}
@@ -264,7 +268,7 @@ public class GObjRoom extends BeanOrigin implements Runnable {
 		switch (robot_ai) {
 		case 1:
 			for (int i = 1; i <= GObjConfig.NMax_Runway; i++) {
-				
+
 			}
 			for (int i = 1; i <= GObjConfig.NMax_Runway; i++) {
 			}
