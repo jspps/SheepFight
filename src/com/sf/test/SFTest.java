@@ -26,6 +26,8 @@ public class SFTest extends BeanOrigin implements Runnable {
 	static boolean isUrl = true;
 	static ScheduledFuture<?> objSF = null;
 	static long end = 0;
+	static boolean isEnd = false;
+	static int nEnd = 0;
 
 	public static void main(String[] args) {
 		// test_swids();
@@ -93,6 +95,12 @@ public class SFTest extends BeanOrigin implements Runnable {
 			strJson = HttpUriPostEx.inps2Str(ins, "utf-8");
 			System.out.println(String.format("== heart ==[%s]", strJson));
 			ins.close();
+			JSONObject json = JsonHelper.toJSON(strJson);
+			JSONObject jsonMsg = json.getJSONObject("msg");
+			if(jsonMsg.has("isWin")){
+				isEnd = true;
+				nEnd = 3;
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -133,13 +141,15 @@ public class SFTest extends BeanOrigin implements Runnable {
 
 	@Override
 	public void run() {
-		if (end < now()) {
+		if ((isEnd && nEnd <= 0)|| (end < now())) {
 			if (objSF != null) {
 				objSF.cancel(true);
 				objSF = null;
 			}
+			isEnd = false;
 		}
 		if (sesid > 0) {
+			nEnd--;
 			gameHeart(isUrl);
 		}
 	}

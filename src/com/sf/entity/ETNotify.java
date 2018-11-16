@@ -9,7 +9,9 @@ package com.sf.entity;
  */
 public enum ETNotify {
 	None,
-	Enemy_Matched,
+	MatchedEnemy,
+	WaitSelf,
+	WaitEnemy,
 	Update,
 	FightEnd,
 }

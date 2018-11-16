@@ -45,12 +45,20 @@ class LgcRoom extends MgrSession {
 
 	static final GObjSession enemySession(GObjSession ses) {
 		GObjRoom room = getRoom(ses.getRoomid());
-		long sesid = room.getOther(ses.getId());
-		GObjSession enemy = targetSession(sesid);
-		if(enemy == null && !room.isFree()){
-			return room.getRobot();
+		if (room != null) {
+			long sesid = room.getOther(ses.getId());
+			GObjSession enemy = targetSession(sesid);
+			if (enemy == null && !room.isFree()) {
+				return room.getRobot();
+			}
+			return enemy;
 		}
-		return enemy;
+		return null;
+	}
+
+	static final public GObjSession enemySession(long sesid) {
+		GObjSession ses = targetSession(sesid);
+		return enemySession(ses);
 	}
 
 	static final protected String base64(String src, boolean encode) {
@@ -172,8 +180,8 @@ class LgcRoom extends MgrSession {
 				notifyType = _list.get(i);
 				ses.rmNotify(notifyType);
 				switch (notifyType) {
-				case Enemy_Matched:
-					if(enemy != null){
+				case MatchedEnemy:
+					if (enemy != null) {
 						pars.put("enemy", enemy.getCurr().toMap());
 						pars.put("roomOverTimeMs", room.getOvertime_ms());
 					}
@@ -184,6 +192,14 @@ class LgcRoom extends MgrSession {
 				case FightEnd:
 					pars.put("isWin", ses.isWin());
 					room.notifyEnd();
+					break;
+				case WaitSelf:
+					pars.put("waitListSelf", ses.getCurr().lmWait());
+					break;
+				case WaitEnemy:
+					if (enemy != null) {
+						pars.put("waitListEnemy", enemy.getCurr().lmWait());
+					}
 					break;
 				default:
 					break;

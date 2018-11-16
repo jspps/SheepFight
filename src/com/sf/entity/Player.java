@@ -100,8 +100,7 @@ public class Player extends BeanOrigin {
 		map.put("name", name);
 		map.put("icon", icon);
 		map.put("forage", forage);
-		lmWait.clear();
-		map.put("listWait", listMap(lmWait, listWait));
+		map.put("listWait", lmWait());
 		return map;
 	}
 
@@ -134,8 +133,13 @@ public class Player extends BeanOrigin {
 		return lMap;
 	}
 
-	public List<Map<String, Object>> listMap(List<Map<String, Object>> lMap) {
+	public List<Map<String, Object>> lmRunning(List<Map<String, Object>> lMap) {
 		return listMap(lMap, listRunning);
+	}
+	
+	public List<Map<String, Object>> lmWait() {
+		lmWait.clear();
+		return listMap(lmWait, listWait);
 	}
 
 	GObject getInWait(long sheepId) {
@@ -164,16 +168,18 @@ public class Player extends BeanOrigin {
 		return mapRunning.get(sheepId);
 	}
 
-	public void jugdeRndSheep() {
+	public boolean jugdeRndSheep() {
 		if (this.listWait.size() >= GObjConfig.NMax_Sheep_Wait)
-			return;
+			return false;
 		long now = now();
 		if (nextRndWait <= 0) {
 			this.nextRndWait = now + GObjConfig.LMS_NextNewSheep;
 		} else if (nextRndWait <= now) {
 			this.nextRndWait = now + GObjConfig.LMS_NextNewSheep;
 			rndWaitOne(belongTo);
+			return true;
 		}
+		return false;
 	}
 
 	public boolean startRunning(long sheepId, int way, long runTo) {

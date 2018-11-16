@@ -119,7 +119,7 @@ public class GObjSession extends Session {
 		map = toMapMust(map);
 		map.put("lens_way", GObjConfig.LenMax_Runway);
 		map.put("player", curr.toMap());
-		GObjSession enemy = LgcGame.targetSession(enemySesId);
+		GObjSession enemy = LgcGame.enemySession(getId());
 		if (enemy != null) {
 			map.put("enemy", enemy.getCurr().toMap());
 		}
@@ -139,10 +139,10 @@ public class GObjSession extends Session {
 
 	public List<Map<String, Object>> toLMRunning() {
 		lMap.clear();
-		curr.listMap(lMap);
-		GObjSession enemy = LgcGame.targetSession(enemySesId);
+		curr.lmRunning(lMap);
+		GObjSession enemy = LgcGame.enemySession(getId());
 		if (enemy != null) {
-			enemy.getCurr().listMap(lMap);
+			enemy.getCurr().lmRunning(lMap);
 			// room
 			GObjRoom room = LgcGame.getRoom(roomid);
 			room.listMap(lMap);

@@ -196,10 +196,10 @@ public class GObjRoom extends BeanOrigin implements Runnable {
 			ses.start(id2);
 			sesOther.start(id1);
 			if (!sesOther.isRobot()) {
-				sesOther.addNotify(ETNotify.Enemy_Matched);
+				sesOther.addNotify(ETNotify.MatchedEnemy);
 			}
 			if (isNdSelf && !ses.isRobot()) {
-				ses.addNotify(ETNotify.Enemy_Matched);
+				ses.addNotify(ETNotify.MatchedEnemy);
 			}
 
 			long runTo = 0;
@@ -257,6 +257,20 @@ public class GObjRoom extends BeanOrigin implements Runnable {
 
 	void rndStartNeutral(GObject gobj, long runTo) {
 		rndStartGobj(gobj, runTo, GObjConfig.NMin_SpeedNeutral, GObjConfig.NMax_SpeedNeutral);
+	}
+
+	private void handlerWaitSheep(GObjSession ses1, GObjSession ses2) {
+		boolean isOkey1 = ses1.getCurr().jugdeRndSheep();
+		boolean isOkey2 = ses2.getCurr().jugdeRndSheep();
+		if (isOkey1) {
+			ses1.addNotify(ETNotify.WaitSelf);
+			ses2.addNotify(ETNotify.WaitEnemy);
+		}
+
+		if (isOkey2) {
+			ses1.addNotify(ETNotify.WaitEnemy);
+			ses2.addNotify(ETNotify.WaitSelf);
+		}
 	}
 
 	private void handlerRobotDownSheep(GObjSession ses1, GObjSession ses2) {
@@ -462,8 +476,7 @@ public class GObjRoom extends BeanOrigin implements Runnable {
 			return;
 		}
 		// 判断产生wait随机羊
-		ses1.getCurr().jugdeRndSheep();
-		ses2.getCurr().jugdeRndSheep();
+		handlerWaitSheep(ses1, ses2);
 		// 处理机器人 放羊
 		handlerRobotDownSheep(ses1, ses2);
 		// 处理狼数据
