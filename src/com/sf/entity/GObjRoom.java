@@ -103,7 +103,7 @@ public class GObjRoom extends BeanOrigin implements Runnable {
 	}
 
 	public boolean isFree() {
-		return sesid1 <= 0 || sesid2 <= 0;
+		return (sesid1 <= 0 || sesid2 <= 0) && (state == ETState.None || state == ETState.Matching);
 	}
 
 	public GObjSession getRobot() {
@@ -195,12 +195,6 @@ public class GObjRoom extends BeanOrigin implements Runnable {
 
 			ses.start(id2);
 			sesOther.start(id1);
-			if (!sesOther.isRobot()) {
-				sesOther.addNotify(ETNotify.MatchedEnemy);
-			}
-			if (isNdSelf && !ses.isRobot()) {
-				ses.addNotify(ETNotify.MatchedEnemy);
-			}
 
 			long runTo = 0;
 			if (ses.isRobot()) {
@@ -219,9 +213,15 @@ public class GObjRoom extends BeanOrigin implements Runnable {
 			rndStartNeutral(gobjNeutral2, runTo);
 			overtime_ms = now() + GObjConfig.NMax_RoomAllTime;
 
+			state = ETState.Running;
+			if (!sesOther.isRobot()) {
+				sesOther.addNotify(ETNotify.MatchedEnemy);
+			}
+			if (isNdSelf && !ses.isRobot()) {
+				ses.addNotify(ETNotify.MatchedEnemy);
+			}
 			// objSF = Toolkit.scheduled8FixedRate(_ses, this,200,500);
 			objSF = Toolkit.scheduled8FixedRate(_ses, this, GObjConfig.LMS_RoomUpFirst, GObjConfig.LMS_RoomUpDelay);
-			state = ETState.Running;
 		}
 	}
 
@@ -446,10 +446,10 @@ public class GObjRoom extends BeanOrigin implements Runnable {
 			ses2.setState(ETState.Win);
 		}
 		objSF = Toolkit.scheduleMS(_ses, this, GObjConfig.LMS_RoomWaitEnd);
-		ses1.addNotify(ETNotify.FightEnd);
-		ses2.addNotify(ETNotify.FightEnd);
 		notifyCount = robot_ai != -1 ? 1 : 2;
 		this.state = ETState.End;
+		ses1.addNotify(ETNotify.FightEnd);
+		ses2.addNotify(ETNotify.FightEnd);
 	}
 
 	public void upRunning() {
@@ -475,10 +475,10 @@ public class GObjRoom extends BeanOrigin implements Runnable {
 			_toEnd(ses1, ses2);
 			return;
 		}
-		// 判断产生wait随机羊
-		handlerWaitSheep(ses1, ses2);
 		// 处理机器人 放羊
 		handlerRobotDownSheep(ses1, ses2);
+		// 判断产生wait随机羊
+		handlerWaitSheep(ses1, ses2);
 		// 处理狼数据
 		handlerWolf(ses1, ses2);
 		// 处理叛变羊

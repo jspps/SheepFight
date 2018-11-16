@@ -10,6 +10,7 @@ import com.bowlong.tool.TkitJsp;
 import com.bowlong.util.DateEx;
 import com.bowlong.util.MapEx;
 import com.sf.entity.GObjConfig;
+import com.sf.filter.AppFilter;
 import com.sf.logic.LgcGame;
 
 /**
@@ -36,6 +37,10 @@ public class GameServlet extends AbsDispatcherServlet {
 			outVal = gameEncode(pars);
 			break;
 		}
+		case 102: {
+			outVal = gamePrint(pars);
+			break;
+		}
 		default:
 			outVal = disp(cmd, pars);
 			break;
@@ -51,6 +56,12 @@ public class GameServlet extends AbsDispatcherServlet {
 		boolean isEncode = MapEx.getBoolean(pars, "isEncode");
 		LgcGame.isMustEncode = isEncode;
 		return String.valueOf(isEncode);
+	}
+	
+	String gamePrint(Map<String, Object> pars) {
+		boolean isLog = MapEx.getBoolean(pars, "isLog");
+		AppFilter.isPrint = isLog;
+		return String.valueOf(isLog);
 	}
 
 	String disp(int cmd, Map<String, Object> pars) {
