@@ -66,7 +66,7 @@ public class BeanOrigin implements Serializable {
 		return toMap(map);
 	}
 
-	public long now() {
+	static final public long now() {
 		return CalendarEx.now();
 	}
 }

@@ -265,15 +265,27 @@ public class GObjRoom extends BeanOrigin implements Runnable {
 		long runTo = ses1.getId();
 		long sheepId = gobjRobot.getCurr().getMaxPowerInWait().getId();
 		int runway = 0;
+		int power1 = 1, power2 = 0;
 		switch (robot_ai) {
 		case 1:
 			for (int i = 1; i <= GObjConfig.NMax_Runway; i++) {
-
+				power1 = gobjRobot.getCurr().getAllPower4Way(i);
+				power2 = ses1.getCurr().getAllPower4Way(i);
+				if (power2 >= power1 + 2) {
+					runway = i;
+					break;
+				}
 			}
-			for (int i = 1; i <= GObjConfig.NMax_Runway; i++) {
+			if (runway == 0) {
+				for (int i = 1; i <= GObjConfig.NMax_Runway; i++) {
+					power1 = gobjRobot.getCurr().getAllPower4Way(i);
+					power2 = ses1.getCurr().getAllPower4Way(i);
+					if (power1 > 0 && power2 <= power1) {
+						runway = i;
+						break;
+					}
+				}
 			}
-			break;
-		default:
 			break;
 		}
 		gobjRobot.getCurr().startRunning(sheepId, runway, runTo);

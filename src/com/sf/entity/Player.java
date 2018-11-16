@@ -204,10 +204,23 @@ public class Player extends BeanOrigin {
 	}
 
 	public GObject getFirst4Way(int way) {
+		GObject gobj = null;
 		listWay = getList(way, listWay);
 		if (listWay.size() > 0)
-			return listWay.get(0);
-		return null;
+			gobj = listWay.get(0);
+		listWay.clear();
+		return gobj;
+	}
+	
+	public int getAllPower4Way(int way){
+		listWay = getList(way, listWay);
+		int lens =listWay.size();
+		int sum = 0;
+		for (int i = 0; i < lens; i++) {
+			sum += listWay.get(i).getGobjType().getPower();
+		}
+		listWay.clear();
+		return sum;
 	}
 
 	public List<GObject> jugdeArrive() {
