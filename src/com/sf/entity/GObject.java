@@ -200,7 +200,7 @@ public class GObject extends BeanOrigin {
 	// 是否移动到终点
 	private boolean isEnd(double otherDis) {
 		double mvDis = calcDistance() + otherDis;
-		double diff = Math.abs(this.endDistance - mvDis);
+		double diff = this.endDistance - mvDis;
 		return diff <= GObjConfig.NMax_CollidDistance;
 	}
 
