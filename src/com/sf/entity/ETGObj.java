@@ -6,6 +6,7 @@ import java.util.Map;
 /**
  * 枚举 - 对象类型<br/>
  * ET = Enum_Type
+ * 
  * @author Canyon
  * @version createtime：2018-11-11上午9:13:20
  */
@@ -14,8 +15,8 @@ public enum ETGObj {
 	SheepMiddle("中羊", 2, 2), 
 	SheepBig("大羊", 3, 4), 
 	SheepNeutral("叛变羊", 4), 
-	Wolf("狼",5), 
-	Spinach("菠菜罐头", 6, 7),;
+	Wolf("狼", 5), 
+	Spinach("菠菜罐头", 6, 7, 0), ;
 	// 取得对象的方法
 	static public ETGObj get(int index) {
 		for (ETGObj got : ETGObj.values()) {
@@ -91,7 +92,7 @@ public enum ETGObj {
 	}
 
 	public String toStr() {
-		return String.format("%s_%s_%s_%s_%s_%s", name(), ordinal(), index,	name, power, speed);
+		return String.format("%s_%s_%s_%s_%s_%s", name(), ordinal(), index, name, power, speed);
 	}
 
 	public Map<String, Object> toMap(Map<String, Object> map) {
@@ -99,8 +100,10 @@ public enum ETGObj {
 			map = new HashMap<String, Object>();
 		map.put("index", index);
 		map.put("name", name);
-		map.put("power", power);
-		map.put("speed", speed);
+		if (power > 0)
+			map.put("power", power);
+		if (speed > 0)
+			map.put("speed", speed);
 		return map;
 	}
 
