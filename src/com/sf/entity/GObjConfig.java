@@ -44,5 +44,8 @@ public class GObjConfig {
 	static final public int NMax_NeutralMutiny = 3; // 叛变羊最大叛变次数
 	static final public int NMin_NeutralPower = 2; // 叛变羊最小体力
 	static final public int NMax_NeutralPower = 4; // 叛变羊最大体力
-	static final public int LMS_Neutral_NextLive = 1500; // 叛变羊消失后，下次刷新间隔
+	static final public int LMS_NextLive_Neutral = 1500; // 叛变羊消失后，下次刷新间隔
+	static final public double NMin_PosSpinach = 3.5; // 菠菜罐头位置
+	static final public double NMax_PosSpinach = 6.5; // 菠菜罐头位置
+	static final public int LMS_NextLive_Spinach = 1500; // 菠菜罐头消失后，下次刷新间隔
 }

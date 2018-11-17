@@ -17,12 +17,14 @@ public class GObject extends BeanOrigin {
 	private ETGObj gobjType = ETGObj.SheepSmall; // 类型
 	private int runway = 0; // 跑道编号
 	private long createtime = 0; // 创建时间
-	private long startRunTime = 0;// 开始跑的时间
+	private long startMs = 0;// 开始跑的时间
 	private long belongTo = 0; // 拥有者
 	private long runTo = 0; // 跑向的人
 	private boolean isRunning = false;
 	private double endDistance = 0; // 目的距离
 	private double base_speed = -1; // 基础速度
+	private long startStayMs = 0;//开始停留时间
+	private int stayMs = 0; // 停留时间毫秒 ms
 
 	public long getId() {
 		return id;
@@ -56,12 +58,12 @@ public class GObject extends BeanOrigin {
 		this.createtime = createtime;
 	}
 
-	public long getStartRunTime() {
-		return startRunTime;
+	public long getStartMs() {
+		return startMs;
 	}
 
-	public void setStartRunTime(long startRunTime) {
-		this.startRunTime = startRunTime;
+	public void setStartMs(long startMs) {
+		this.startMs = startMs;
 	}
 
 	public long getBelongTo() {
@@ -113,7 +115,7 @@ public class GObject extends BeanOrigin {
 		map.put("belongTo", belongTo);
 		map.put("runTo", runTo);
 		map.put("isRunning", isRunning);
-		map.put("start_ms", startRunTime);
+		map.put("start_ms", startMs);
 		map.put("distance", calcDistance());
 		map = gobjType.toMap(map);
 		return map;
@@ -137,28 +139,22 @@ public class GObject extends BeanOrigin {
 	}
 
 	public GObject reInit(ETGObj gobjType) {
-		return reInit(gobjType, currWay(), 0);
-	}
-
-	private int rndWay() {
-		return 1 + RndEx.nextInt(GObjConfig.NMax_Runway);
+		return reInit(gobjType, currWay(this.runway <= 0), 0);
 	}
 
 	public int currWay(boolean isRnd) {
 		if (isRnd) {
-			this.runway = rndWay();
+			this.runway = 1 + RndEx.nextInt(GObjConfig.NMax_Runway);
 		}
 		return this.runway;
-	}
-
-	public int currWay() {
-		return currWay(this.runway <= 0);
 	}
 
 	public void stop() {
 		this.runway = 0;
 		this.runTo = 0;
-		this.startRunTime = 0;
+		this.startMs = 0;
+		this.stayMs = 0;
+		this.startStayMs = 0;
 		this.isRunning = false;
 	}
 
@@ -166,19 +162,21 @@ public class GObject extends BeanOrigin {
 		this.runway = runway;
 		this.runTo = runTo;
 		this.endDistance = endDis;
-		this.startRunTime = now();
+		this.startMs = now();
+		this.stayMs = 0;
+		this.startStayMs = 0;
 		this.isRunning = true;
 	}
 
 	public void startRunning(long runTo, int runway) {
 		if (runway <= 0) {
-			runway = rndWay();
+			runway = currWay(true);
 		}
 		reRunning(runTo, runway, GObjConfig.LenMax_Runway);
 	}
 
 	public void startRunning(long runTo) {
-		startRunning(runTo, currWay());
+		startRunning(runTo, this.runway);
 	}
 
 	public void runBack(long runTo, boolean isRndWay) {
@@ -194,7 +192,8 @@ public class GObject extends BeanOrigin {
 
 	public double calcDistance() {
 		if (isRunning) {
-			double val = (now() - this.startRunTime) * gobjType.getSpeed() * 0.001;
+			long diffMs = (now() - this.startMs - this.stayMs);
+			double val = diffMs * gobjType.getSpeed() * 0.001;
 			return round(val, 3);
 		}
 		return 0;
@@ -229,5 +228,16 @@ public class GObject extends BeanOrigin {
 
 	public boolean isMvEnemy() {
 		return this.belongTo != this.runTo;
+	}
+	
+	// 停留会儿吧
+	public void stayOrRun(boolean isStay){
+		if(isStay){
+			this.startStayMs = now();
+		}else{
+			if(this.startStayMs > 0){
+				this.startMs += now() - this.startStayMs;
+			}
+		}
 	}
 }

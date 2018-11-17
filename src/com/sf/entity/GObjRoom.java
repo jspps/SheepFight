@@ -369,6 +369,9 @@ public class GObjRoom extends BeanOrigin implements Runnable {
 						tmp2.runBack(0);
 					}
 				}
+			} else if (tmp1.isCanRelive()) {
+				runTo = RndEx.nextBoolean() ? sesid1 : sesid2;
+				rndStartNeutral(tmp1, runTo);
 			}
 		}
 

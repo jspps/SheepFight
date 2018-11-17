@@ -9,6 +9,7 @@ import java.util.concurrent.ScheduledFuture;
 
 import org.json.JSONObject;
 
+import com.bowlong.lang.NumEx;
 import com.bowlong.lang.RndEx;
 import com.bowlong.net.http.uri.HttpUriPostEx;
 import com.bowlong.net.http.urlcon.HttpUrlConEx;
@@ -35,7 +36,25 @@ public class SFTest extends BeanOrigin implements Runnable {
 		// test_net(isUrl);
 		// test_queue();
 		// test_rnd();
-		test_game(isUrl);
+		// test_game(isUrl);
+		test_rnd_number();
+	}
+	
+	static void test_rnd_number() {
+		String val = "";
+		String fmt = "i = %s,j = %s,rndInt = [%s],rnd = [%s]";
+		int k,v;
+		double dv = 0;
+		for (int i = 1; i <= 5; i++) {
+			for (int j = 1; j <= 5; j++) {
+				k = 1;
+				v = 5;
+				dv = RndEx.nextDouble(k, v,3);
+				val = String.format(fmt, k, v,RndEx.nextInt(k, v),dv);
+				System.out.println(val);
+				System.out.println(NumEx.roundDecimal(dv, 3));
+			}
+		}
 	}
 
 	static void test_game(boolean isUrl) {

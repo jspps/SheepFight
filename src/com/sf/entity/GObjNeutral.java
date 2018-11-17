@@ -47,11 +47,25 @@ public class GObjNeutral extends GObject {
 	}
 
 	public void disappear(boolean isReLive) {
+		int way = getRunway();
 		setBelongTo(0);
 		stop();
 		nextLiveMs = 0;
 		numMutiny = 0;
+		setRunway(way);
 		if (isReLive)
-			nextLiveMs = now() + GObjConfig.LMS_Neutral_NextLive;
+			nextLiveMs = now() + GObjConfig.LMS_NextLive_Neutral;
+	}
+
+	public boolean isCanRelive() {
+		if (this.nextLiveMs > 0)
+			return this.nextLiveMs <= now();
+		return false;
+	}
+
+	@Override
+	public void startRunning(long runTo) {
+		super.startRunning(runTo);
+		this.nextLiveMs = 0;
 	}
 }
