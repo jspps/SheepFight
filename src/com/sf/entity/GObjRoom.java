@@ -34,8 +34,8 @@ public class GObjRoom extends BeanOrigin implements Runnable {
 	private CompGObjEnd comObj = new CompGObjEnd();
 	private GObjRobot robot = new GObjRobot(); // 机器人
 	private GObject wolf = new GObject(ETGObj.Wolf, 1, 0);
-	private GObjNeutral neutral1 = new GObjNeutral(ETGObj.SheepNeutral, 2, 0);
-	private GObjNeutral neutral2 = new GObjNeutral(ETGObj.SheepNeutral, 4, 0);
+	private GObjNeutral neutral1 = new GObjNeutral(2, 0);
+	private GObjNeutral neutral2 = new GObjNeutral(4, 0);
 	private List<GObject> listEnd = new ArrayList<GObject>();
 
 	public long getRoomid() {

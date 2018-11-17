@@ -12,7 +12,7 @@ public class Session extends BeanOrigin {
 	static long minLmt = 100;
 	static private long defMs1Sec = 1000; // 1秒
 	static private long defMs1Min = 60 * defMs1Sec; // 1分钟
-	static private long defMs = defMs1Sec * 15;
+	static private long defMs = defMs1Sec * 10;
 
 	protected long lmsOver = 0;
 	protected long id;

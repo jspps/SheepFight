@@ -1,5 +1,7 @@
 package com.sf.entity;
 
+import com.bowlong.lang.RndEx;
+
 /**
  * 叛变羊
  * 
@@ -28,12 +30,14 @@ public class GObjNeutral extends GObject {
 		this.nextLiveMs = nextLiveMs;
 	}
 
-	public GObjNeutral(ETGObj gobjType, int runway, long belongTo) {
-		reInit(gobjType, runway, belongTo);
+	public GObjNeutral(int runway, long belongTo) {
+		reInit(ETGObj.SheepNeutral, runway, belongTo);
+		int power = RndEx.nextInt(GObjConfig.NMin_NeutralPower, GObjConfig.NMax_NeutralPower + 1);
+		this.getGobjType().setPower(power);
 	}
 
 	public boolean isOverMutiny() {
-		return numMutiny >= GObjConfig.NMax_Mutiny;
+		return numMutiny >= GObjConfig.NMax_NeutralMutiny;
 	}
 
 	public void doMutiny(long beTo, long runTo) {
@@ -48,8 +52,6 @@ public class GObjNeutral extends GObject {
 		nextLiveMs = 0;
 		numMutiny = 0;
 		if (isReLive)
-			nextLiveMs = now() + GObjConfig.LMS_Neutral_NextLive;	
+			nextLiveMs = now() + GObjConfig.LMS_Neutral_NextLive;
 	}
-	
-//	public boolean isCanRu
 }
