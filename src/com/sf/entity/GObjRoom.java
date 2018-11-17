@@ -539,4 +539,18 @@ public class GObjRoom extends BeanOrigin implements Runnable {
 			}
 		}
 	}
+
+	/** 检测有效性 */
+	public void checkRoom() {
+		synchronized (this) {
+			GObjSession ses = LgcGame.targetSession(sesid1);
+			if (ses != null && !ses.IsValid()) {
+				LgcGame.remove4Room(ses);
+			}
+			ses = LgcGame.targetSession(sesid2);
+			if (ses != null && !ses.IsValid()) {
+				LgcGame.remove4Room(ses);
+			}
+		}
+	}
 }

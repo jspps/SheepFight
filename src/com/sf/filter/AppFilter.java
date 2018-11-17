@@ -32,7 +32,7 @@ public class AppFilter extends BasicFilter {
 		// 要排除的(服务器系统时间,支付回調等)
 		if (uri.contains("/Svlet/Game")) {
 			int cmd = MapEx.getInt(pars, "cmd");
-			isFitler = (cmd > 1000) && (cmd != 1000);
+			isFitler = (cmd > 1000);
 			isVTime = isFitler && pars.containsKey(key_time);
 		}
 		isFitler = isFitler && isFilterTime(pars, key_time);

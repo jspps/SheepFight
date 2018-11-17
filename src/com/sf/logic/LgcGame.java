@@ -122,4 +122,11 @@ public class LgcGame extends LgcRoom {
 		sesOther.addNotify(ETNotify.Update);
 		return outVal;
 	}
+	
+	/** 登出 **/
+	static public String logout(Map<String, Object> pars) {
+		GObjSession ses = mySession(pars);
+		remove4Room(ses);
+		return msg(GObjConfig.S_Success);
+	}
 }

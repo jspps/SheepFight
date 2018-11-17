@@ -27,3 +27,12 @@ http://127.0.0.1:8080/SheepFight/Svlet/Game?cmd=1001
 &time_ms=[当前系统时间(单位ms)] - (可选,传递了会验证请求的有效性)
 
 http://127.0.0.1:8080/SheepFight/Svlet/Game?cmd=1001&sesid=10038664411222016
+
+ 请求 - 离开游戏
+http://127.0.0.1:8080/SheepFight/Svlet/Game?cmd=1002
+&sesid=[sesid]
+&time_ms=[当前系统时间(单位ms)] - (可选,传递了会验证请求的有效性)
+
+http://127.0.0.1:8080/SheepFight/Svlet/Game?cmd=1002&sesid=10038664411222016
+
+返回  { "code": "success"}

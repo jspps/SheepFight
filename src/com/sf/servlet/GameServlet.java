@@ -91,6 +91,10 @@ public class GameServlet extends AbsDispatcherServlet {
 			outVal = LgcGame.heart(pars);
 			break;
 		}
+		case 1002: {
+			outVal = LgcGame.logout(pars);
+			break;
+		}
 		case 1010: {
 			outVal = LgcGame.downSheep(pars);
 			break;

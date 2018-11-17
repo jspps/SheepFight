@@ -3,3 +3,6 @@
 
 取得服务器时间
 http://60.205.217.89:8080/SheepFight/Svlet/Game?cmd=100
+
+服务器请求消息打印
+http://60.205.217.89:8080/SheepFight/Svlet/Game?cmd=102&isLog=true

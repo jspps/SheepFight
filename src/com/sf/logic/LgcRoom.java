@@ -114,6 +114,7 @@ class LgcRoom extends MgrSession {
 		GObjRoom _ret = null;
 		for (int i = 0; i < lens; i++) {
 			_tmp = getRoom(list.get(i));
+			_tmp.checkRoom();
 			if (_tmp.isFree()) {
 				_ret = _tmp;
 				break;
@@ -141,11 +142,12 @@ class LgcRoom extends MgrSession {
 
 	static public void remove4Room(GObjSession ses) {
 		synchronized (mapRoom) {
-			rmSession(ses);
-			long roomid = ses.getRoomid();
-			GObjRoom room = getRoom(roomid);
-			if (room != null) {
-				room.remove(ses.getId());
+			if (rmSession(ses)) {
+				long roomid = ses.getRoomid();
+				GObjRoom room = getRoom(roomid);
+				if (room != null) {
+					room.remove(ses.getId());
+				}
 			}
 		}
 	}
@@ -173,7 +175,7 @@ class LgcRoom extends MgrSession {
 	static public Map<String, Object> roomHeart(GObjSession ses, Map<String, Object> pars) {
 		GObjRoom room = getRoom(ses.getRoomid());
 		GObjSession enemy = enemySession(ses);
-//		pars = ses.toMapMust(pars);
+		// pars = ses.toMapMust(pars);
 		List<ETNotify> _list = new ArrayList<ETNotify>();
 		_list.addAll(ses.getListNotify());
 		int lens = _list.size();
