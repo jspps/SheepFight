@@ -311,13 +311,14 @@ public class GObjRoom extends BeanOrigin implements Runnable {
 
 	private void handlerWolf(GObjSession ses1, GObjSession ses2) {
 		int way = wolf.getRunway();
+		long runTo = wolf.getRunTo();
 		GObject tmp1 = null;
 		if (wolf.isEnd()) {
-			long runTo = getOther(wolf.getRunTo());
+			runTo = getOther(runTo);
 			rndStartWolf(runTo);
 		} else {
-			ses1 = wolf.getRunTo() == sesid1 ? ses1 : ses2;
-			tmp1 = ses1.getFirst4Way(way);
+			GObjSession ses = runTo == sesid1 ? ses1 : ses2;
+			tmp1 = ses.getFirst4Way(way);
 			if (tmp1 != null && tmp1.isColliding(wolf)) {
 				tmp1.runBack(2);
 			}

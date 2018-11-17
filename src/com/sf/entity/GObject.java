@@ -22,6 +22,7 @@ public class GObject extends BeanOrigin {
 	private long runTo = 0; // 跑向的人
 	private boolean isRunning = false;
 	private double endDistance = 0; // 目的距离
+	private double base_speed = -1; // 基础速度
 
 	public long getId() {
 		return id;
@@ -125,6 +126,9 @@ public class GObject extends BeanOrigin {
 		this.runway = runway;
 		this.belongTo = belongTo;
 		this.createtime = now();
+		if (this.base_speed <= 0) {
+			this.base_speed = this.gobjType.getSpeed();
+		}
 		return this;
 	}
 
@@ -183,8 +187,7 @@ public class GObject extends BeanOrigin {
 
 	public void runBack(double multiples) {
 		if (multiples > 0) {
-			double speed = this.gobjType.getSpeed();
-			this.gobjType.setSpeed(speed * multiples);
+			this.gobjType.setSpeed(this.base_speed * multiples);
 		}
 		runBack(this.belongTo, false);
 	}
