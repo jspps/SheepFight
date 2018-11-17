@@ -55,13 +55,13 @@ public class GameServlet extends AbsDispatcherServlet {
 	String gameEncode(Map<String, Object> pars) {
 		boolean isEncode = MapEx.getBoolean(pars, "isEncode");
 		LgcGame.isMustEncode = isEncode;
-		return String.valueOf(isEncode);
+		return String.format("gameEncode = %s",isEncode);
 	}
 	
 	String gamePrint(Map<String, Object> pars) {
 		boolean isLog = MapEx.getBoolean(pars, "isLog");
 		AppFilter.isPrint = isLog;
-		return String.valueOf(isLog);
+		return String.format("gameLog = %s",isLog);
 	}
 
 	String disp(int cmd, Map<String, Object> pars) {

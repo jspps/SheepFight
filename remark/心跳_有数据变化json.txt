@@ -1,12 +1,11 @@
 {
 	"code": "success",
 	"msg": {
-		"time_ms": 1541924503373,
-		"roomid": 10031530680389632,
-		"sesid": 10031530743173120,
 		"enemy": 与player一样(字段可能不存在),
+		"roomOverTimeMs:": 与enemy一起推送，表示游戏最长有效时间(超过了会结束),
 		"listRunning": 跑道的羊羊(字段可能不存在),
+		"isWin": 战斗结束是否胜利,
+		"waitListSelf": 自己等待区的羊,
+		"waitListEnemy": 敌人等待区的羊,
 	}
 }
-
-一般情况下，enemy 不会 listRunning 同时存在(有特殊情况)

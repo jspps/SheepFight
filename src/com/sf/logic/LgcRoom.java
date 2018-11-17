@@ -173,7 +173,7 @@ class LgcRoom extends MgrSession {
 	static public Map<String, Object> roomHeart(GObjSession ses, Map<String, Object> pars) {
 		GObjRoom room = getRoom(ses.getRoomid());
 		GObjSession enemy = enemySession(ses);
-		pars = ses.toMapMust(pars);
+//		pars = ses.toMapMust(pars);
 		List<ETNotify> _list = new ArrayList<ETNotify>();
 		_list.addAll(ses.getListNotify());
 		int lens = _list.size();

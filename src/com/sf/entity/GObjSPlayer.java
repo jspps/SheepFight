@@ -266,7 +266,7 @@ public class GObjSPlayer extends Session {
 		setForage(nCurr);
 	}
 	
-	public void downSheep(long sheepId, int runway, long runTo) {
-		startRunning(sheepId, runway, runTo);
+	public boolean downSheep(long sheepId, int runway, long runTo) {
+		return startRunning(sheepId, runway, runTo);
 	}
 }

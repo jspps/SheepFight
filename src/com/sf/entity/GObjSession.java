@@ -122,7 +122,6 @@ public class GObjSession extends GObjSPlayer {
 		map.put(GObjConfig.K_SesID, id);
 		map.put("time_ms", now());
 		map.put("roomid", roomid);
-		// map.put("state", state.ordinal());
 		return map;
 	}
 

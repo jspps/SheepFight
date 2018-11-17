@@ -47,9 +47,12 @@ public class GObjRobot extends GObjSession {
 	}
 
 	@Override
-	public void downSheep(long sheepId, int runway, long runTo) {
-		super.downSheep(sheepId, runway, runTo);
-		this.msNextDown = now() + GObjConfig.LMS_NextRobotDownSheep;
+	public boolean downSheep(long sheepId, int runway, long runTo) {
+		boolean isOkey = super.downSheep(sheepId, runway, runTo);
+		if (isOkey) {
+			this.msNextDown = now() + GObjConfig.LMS_NextRobotDownSheep;
+		}
+		return isOkey;
 	}
 
 	@Override
@@ -62,11 +65,10 @@ public class GObjRobot extends GObjSession {
 	public boolean jugdeRndSheep() {
 		boolean isEmpty = isEmptyWait();
 		boolean isOkey = super.jugdeRndSheep();
-		if(isOkey && isEmpty){
+		if (isOkey && isEmpty) {
 			this.msNextDown = now() + GObjConfig.LMS_NextRobotDownSheep;
 		}
 		return isOkey;
 	}
 
-	
 }

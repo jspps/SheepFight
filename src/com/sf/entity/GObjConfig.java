@@ -20,11 +20,11 @@ public class GObjConfig {
 	static final public String S_Wait = "wait";
 	static final public String K_SesID = "sesid"; // sessionID的key值
 	static final public int LMS_Net = 5 * 1000; // 5秒
-	static final public int LmtN_Net = 60; // 每个session对象每 LMS_Net 秒限定最多请求数
 	static final public int NMax_OnLine = 100000; // 同时在线人数(超过了就排队)
 	static final public int LMS_RoomMatching = 15 * 1000; // 匹配玩家倒计时 - 15秒
 	static final public int LMS_RoomUpFirst = 10 * 2; // 房间 首次更新 - 20 毫秒
-	static final public int LMS_RoomUpDelay = 100 * 1; // 房间 间隔更新 - 100 毫秒
+	static final public int LMS_RoomUpDelay = 10 * 5; // 房间 间隔更新 - 50 毫秒
+	static final public int LmtN_Net = LMS_Net / LMS_RoomUpDelay + 10; // 每个session对象每 LMS_Net 秒限定最多请求数
 	static final public int LMS_RoomWaitEnd = 2 * 1000; // 房间战斗结束倒计时 - 2秒
 	static final public int NMax_RoomTime = 10 * 60 * 1000; // 房间战斗最长时间为 10 分钟
 	static final public int NMin_RoomTime = 30 * 1000; // 判断胜负的最小时间
@@ -40,6 +40,7 @@ public class GObjConfig {
 	static final public double NMax_SpeedWolf = 3.0; // 狼最大随机速度
 	static final public double NMin_SpeedNeutral = 0.8; // 叛变羊最小随机速度
 	static final public double NMax_SpeedNeutral = 2.0; // 叛变羊最大随机速度
+	static final public double NMax_CollidDistance = 0.08; // 判断相碰的最小距离
 	static final public int NMax_Mutiny = 3; // 最大叛变次数
 	static final public int LMS_Neutral_NextLive = 1500; // 叛变羊消失后，下次刷新间隔
 }

@@ -201,7 +201,7 @@ public class GObject extends BeanOrigin {
 	private boolean isEnd(double otherDis) {
 		double mvDis = calcDistance() + otherDis;
 		double diff = Math.abs(this.endDistance - mvDis);
-		return diff <= 0.1;
+		return diff <= GObjConfig.NMax_CollidDistance;
 	}
 
 	public boolean isColliding(GObject gobj) {

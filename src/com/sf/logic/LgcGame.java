@@ -92,8 +92,14 @@ public class LgcGame extends LgcRoom {
 		}
 
 		GObjSession sesOther = enemySession(ses);
-		if (sesOther == null || !sesOther.IsValid()) {
+		if (sesOther == null) {
 			pars.put("tip", "对手已经掉线");
+			return msg(GObjConfig.S_Fails, pars, isEncode);
+		}
+		
+		if (!sesOther.IsValid()) {
+			pars.put("tip", "对手已经掉线");
+			remove4Room(sesOther);
 			return msg(GObjConfig.S_Fails, pars, isEncode);
 		}
 
@@ -102,11 +108,15 @@ public class LgcGame extends LgcRoom {
 			return msg(GObjConfig.S_Fails, pars, isEncode);
 		}
 
-		ses.downSheep(sheepId, runway, sesOther.getId());
-		// 自身数据
-		pars.put("sesid", ses.getId());
-		pars.put("addSheep", ses.getInRunning(sheepId));
-		String outVal = msg(GObjConfig.S_Success, pars, isEncode);
+		boolean isOkey = ses.downSheep(sheepId, runway, sesOther.getId());
+		String state = GObjConfig.S_Success;
+		if(isOkey){
+			pars.put("addSheep", ses.getInRunning(sheepId).toMap());
+		}else{
+			state = GObjConfig.S_Fails;
+			pars.put("tip", "放羊失败;错误 id = " + sheepId);
+		}
+		String outVal = msg(state, pars, isEncode);
 
 		// 推送给别的数据
 		sesOther.addNotify(ETNotify.Update);

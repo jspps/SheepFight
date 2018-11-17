@@ -1,7 +1,7 @@
 {
 	"code": "success",
 	"msg": {
-		"listRunning": [{
+		"addSheep": {
 			"id": 11226862760235010,
 			"belongTo": 11226845382971392,
 			"distance": 0,
@@ -13,7 +13,6 @@
 			"name": "小羊",
 			"power": 1,
 			"runTo": 11226482886053888
-		}],
-		"sesid": 11226845382971392
+		}
 	}
 }
