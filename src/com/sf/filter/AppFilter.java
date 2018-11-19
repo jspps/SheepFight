@@ -22,7 +22,6 @@ public class AppFilter extends BasicFilter {
 	public void onInit(FilterConfig arg0) {
 		ms_bef = CalendarEx.TIME_SECOND * 20;
 		ms_aft = CalendarEx.TIME_SECOND * 20;
-		isPrint = false;
 		isCFDef = false;
 	}
 
