@@ -21,9 +21,9 @@ public class GObject extends BeanOrigin {
 	private long belongTo = 0; // 拥有者
 	private long runTo = 0; // 跑向的人
 	private boolean isRunning = false;
-	private double endDistance = 0; // 目的距离
+	protected double endDistance = 0; // 目的距离
 	private double base_speed = -1; // 基础速度
-	private long startStayMs = 0;//开始停留时间
+	private long startStayMs = 0;// 开始停留时间
 	private int stayMs = 0; // 停留时间毫秒 ms
 
 	public long getId() {
@@ -103,7 +103,7 @@ public class GObject extends BeanOrigin {
 	}
 
 	public GObject(ETGObj gobjType) {
-		reInit(gobjType, 1 + RndEx.nextInt(GObjConfig.NMax_Runway), 0);
+		reInit(gobjType, rndWay(), 0);
 	}
 
 	@Override
@@ -142,9 +142,13 @@ public class GObject extends BeanOrigin {
 		return reInit(gobjType, currWay(this.runway <= 0), 0);
 	}
 
+	protected int rndWay() {
+		return 1 + RndEx.nextInt(GObjConfig.NMax_Runway);
+	}
+
 	public int currWay(boolean isRnd) {
 		if (isRnd) {
-			this.runway = 1 + RndEx.nextInt(GObjConfig.NMax_Runway);
+			this.runway = rndWay();
 		}
 		return this.runway;
 	}
@@ -229,13 +233,13 @@ public class GObject extends BeanOrigin {
 	public boolean isMvEnemy() {
 		return this.belongTo != this.runTo;
 	}
-	
+
 	// 停留会儿吧
-	public void stayOrRun(boolean isStay){
-		if(isStay){
+	public void stayOrRun(boolean isStay) {
+		if (isStay) {
 			this.startStayMs = now();
-		}else{
-			if(this.startStayMs > 0){
+		} else {
+			if (this.startStayMs > 0) {
 				this.startMs += now() - this.startStayMs;
 			}
 		}

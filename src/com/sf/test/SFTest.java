@@ -1,6 +1,5 @@
 package com.sf.test;
 
-import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Queue;
@@ -9,6 +8,7 @@ import java.util.concurrent.ScheduledFuture;
 
 import org.json.JSONObject;
 
+import com.bowlong.lang.ByteEx;
 import com.bowlong.lang.NumEx;
 import com.bowlong.lang.RndEx;
 import com.bowlong.net.http.uri.HttpUriPostEx;
@@ -21,44 +21,57 @@ import com.sf.entity.GObject;
 
 public class SFTest extends BeanOrigin implements Runnable {
 	private static final long serialVersionUID = 1L;
-	static String host = "http://127.0.0.1:8080/SheepFight/Svlet/Game";
+	static String host = "http://%s:8080/SheepFight/Svlet/Game";
 	static Map<String, Object> params = new HashMap<String, Object>();
 	static long sesid = 0;
-	static boolean isUrl = true;
 	static ScheduledFuture<?> objSF = null;
 	static long end = 0;
 	static boolean isEnd = false;
 	static int nEnd = 0;
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws Exception {
 		// test_swids();
 		// test_enum();
-		// test_net(isUrl);
+		// test_net();
 		// test_queue();
 		// test_rnd();
-		// test_game(isUrl);
-		test_rnd_number();
+		// test_game();
+		// test_rnd_number();
+		test_get_time();
 	}
-	
+
+	static void test_get_time() throws Exception {
+		String ip = "127.0.0.1";
+		ip = "60.205.217.89";
+		params.put("cmd", 100);
+		byte[] buffer = null;
+		String str = "";
+		buffer = HttpUrlConEx.postParams(String.format(host, ip), params, "utf-8");
+		str = ByteEx.toStr(buffer, "utf-8");
+		System.out.println(str);
+		buffer = HttpUriPostEx.postMap(String.format(host, ip), params, "utf-8");
+		System.out.println(String.format("test_get_time =[%s]", ByteEx.toStr(buffer, "utf-8")));
+	}
+
 	static void test_rnd_number() {
 		String val = "";
 		String fmt = "i = %s,j = %s,rndInt = [%s],rnd = [%s]";
-		int k,v;
+		int k, v;
 		double dv = 0;
 		for (int i = 1; i <= 5; i++) {
 			for (int j = 1; j <= 5; j++) {
 				k = 1;
 				v = 5;
-				dv = RndEx.nextDouble(k, v,3);
-				val = String.format(fmt, k, v,RndEx.nextInt(k, v),dv);
+				dv = RndEx.nextDouble(k, v, 3);
+				val = String.format(fmt, k, v, RndEx.nextInt(k, v), dv);
 				System.out.println(val);
 				System.out.println(NumEx.roundDecimal(dv, 3));
 			}
 		}
 	}
 
-	static void test_game(boolean isUrl) {
-		gameLogin(isUrl);
+	static void test_game() {
+		gameLogin();
 		if (sesid > 0) {
 			end = GObjConfig.NMax_RoomTime + now();
 			objSF = com.bowlong.lang.task.SchedulerEx.fixedRateMS(new SFTest(), 200, 500);
@@ -77,20 +90,15 @@ public class SFTest extends BeanOrigin implements Runnable {
 		System.out.println(poll);
 	}
 
-	static private void gameLogin(boolean isUrl) {
+	static private void gameLogin() {
 		params.put("cmd", 1000);
 		params.put("lgid", "11111");
 		params.put("lgpwd", "222222");
-		InputStream ins = null;
-		if (isUrl) {
-			ins = HttpUrlConEx.postParams(host, params, "utf-8");
-		} else {
-			ins = HttpUriPostEx.postMap(host, params, "utf-8");
-		}
-		String strJson = HttpUriPostEx.inps2Str(ins, "utf-8");
+		byte[] ins = null;
+		ins = HttpUrlConEx.postParams(host, params, "utf-8");
+		String strJson = ByteEx.toStr(ins, "utf-8");
 		System.out.println(String.format("lg =[%s]", strJson));
 		try {
-			ins.close();
 			JSONObject json = JsonHelper.toJSON(strJson);
 			JSONObject jsonMsg = json.getJSONObject("msg");
 			sesid = jsonMsg.getLong("sesid");
@@ -99,21 +107,16 @@ public class SFTest extends BeanOrigin implements Runnable {
 		}
 	}
 
-	static private void gameHeart(boolean isUrl) {
+	static private void gameHeart() {
 		try {
-			InputStream ins = null;
+			byte[] ins = null;
 			String strJson = null;
 			params.clear();
 			params.put("cmd", 1001);
 			params.put("sesid", sesid);
-			if (isUrl) {
-				ins = HttpUrlConEx.postParams(host, params, "utf-8");
-			} else {
-				ins = HttpUriPostEx.postMap(host, params, "utf-8");
-			}
-			strJson = HttpUriPostEx.inps2Str(ins, "utf-8");
+			ins = HttpUrlConEx.postParams(host, params, "utf-8");
+			strJson = ByteEx.toStr(ins, "utf-8");
 			System.out.println(String.format("heart =[%s]", strJson));
-			ins.close();
 			JSONObject json = JsonHelper.toJSON(strJson);
 			JSONObject jsonMsg = json.getJSONObject("msg");
 			if (jsonMsg.has("isWin")) {
@@ -126,11 +129,11 @@ public class SFTest extends BeanOrigin implements Runnable {
 
 	}
 
-	static void test_net(boolean isUrl) {
-		gameLogin(isUrl);
+	static void test_net() {
+		gameLogin();
 		try {
 			for (int i = 0; i < 30; i++) {
-				gameHeart(isUrl);
+				gameHeart();
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -169,7 +172,7 @@ public class SFTest extends BeanOrigin implements Runnable {
 		}
 		if (sesid > 0) {
 			nEnd--;
-			gameHeart(isUrl);
+			gameHeart();
 		}
 	}
 }

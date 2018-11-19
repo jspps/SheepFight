@@ -36,6 +36,7 @@ public class GObjRoom extends BeanOrigin implements Runnable {
 	private GObject wolf = new GObject(ETGObj.Wolf, 1, 0);
 	private GObjNeutral neutral1 = new GObjNeutral(2, 0);
 	private GObjNeutral neutral2 = new GObjNeutral(4, 0);
+	private GObjSpinach spinach = new GObjSpinach();
 	private List<GObject> listEnd = new ArrayList<GObject>();
 
 	public long getRoomid() {
@@ -148,6 +149,7 @@ public class GObjRoom extends BeanOrigin implements Runnable {
 			wolf.stop();
 			neutral1.disappear(false);
 			neutral2.disappear(false);
+			spinach.disappear(false);
 		}
 	}
 
@@ -160,6 +162,9 @@ public class GObjRoom extends BeanOrigin implements Runnable {
 		}
 		if (neutral2.isRunning()) {
 			lMap.add(neutral2.toMap());
+		}
+		if (spinach.isRunning()) {
+			lMap.add(spinach.toMap());
 		}
 		return lMap;
 	}
@@ -211,6 +216,7 @@ public class GObjRoom extends BeanOrigin implements Runnable {
 
 			runTo = RndEx.nextBoolean() ? id1 : id2;
 			rndStartNeutral(neutral2, runTo);
+			spinach.startRnd(runTo);
 			ms_start = now();
 			ms_over = ms_start + GObjConfig.NMax_RoomTime;
 
@@ -322,6 +328,31 @@ public class GObjRoom extends BeanOrigin implements Runnable {
 			if (tmp1 != null && tmp1.isColliding(wolf)) {
 				tmp1.runBack(2);
 			}
+		}
+	}
+
+	private void handlerSpinach(GObjSession ses1, GObjSession ses2) {
+		if (spinach.isCanRelive()) {
+			long beTo = RndEx.nextBoolean() ? ses1.getId() : ses2.getId();
+			spinach.startRnd(beTo);
+			return;
+		}
+
+		if (!spinach.isRunning()) {
+			return;
+		}
+
+		int way = spinach.getRunway();
+		GObject tmp1 = ses1.getFirst4Way(way);
+		GObject tmp2 = ses2.getFirst4Way(way);
+		double df1 = spinach.diffDistance(tmp1);
+		double df2 = spinach.diffDistance(tmp2);
+		if (df1 <= GObjConfig.NMax_CollidDistance) {
+			tmp1.setGobjType(ETGObj.SheepBig);
+			spinach.disappear(true);
+		} else if (df2 <= GObjConfig.NMax_CollidDistance) {
+			tmp2.setGobjType(ETGObj.SheepBig);
+			spinach.disappear(true);
 		}
 	}
 
@@ -491,6 +522,8 @@ public class GObjRoom extends BeanOrigin implements Runnable {
 		handlerWaitSheep(ses1, ses2);
 		// 处理狼数据
 		handlerWolf(ses1, ses2);
+		// 菠菜罐头
+		handlerSpinach(ses1, ses2);
 		// 处理叛变羊
 		handlerNeutral(ses1, ses2);
 		// 处理相碰
