@@ -3,6 +3,8 @@ package com.sf.filter;
 import java.util.Map;
 
 import javax.servlet.FilterConfig;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import com.bowlong.third.jsp.BasicFilter;
 import com.bowlong.util.CalendarEx;
@@ -12,16 +14,23 @@ import com.sf.entity.GObjConfig;
 import com.sf.logic.LgcGame;
 
 public class AppFilter extends BasicFilter {
-	
+
 	int netCount = 0;
 	Ref<Integer> refObj = new Ref<Integer>(0);
-	
+
 	@Override
 	public void onInit(FilterConfig arg0) {
 		ms_bef = CalendarEx.TIME_SECOND * 20;
 		ms_aft = CalendarEx.TIME_SECOND * 20;
 		isPrint = false;
 		isCFDef = false;
+	}
+
+	@Override
+	protected void preOnFilter(HttpServletRequest req, HttpServletResponse res) {
+		super.preOnFilter(req, res);
+		res.addHeader("Access-Control-Allow-Origin", "*");
+		res.addHeader("Access-Control-Allow-Headers", "*");
 	}
 
 	@Override
@@ -36,8 +45,8 @@ public class AppFilter extends BasicFilter {
 			isVTime = isFitler && pars.containsKey(key_time);
 		}
 		isFitler = isFitler && isFilterTime(pars, key_time);
-		isFitler = isFitler || LgcGame.isFilter4NetCount(pars,refObj);
-		if(isFitler){
+		isFitler = isFitler || LgcGame.isFilter4NetCount(pars, refObj);
+		if (isFitler) {
 			netCount = refObj.val;
 			refObj.val = 0;
 		}
@@ -45,12 +54,13 @@ public class AppFilter extends BasicFilter {
 	}
 
 	@Override
-	public String cfFilter(int state,String uri, Map<String, Object> pars) {
+	public String cfFilter(int state, String uri, Map<String, Object> pars) {
 		pars.put("uri", uri);
-		if(netCount > 0)
-			pars.put("tip", String.format("每%s秒超过了%s条请求,当前已请求%s条!",(GObjConfig.LMS_Net / 1000),GObjConfig.LmtN_Net,netCount));
+		if (netCount > 0)
+			pars.put("tip", String.format("每%s秒超过了%s条请求,当前已请求%s条!", (GObjConfig.LMS_Net / 1000), GObjConfig.LmtN_Net,
+					netCount));
 		else
-			pars.put("tip", (state == 3)?"消息带有有sql注入":"消息过时了!");
+			pars.put("tip", (state == 3) ? "消息带有有sql注入" : "消息过时了!");
 		return LgcGame.msg(GObjConfig.S_Fails, pars);
 	}
 }
