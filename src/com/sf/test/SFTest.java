@@ -91,11 +91,13 @@ public class SFTest extends BeanOrigin implements Runnable {
 	}
 
 	static private void gameLogin() {
+		String ip = "127.0.0.1";
+		ip = "60.205.217.89";
 		params.put("cmd", 1000);
 		params.put("lgid", "11111");
 		params.put("lgpwd", "222222");
 		byte[] ins = null;
-		ins = HttpUrlConEx.postParams(host, params, "utf-8");
+		ins = HttpUrlConEx.postParams(String.format(host, ip), params, "utf-8");
 		String strJson = ByteEx.toStr(ins, "utf-8");
 		System.out.println(String.format("lg =[%s]", strJson));
 		try {
@@ -109,12 +111,14 @@ public class SFTest extends BeanOrigin implements Runnable {
 
 	static private void gameHeart() {
 		try {
+			String ip = "127.0.0.1";
+			ip = "60.205.217.89";
 			byte[] ins = null;
 			String strJson = null;
 			params.clear();
 			params.put("cmd", 1001);
 			params.put("sesid", sesid);
-			ins = HttpUrlConEx.postParams(host, params, "utf-8");
+			ins = HttpUrlConEx.postParams(String.format(host, ip), params, "utf-8");
 			strJson = ByteEx.toStr(ins, "utf-8");
 			System.out.println(String.format("heart =[%s]", strJson));
 			JSONObject json = JsonHelper.toJSON(strJson);
