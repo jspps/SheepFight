@@ -9,12 +9,12 @@ import com.sf.entity.BeanOrigin;
  */
 public class Session extends BeanOrigin {
 	private static final long serialVersionUID = 1L;
-	static long minLmt = 100;
-	static private long defMs1Sec = 1000; // 1秒
-	static private long defMs1Min = 60 * defMs1Sec; // 1分钟
-	static private long defMs = defMs1Sec * 10;
+	static int minLmt = 100;
+	static private int defMs1Sec = 1000; // 1秒
+	static private int defMs1Min = defMs1Sec * 60; // 1分钟
+	static private int defMs = defMs1Sec * 20;
 
-	protected long lmsOver = 0;
+	protected int lmsOver = 0;
 	protected long id;
 	private long nextOverdue;
 	private long creattime;
@@ -38,22 +38,22 @@ public class Session extends BeanOrigin {
 		InitSesID(id);
 	}
 
-	public Session(long id, long limitMs) {
+	public Session(long id, int limitMs) {
 		InitAll(id, limitMs);
 	}
 
-	public void InitAll(long id, long lmtMs) {
+	public void InitAll(long id, int lmtMs) {
 		this.creattime = now();
 		this.id = id;
 		ReLmtOver(lmtMs);
 	}
 
 	public void InitSesID(long id) {
-		long lmtMs = lmsOver > minLmt ? lmsOver : defMs;
+		int lmtMs = lmsOver > minLmt ? lmsOver : defMs;
 		InitAll(id, lmtMs);
 	}
 
-	public void ReLmtOver(long lmtMs) {
+	public void ReLmtOver(int lmtMs) {
 		lmsOver = lmtMs;
 		ResetTimeOverdue();
 	}

@@ -47,9 +47,8 @@ public class LgcGame extends LgcRoom {
 		if (ses == null) {
 			pars.put("tip", "帐号已过期");
 			return msg(GObjConfig.S_Fails, pars, isEncode);
-		} else {
-			ses.ResetTimeOverdue();
 		}
+		ses.ResetTimeOverdue();
 		pars = roomHeart(ses, pars);
 		return msg(GObjConfig.S_Success, pars, isEncode);
 	}
@@ -73,6 +72,7 @@ public class LgcGame extends LgcRoom {
 		GObjSession ses = (GObjSession) getSession(lgid, lgpwd);
 		if (ses == null) {
 			ses = new GObjSession(lgid, lgpwd);
+			// ses.ReLmtOver1Min();
 		}
 
 		pars = matching(ses, pars);
