@@ -25,6 +25,7 @@ public class GObject extends BeanOrigin {
 	private double base_speed = -1; // 基础速度
 	private long startStayMs = 0;// 开始停留时间
 	private int stayMs = 0; // 停留时间毫秒 ms
+	private boolean isRunBack = false; // 是否返了(用于距离减少)
 
 	public long getId() {
 		return id;
@@ -116,7 +117,8 @@ public class GObject extends BeanOrigin {
 		map.put("runTo", runTo);
 		map.put("isRunning", isRunning);
 		map.put("start_ms", startMs);
-		map.put("distance", calcDistance());
+		double dic = calcDistance();
+		map.put("distance",this.isRunBack ? this.endDistance - dic : dic);
 		map = gobjType.toMap(map);
 		return map;
 	}
@@ -170,6 +172,7 @@ public class GObject extends BeanOrigin {
 		this.stayMs = 0;
 		this.startStayMs = 0;
 		this.isRunning = true;
+		this.isRunBack = (this.endDistance != GObjConfig.LenMax_Runway);
 	}
 
 	public void startRunning(long runTo, int runway) {
