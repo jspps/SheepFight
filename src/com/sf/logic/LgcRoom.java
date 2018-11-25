@@ -187,6 +187,7 @@ class LgcRoom extends MgrSession {
 				switch (notifyType) {
 				case MatchedEnemy:
 					if (enemy != null) {
+						pars.put("start", 1);
 						pars.put("enemy", enemy.toPlayMap(null));
 						pars.put("roomOverTimeMs", room.getOvertime_ms());
 					}
