@@ -246,7 +246,7 @@ public class GObjRoom extends BeanOrigin implements Runnable {
 		if (max > speed) {
 			double diff = max - min;
 			int nx = (int) (diff * 100);
-			speed = min + RndEx.nextInt(nx) * 0.01;
+			speed = min + RndEx.nextInt(nx) / 100.0d;
 		}
 		return speed > 0 ? speed : 1;
 	}
