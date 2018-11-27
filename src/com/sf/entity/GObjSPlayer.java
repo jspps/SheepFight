@@ -87,7 +87,7 @@ public class GObjSPlayer extends Session {
 		map.put("name", name);
 		map.put("icon", icon);
 		map.put("forage", forage);
-		map.put("listWait", lmWait());
+//		map.put("listWait", lmWait());
 		return map;
 	}
 

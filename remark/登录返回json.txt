@@ -4,48 +4,13 @@
 		"roomid": 11226794866905088,		
 		"player": {
 			"icon": "965222380",
-			"listWait": [{
-				"id": 11226862760235010,
-				"belongTo": 11226845382971392,
-				"distance": 0,
-				"index": 1,
-				"start_ms": 0,
-				"isRunning": false,
-				"speed": 1,
-				"runway": 0,
-				"name": "小羊",
-				"power": 1,
-				"runTo": 0
-			}, {
-				"id": 11226862760235009,
-				"belongTo": 11226845382971392,
-				"distance": 0,
-				"index": 2,
-				"start_ms": 0,
-				"isRunning": false,
-				"speed": 1,
-				"runway": 0,
-				"name": "中羊",
-				"power": 2,
-				"runTo": 0
-			}, {
-				"id": 11226862760235008,
-				"belongTo": 11226845382971392,
-				"distance": 0,
-				"index": 1,
-				"start_ms": 0,
-				"isRunning": false,
-				"speed": 1,
-				"runway": 0,
-				"name": "小羊",
-				"power": 1,
-				"runTo": 0
-			}],
 			"name": "965222380",
 			"forage": 100
 		},
 		"enemy": 于player一样(可能为空字段),
 		"listRunning": [],
+		"listWaitSelf": [],
+		"listWaitEnemy": [],
 		"time_ms": 1542209561510,
 		"lens_way": 10,
 		"sesid": 11226845382971392

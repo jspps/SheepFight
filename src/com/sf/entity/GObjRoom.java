@@ -452,6 +452,10 @@ public class GObjRoom extends BeanOrigin implements Runnable {
 					isEnd = true;
 					winSesid = tmp1.getBelongTo();
 					break;
+				} else {
+					tmp.addNotify(ETNotify.ForageSelf);
+					tmp = (tmp == ses1) ? ses2 : ses1;
+					tmp.addNotify(ETNotify.ForageEnemy);
 				}
 			}
 			tmp = tmp1.getBelongTo() == ses1.getId() ? ses1 : ses2;

@@ -108,9 +108,11 @@ public class GObjSession extends GObjSPlayer {
 		map = toMapMust(map);
 		map.put("lens_way", GObjConfig.LenMax_Runway);
 		map.put("player", toPlayMap(null));
+		map.put("listWaitSelf", lmWait());
 		GObjSession enemy = LgcGame.enemySession(getId());
 		if (enemy != null) {
 			map.put("enemy", enemy.toPlayMap(null));
+			map.put("listWaitEnemy", enemy.lmWait());
 		}
 		map.put("listRunning", toLMRunning());
 		return map;

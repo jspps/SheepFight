@@ -188,8 +188,9 @@ class LgcRoom extends MgrSession {
 				case MatchedEnemy:
 					if (enemy != null) {
 						pars.put("start", 1);
-						pars.put("enemy", enemy.toPlayMap(null));
 						pars.put("roomOverTimeMs", room.getOvertime_ms());
+						pars.put("enemy", enemy.toPlayMap(null));
+						pars.put("listWaitEnemy", enemy.lmWait());
 					}
 					break;
 				case Update:
@@ -200,11 +201,19 @@ class LgcRoom extends MgrSession {
 					room.notifyEnd();
 					break;
 				case WaitSelf:
-					pars.put("waitListSelf", ses.lmWait());
+					pars.put("listWaitSelf", ses.lmWait());
 					break;
 				case WaitEnemy:
 					if (enemy != null) {
-						pars.put("waitListEnemy", enemy.lmWait());
+						pars.put("listWaitEnemy", enemy.lmWait());
+					}
+					break;
+				case ForageSelf:
+					pars.put("player", ses.toPlayMap(null));
+					break;
+				case ForageEnemy:
+					if (enemy != null) {
+						pars.put("enemy", enemy.toPlayMap(null));
 					}
 					break;
 				default:

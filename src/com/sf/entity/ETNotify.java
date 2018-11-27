@@ -13,5 +13,7 @@ public enum ETNotify {
 	WaitSelf,
 	WaitEnemy,
 	Update,
+	ForageSelf,
+	ForageEnemy,
 	FightEnd,
 }
