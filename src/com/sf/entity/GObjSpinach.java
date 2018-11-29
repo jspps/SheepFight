@@ -21,11 +21,13 @@ public class GObjSpinach extends GObject {
 	public void startRnd(long beTo) {
 		if (now() <= this.nextLiveMs)
 			return;
+		this.nextLiveMs = 0;
 		this.disPos = RndEx.nextDouble(GObjConfig.NMin_PosSpinach, GObjConfig.NMax_PosSpinach);
 		setBelongTo(beTo); // 通过beto来判断距离(disPos 的距离)
 		setRunTo(0);
 		setRunway(rndWay());
-		setRunning(true);
+		this.nState = 1;
+		// setRunning(true);
 	}
 
 	public double diffDistance(GObject gobj) {
@@ -53,4 +55,11 @@ public class GObjSpinach extends GObject {
 			return this.nextLiveMs <= now();
 		return false;
 	}
+
+	@Override
+	public double calcDistance() {
+		return this.disPos;
+	}
+	
+	
 }

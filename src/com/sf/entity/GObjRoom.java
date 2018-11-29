@@ -154,16 +154,16 @@ public class GObjRoom extends BeanOrigin implements Runnable {
 	}
 
 	public List<Map<String, Object>> listMap(List<Map<String, Object>> lMap) {
-		if (wolf.isRunning()) {
+		if (wolf.isReadyRunning()) {
 			lMap.add(wolf.toMap());
 		}
-		if (neutral1.isRunning()) {
+		if (neutral1.isReadyRunning()) {
 			lMap.add(neutral1.toMap());
 		}
-		if (neutral2.isRunning()) {
+		if (neutral2.isReadyRunning()) {
 			lMap.add(neutral2.toMap());
 		}
-		if (spinach.isRunning()) {
+		if (spinach.isReadyRunning()) {
 			lMap.add(spinach.toMap());
 		}
 		return lMap;
@@ -202,20 +202,23 @@ public class GObjRoom extends BeanOrigin implements Runnable {
 			sesOther.start(id1);
 
 			long runTo = 0;
-			if (ses.isRobot()) {
-				runTo = id2;
-			} else if (sesOther.isRobot()) {
-				runTo = id1;
-			} else {
-				runTo = RndEx.nextBoolean() ? id1 : id2;
-			}
-			rndStartWolf(runTo);
+			// if (ses.isRobot()) {
+			// runTo = id2;
+			// } else if (sesOther.isRobot()) {
+			// runTo = id1;
+			// } else {
+			// runTo = RndEx.nextBoolean() ? id1 : id2;
+			// }
+			// rndStartWolf(runTo);
+			wolf.ready(GObjConfig.NI_PosWolf);
 
-			runTo = RndEx.nextBoolean() ? id1 : id2;
-			rndStartNeutral(neutral1, runTo);
+			// runTo = RndEx.nextBoolean() ? id1 : id2;
+			// rndStartNeutral(neutral1, runTo);
+			neutral1.ready(GObjConfig.NI_PosNeutral);
 
-			runTo = RndEx.nextBoolean() ? id1 : id2;
-			rndStartNeutral(neutral2, runTo);
+			// runTo = RndEx.nextBoolean() ? id1 : id2;
+			// rndStartNeutral(neutral2, runTo);
+			neutral2.ready(GObjConfig.NI_PosNeutral);
 			spinach.startRnd(runTo);
 			ms_start = now();
 			ms_over = ms_start + GObjConfig.NMax_RoomTime;
@@ -328,6 +331,13 @@ public class GObjRoom extends BeanOrigin implements Runnable {
 			if (tmp1 != null && tmp1.isColliding(wolf)) {
 				tmp1.runBack(2);
 			}
+
+			if (runTo <= 0) {
+				tmp1 = ses1.getFirst4Way(way);
+				if (tmp1 != null && tmp1.isColliding(wolf)) {
+					tmp1.runBack(2);
+				}
+			}
 		}
 	}
 
@@ -338,7 +348,7 @@ public class GObjRoom extends BeanOrigin implements Runnable {
 			return;
 		}
 
-		if (!spinach.isRunning()) {
+		if (!spinach.isReadyRunning()) {
 			return;
 		}
 
@@ -356,16 +366,30 @@ public class GObjRoom extends BeanOrigin implements Runnable {
 		}
 	}
 
+	private void _calcNeutralColliding(GObjSession srcSes, GObjNeutral tmp1, int way, long beTo) {
+		GObject gobj = srcSes.getFirst4Way(way);
+		if (gobj != null && tmp1.isColliding(gobj)) {
+			if (tmp1.isOverMutiny()) {
+				tmp1.disappear(true);
+				return;
+			}
+			int power1 = tmp1.getGobjType().getPower();
+			int power2 = gobj.getGobjType().getPower();
+			if (power1 < power2) {
+				tmp1.doMutiny(srcSes.getId(), beTo);
+			} else if (power1 > power2) {
+				gobj.runBack(0);
+			}
+		}
+	}
+
 	private void handlerNeutral(GObjSession ses1, GObjSession ses2) {
 		GObjNeutral[] arrs = { neutral1, neutral2 };
 		GObjNeutral tmp1 = null;
-		GObject tmp2 = null;
 		GObjSession tmpSes = null;
 		long beTo = 0;
 		long runTo = 0;
 		int way = 0;
-		int power1 = 0;
-		int power2 = 0;
 		for (int i = 0; i < arrs.length; i++) {
 			tmp1 = arrs[i];
 			beTo = tmp1.getBelongTo();
@@ -373,7 +397,7 @@ public class GObjRoom extends BeanOrigin implements Runnable {
 			way = tmp1.getRunway();
 			if (tmp1.isEnd()) {
 				tmp1.disappear(true);
-			} else if (tmp1.isRunning()) {
+			} else if (tmp1.isReadyRunning()) {
 				if (beTo > 0) {
 					tmpSes = beTo == ses1.getId() ? ses2 : ses1;
 				} else {
@@ -384,25 +408,17 @@ public class GObjRoom extends BeanOrigin implements Runnable {
 						tmpSes = ses2;
 						beTo = ses1.getId();
 					}
-
 				}
-				tmp2 = tmpSes.getFirst4Way(way);
-				if (tmp2 != null && tmp1.isColliding(tmp2)) {
-					if (tmp1.isOverMutiny()) {
-						tmp1.disappear(true);
-						continue;
-					}
-					power1 = tmp1.getGobjType().getPower();
-					power2 = tmp2.getGobjType().getPower();
-					if (power1 < power2) {
-						tmp1.doMutiny(tmpSes.getId(), beTo);
-					} else if (power1 > power2) {
-						tmp2.runBack(0);
-					}
+				_calcNeutralColliding(tmpSes, tmp1, way, beTo);
+				if (runTo <= 0) {
+					tmpSes = ses1;
+					beTo = ses2.getId();
+					_calcNeutralColliding(tmpSes, tmp1, way, beTo);
 				}
 			} else if (tmp1.isCanRelive()) {
-				runTo = RndEx.nextBoolean() ? sesid1 : sesid2;
-				rndStartNeutral(tmp1, runTo);
+				// runTo = RndEx.nextBoolean() ? sesid1 : sesid2;
+				// rndStartNeutral(tmp1, runTo);
+				tmp1.ready(GObjConfig.NI_PosNeutral);
 			}
 		}
 

@@ -25,6 +25,7 @@ public class GameServlet extends AbsDispatcherServlet {
 
 	@Override
 	public String dispatcher(HttpServletRequest req, HttpServletResponse resp) {
+//		isLogOut = true;
 		Map<String, Object> pars = TkitJsp.getAllParams(req, true);
 		int cmd = MapEx.getInt(pars, "cmd");
 		String outVal = "";

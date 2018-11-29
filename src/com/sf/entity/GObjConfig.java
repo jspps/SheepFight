@@ -37,15 +37,17 @@ public class GObjConfig {
 	static final public int LMS_NextRobotDownSheep = 1500; // 机器人 放羊時間 间隔
 	static final public int LenMax_Runway = 10; // 跑道总长度
 	static final public double NMax_CollidDistance = 0.08; // 判断相碰的最小距离
-	static final public double NMin_SpeedWolf = 1.0; // 狼最小随机速度
-	static final public double NMax_SpeedWolf = 3.0; // 狼最大随机速度
-	static final public double NMin_SpeedNeutral = 0.8; // 叛变羊最小随机速度
-	static final public double NMax_SpeedNeutral = 2.0; // 叛变羊最大随机速度
+	static final public double NI_PosWolf = 5; // 狼的初始位置
+	static final public double NMin_SpeedWolf = 2; // 狼最小随机速度
+	static final public double NMax_SpeedWolf = 2; // 狼最大随机速度
+	static final public double NI_PosNeutral = 5; // 叛变羊的初始位置
+	static final public double NMin_SpeedNeutral = 1.0; // 叛变羊最小随机速度
+	static final public double NMax_SpeedNeutral = 1.0; // 叛变羊最大随机速度
 	static final public int NMax_NeutralMutiny = 3; // 叛变羊最大叛变次数
 	static final public int NMin_NeutralPower = 2; // 叛变羊最小体力
 	static final public int NMax_NeutralPower = 4; // 叛变羊最大体力
 	static final public int LMS_NextLive_Neutral = 1500; // 叛变羊消失后，下次刷新间隔
-	static final public double NMin_PosSpinach = 3.5; // 菠菜罐头位置
-	static final public double NMax_PosSpinach = 6.5; // 菠菜罐头位置
+	static final public double NMin_PosSpinach = 5; // 菠菜罐头位置
+	static final public double NMax_PosSpinach = 5; // 菠菜罐头位置
 	static final public int LMS_NextLive_Spinach = 2000; // 菠菜罐头消失后，下次刷新间隔
 }

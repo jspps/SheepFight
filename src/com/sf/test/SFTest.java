@@ -37,7 +37,7 @@ public class SFTest extends BeanOrigin implements Runnable {
 		// test_rnd();
 		// test_game();
 		// test_rnd_number();
-		test_get_time();
+		// test_get_time();
 	}
 
 	static void test_get_time() throws Exception {

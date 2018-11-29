@@ -21,11 +21,13 @@ public class GObject extends BeanOrigin {
 	private long belongTo = 0; // 拥有者
 	private long runTo = 0; // 跑向的人
 	private boolean isRunning = false;
+	protected int nState = 0; // 运行状态
 	protected double endDistance = 0; // 目的距离
 	private double base_speed = -1; // 基础速度
 	private long startStayMs = 0;// 开始停留时间
 	private int stayMs = 0; // 停留时间毫秒 ms
 	private boolean isRunBack = false; // 是否返了(用于距离减少)
+	private double initPos = 0; // 初始位置
 
 	public long getId() {
 		return id;
@@ -162,6 +164,22 @@ public class GObject extends BeanOrigin {
 		this.stayMs = 0;
 		this.startStayMs = 0;
 		this.isRunning = false;
+		this.nState = 0;
+		this.initPos = 0;
+	}
+	
+	public void ready(double initPos){
+		if (this.runway <= 0) {
+			this.runway = currWay(true);
+		}
+		reRunning(this.runTo, this.runway, GObjConfig.LenMax_Runway);
+		this.isRunning = false;
+		this.nState = 1;
+		this.initPos = initPos;
+	}
+	
+	public boolean isReadyRunning(){
+		return this.isRunning || this.nState == 1;
 	}
 
 	private void reRunning(long runTo, int runway, double endDis) {
@@ -172,6 +190,7 @@ public class GObject extends BeanOrigin {
 		this.stayMs = 0;
 		this.startStayMs = 0;
 		this.isRunning = true;
+		this.nState = 2;
 		this.isRunBack = (this.endDistance != GObjConfig.LenMax_Runway);
 	}
 
@@ -187,7 +206,9 @@ public class GObject extends BeanOrigin {
 	}
 
 	public void runBack(long runTo, boolean isRndWay) {
-		reRunning(runTo, currWay(isRndWay), calcDistance());
+		double dis = calcDistance();
+		this.initPos = 0;
+		reRunning(runTo, currWay(isRndWay),dis);
 	}
 
 	public void runBack(double multiples) {
@@ -198,12 +219,13 @@ public class GObject extends BeanOrigin {
 	}
 
 	public double calcDistance() {
+		double val = initPos;
 		if (isRunning) {
 			long diffMs = (now() - this.startMs - this.stayMs);
-			double val = diffMs * gobjType.getSpeed() * 0.001;
-			return round(val, 3);
+			val = diffMs * gobjType.getSpeed() * 0.001;
+			val = round(val, 3) + initPos;
 		}
-		return 0;
+		return val;
 	}
 
 	// 是否移动到终点
