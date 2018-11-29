@@ -3,7 +3,6 @@ package com.sf.entity;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 
@@ -153,18 +152,18 @@ public class GObjRoom extends BeanOrigin implements Runnable {
 		}
 	}
 
-	public List<Map<String, Object>> listMap(List<Map<String, Object>> lMap) {
+	public List<GObject> listScene(List<GObject> lMap) {
 		if (wolf.isReadyRunning()) {
-			lMap.add(wolf.toMap());
+			lMap.add(wolf);
 		}
 		if (neutral1.isReadyRunning()) {
-			lMap.add(neutral1.toMap());
+			lMap.add(neutral1);
 		}
 		if (neutral2.isReadyRunning()) {
-			lMap.add(neutral2.toMap());
+			lMap.add(neutral2);
 		}
 		if (spinach.isReadyRunning()) {
-			lMap.add(spinach.toMap());
+			lMap.add(spinach);
 		}
 		return lMap;
 	}

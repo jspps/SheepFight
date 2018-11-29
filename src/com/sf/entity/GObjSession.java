@@ -1,6 +1,7 @@
 package com.sf.entity;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,6 +17,7 @@ import com.sf.logic.LgcGame;
  */
 public class GObjSession extends GObjSPlayer {
 	private static final long serialVersionUID = 1L;
+	static private CompGObjWay sortWay = new CompGObjWay();
 	private long roomid;
 	private String lgid;
 	private String lgpwd;
@@ -27,6 +29,7 @@ public class GObjSession extends GObjSPlayer {
 	private long lmtLastTime = 0;// 上一次计数时间
 	private int netCount = 0;// 5秒内总限定次数
 	private List<ETNotify> lNotify = new ArrayList<ETNotify>();
+	private List<GObject> lstScene = new ArrayList<GObject>();
 	private List<Map<String, Object>> lMap = new ArrayList<Map<String, Object>>();
 
 	public long getRoomid() {
@@ -129,15 +132,19 @@ public class GObjSession extends GObjSPlayer {
 
 	public List<Map<String, Object>> toLMRunning() {
 		lMap.clear();
-		lmRunning(lMap);
+		lstScene.clear();
+		lstScene.addAll(getListRunning());
 		GObjSession enemy = LgcGame.enemySession(getId());
 		if (enemy != null) {
-			enemy.lmRunning(lMap);
+			lstScene.addAll(enemy.getListRunning());
 			// room
 			GObjRoom room = LgcGame.getRoom(roomid);
-			room.listMap(lMap);
+			lstScene = room.listScene(lstScene);
 		}
-		return lMap;
+		if (lstScene.size() > 1) {
+			Collections.sort(lstScene, sortWay);
+		}
+		return toListMap(lMap, lstScene);
 	}
 
 	public void addNotify(ETNotify notifyType) {
@@ -194,6 +201,8 @@ public class GObjSession extends GObjSPlayer {
 			state = ETState.None;
 			enemySesId = 0;
 			lNotify.clear();
+			lstScene.clear();
+			lMap.clear();
 			super.clear();
 		}
 	}

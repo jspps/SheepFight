@@ -110,7 +110,7 @@ public class GObjSPlayer extends Session {
 		}
 	}
 
-	protected List<Map<String, Object>> listMap(List<Map<String, Object>> lMap, Collection<GObject> list) {
+	protected List<Map<String, Object>> toListMap(List<Map<String, Object>> lMap, Collection<GObject> list) {
 		if (lMap == null)
 			lMap = new ArrayList<Map<String, Object>>();
 		for (GObject item : list) {
@@ -118,14 +118,10 @@ public class GObjSPlayer extends Session {
 		}
 		return lMap;
 	}
-
-	public List<Map<String, Object>> lmRunning(List<Map<String, Object>> lMap) {
-		return listMap(lMap, listRunning);
-	}
-
+	
 	public List<Map<String, Object>> lmWait() {
 		lmWait.clear();
-		return listMap(lmWait, listWait);
+		return toListMap(lmWait, listWait);
 	}
 
 	GObject getInWait(long sheepId) {
