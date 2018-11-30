@@ -11,7 +11,7 @@ public class Session extends BeanOrigin {
 	private static final long serialVersionUID = 1L;
 	static int minLmt = 100;
 	static private int defMs1Sec = 1000; // 1秒
-	static private int defMs1Min = defMs1Sec * 60; // 1分钟
+	static private int defMs1Min = defMs1Sec * 600; // 10分钟
 	static private int defMs = defMs1Sec * 20;
 
 	protected int lmsOver = 0;
