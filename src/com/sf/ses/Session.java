@@ -11,7 +11,7 @@ public class Session extends BeanOrigin {
 	private static final long serialVersionUID = 1L;
 	static int minLmt = 100;
 	static private int defMs1Sec = 1000; // 1秒
-	static private int defMs1Min = defMs1Sec * 600; // 10分钟
+	static private int defMsMin = defMs1Sec * 600; // 10分钟
 	static private int defMs = defMs1Sec * 20;
 
 	protected int lmsOver = 0;
@@ -58,8 +58,8 @@ public class Session extends BeanOrigin {
 		ResetTimeOverdue();
 	}
 	
-	public void ReLmtOver1Min() {
-		ReLmtOver(defMs1Min);
+	public void ReLmtOverSomeMin() {
+		ReLmtOver(defMsMin);
 	}
 
 	public void ResetTimeOverdue() {

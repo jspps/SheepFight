@@ -26,7 +26,7 @@ public class GObject extends BeanOrigin {
 	private double base_speed = -1; // 基础速度
 	private long startStayMs = 0;// 开始停留时间
 	private int stayMs = 0; // 停留时间毫秒 ms
-	private boolean isRunBack = false; // 是否返了(用于距离减少)
+	protected boolean isRunBack = false; // 是否返了(用于距离减少) - 目前没用
 	private double initPos = 0; // 初始位置
 
 	public long getId() {
@@ -113,16 +113,15 @@ public class GObject extends BeanOrigin {
 	public Map<String, Object> toMap(Map<String, Object> map) {
 		if (map == null)
 			map = new HashMap<String, Object>();
+		map = gobjType.toMap(map);
 		map.put("id", String.valueOf(id));
 		map.put("runway", runway);
 		map.put("belongTo", String.valueOf(belongTo));
 		map.put("runTo", String.valueOf(runTo));
+		map.put("endDistance", this.endDistance);
+		map.put("distance", calcDistance());
 		map.put("isRunning", isRunning);
-		map.put("start_ms", startMs);
-		map.put("endDis",this.endDistance);// 测试用
-		double dic = calcDistance();
-		map.put("distance",this.isRunBack ? (this.endDistance - dic) : dic);
-		map = gobjType.toMap(map);
+		// map.put("start_ms", startMs);
 		return map;
 	}
 
@@ -168,8 +167,8 @@ public class GObject extends BeanOrigin {
 		this.nState = 0;
 		this.initPos = 0;
 	}
-	
-	public void ready(double initPos){
+
+	public void ready(double initPos) {
 		if (this.runway <= 0) {
 			this.runway = currWay(true);
 		}
@@ -178,8 +177,8 @@ public class GObject extends BeanOrigin {
 		this.nState = 1;
 		this.initPos = initPos;
 	}
-	
-	public boolean isReadyRunning(){
+
+	public boolean isReadyRunning() {
 		return this.isRunning || this.nState == 1;
 	}
 
@@ -209,7 +208,7 @@ public class GObject extends BeanOrigin {
 	public void runBack(long runTo, boolean isRndWay) {
 		double dis = calcDistance();
 		this.initPos = 0;
-		reRunning(runTo, currWay(isRndWay),dis);
+		reRunning(runTo, currWay(isRndWay), dis);
 	}
 
 	public void runBack(double multiples) {
@@ -229,14 +228,25 @@ public class GObject extends BeanOrigin {
 	}
 
 	// 是否移动到终点
-	private boolean isEnd(double otherDis) {
+	private boolean isEnd(double otherDis, boolean isAbs) {
 		double mvDis = calcDistance() + otherDis;
 		double diff = this.endDistance - mvDis;
+		if (isAbs) {
+			diff = Math.abs(diff);
+		}
 		return diff <= GObjConfig.NMax_CollidDistance;
 	}
 
+	// 是否移动到终点
+	public boolean isEnd() {
+		return isEnd(0, false);
+	}
+
 	public boolean isColliding(GObject gobj) {
-		return isEnd(gobj.calcDistance());
+		if (gobj == null)
+			return false;
+
+		return isEnd(gobj.calcDistance(), true);
 	}
 
 	public int comPower(GObject gobj) {
@@ -248,11 +258,6 @@ public class GObject extends BeanOrigin {
 			return -1;
 		}
 		return 0;
-	}
-
-	// 是否移动到终点
-	public boolean isEnd() {
-		return isEnd(0);
 	}
 
 	public boolean isMvEnemy() {
