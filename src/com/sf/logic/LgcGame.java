@@ -111,7 +111,8 @@ public class LgcGame extends LgcRoom {
 		boolean isOkey = ses.downSheep(sheepId, runway, sesOther.getId());
 		String state = GObjConfig.S_Success;
 		if(isOkey){
-			pars.put("addSheep", ses.getInRunning(sheepId).toMap());
+			ses.addNotify(ETNotify.Update);
+			sesOther.addNotify(ETNotify.Update);
 		}else{
 			state = GObjConfig.S_Fails;
 			pars.put("tip", "放羊失败;错误 id = " + sheepId);
