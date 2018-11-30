@@ -119,8 +119,9 @@ public class GObject extends BeanOrigin {
 		map.put("runTo", String.valueOf(runTo));
 		map.put("isRunning", isRunning);
 		map.put("start_ms", startMs);
+		map.put("endDis",this.endDistance);// 测试用
 		double dic = calcDistance();
-		map.put("distance",this.isRunBack ? this.endDistance - dic : dic);
+		map.put("distance",this.isRunBack ? (this.endDistance - dic) : dic);
 		map = gobjType.toMap(map);
 		return map;
 	}
@@ -191,7 +192,7 @@ public class GObject extends BeanOrigin {
 		this.startStayMs = 0;
 		this.isRunning = true;
 		this.nState = 2;
-		this.isRunBack = (this.endDistance != GObjConfig.LenMax_Runway);
+		this.isRunBack = (this.runTo == this.belongTo);
 	}
 
 	public void startRunning(long runTo, int runway) {
@@ -222,8 +223,7 @@ public class GObject extends BeanOrigin {
 		double val = initPos;
 		if (isRunning) {
 			long diffMs = (now() - this.startMs - this.stayMs);
-			val = diffMs * gobjType.getSpeed() * 0.001;
-			val = round(val, 3) + initPos;
+			val += (diffMs * gobjType.getSpeed()) / 1000;
 		}
 		return val;
 	}
