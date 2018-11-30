@@ -113,10 +113,10 @@ public class GObject extends BeanOrigin {
 	public Map<String, Object> toMap(Map<String, Object> map) {
 		if (map == null)
 			map = new HashMap<String, Object>();
-		map.put("id", id);
+		map.put("id", String.valueOf(id));
 		map.put("runway", runway);
-		map.put("belongTo", belongTo);
-		map.put("runTo", runTo);
+		map.put("belongTo", String.valueOf(belongTo));
+		map.put("runTo", String.valueOf(runTo));
 		map.put("isRunning", isRunning);
 		map.put("start_ms", startMs);
 		double dic = calcDistance();
