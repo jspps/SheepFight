@@ -14,22 +14,6 @@ public class GObjNeutral extends GObject {
 	private int numMutiny; // 叛变次数
 	private long nextLiveMs; // 下次复活时间
 
-	public int getNumMutiny() {
-		return numMutiny;
-	}
-
-	public void setNumMutiny(int numMutiny) {
-		this.numMutiny = numMutiny;
-	}
-
-	public long getNextLiveMs() {
-		return nextLiveMs;
-	}
-
-	public void setNextLiveMs(long nextLiveMs) {
-		this.nextLiveMs = nextLiveMs;
-	}
-
 	public GObjNeutral(int runway, long belongTo) {
 		reInit(ETGObj.SheepNeutral, runway, belongTo);
 		int power = RndEx.nextInt(GObjConfig.NMin_NeutralPower, GObjConfig.NMax_NeutralPower);
@@ -69,6 +53,10 @@ public class GObjNeutral extends GObject {
 	public void ready(double initPos) {
 		super.ready(initPos);
 		this.nextLiveMs = 0;
+	}
+	
+	public void ready(){
+		ready(GObjConfig.NI_PosNeutral);
 	}
 
 	@Override

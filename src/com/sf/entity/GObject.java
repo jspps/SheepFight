@@ -212,10 +212,10 @@ public class GObject extends BeanOrigin {
 	}
 
 	public void runBack(double multiples) {
+		runBack(this.belongTo, false);
 		if (multiples > 0) {
 			this.gobjType.setSpeed(this.base_speed * multiples);
 		}
-		runBack(this.belongTo, false);
 	}
 
 	public double calcDistance() {

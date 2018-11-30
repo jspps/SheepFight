@@ -7,7 +7,6 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 
 import com.bowlong.Toolkit;
-import com.bowlong.lang.RndEx;
 import com.sf.logic.LgcGame;
 
 /**
@@ -32,7 +31,7 @@ public class GObjRoom extends BeanOrigin implements Runnable {
 	// 随机动物
 	private CompGObjEnd comObj = new CompGObjEnd();
 	private GObjRobot robot = new GObjRobot(); // 机器人
-	private GObject wolf = new GObject(ETGObj.Wolf, 1, 0);
+	private GObjWolf wolf = new GObjWolf();
 	private GObjNeutral neutral1 = new GObjNeutral(2, 0);
 	private GObjNeutral neutral2 = new GObjNeutral(4, 0);
 	private GObjSpinach spinach = new GObjSpinach();
@@ -199,10 +198,10 @@ public class GObjRoom extends BeanOrigin implements Runnable {
 
 			ses.start(id2);
 			sesOther.start(id1);
-			
-			wolf.ready(GObjConfig.NI_PosWolf);
-			neutral1.ready(GObjConfig.NI_PosNeutral);
-			neutral2.ready(GObjConfig.NI_PosNeutral);
+
+			wolf.ready();
+			neutral1.ready();
+			neutral2.ready();
 			spinach.startRnd(0);
 			ms_start = now();
 			ms_over = ms_start + GObjConfig.NMax_RoomTime;
@@ -226,31 +225,6 @@ public class GObjRoom extends BeanOrigin implements Runnable {
 				clear();
 			}
 		}
-	}
-
-	private double rndSpeed(double min, double max) {
-		double speed = min;
-		if (max > speed) {
-			double diff = max - min;
-			int nx = (int) (diff * 100);
-			speed = min + RndEx.nextInt(nx) / 100.0d;
-		}
-		return speed > 0 ? speed : 1;
-	}
-
-	private void rndStartGobj(GObject gobj, long runTo, double sp_min, double sp_max) {
-		double speed = rndSpeed(sp_min, sp_max);
-		gobj.getGobjType().setSpeed(speed);
-		gobj.startRunning(runTo);
-	}
-
-	void rndStartWolf(long runTo) {
-		wolf.setRunway(0);
-		rndStartGobj(wolf, runTo, GObjConfig.NMin_SpeedWolf, GObjConfig.NMax_SpeedWolf);
-	}
-
-	void rndStartNeutral(GObject gobj, long runTo) {
-		rndStartGobj(gobj, runTo, GObjConfig.NMin_SpeedNeutral, GObjConfig.NMax_SpeedNeutral);
 	}
 
 	private void handlerWaitSheep(GObjSession ses1, GObjSession ses2) {
@@ -307,20 +281,28 @@ public class GObjRoom extends BeanOrigin implements Runnable {
 		long runTo = wolf.getRunTo();
 		GObject tmp1 = null;
 		if (wolf.isEnd()) {
-			runTo = getOther(runTo);
-			rndStartWolf(runTo);
-		} else {
-			GObjSession ses = runTo == sesid1 ? ses1 : ses2;
+			wolf.disappear(true);
+		} else if (wolf.isCanRelive()) {
+			wolf.ready();
+		} else if (wolf.isReadyRunning()) {
+			boolean isRunZero = runTo <= 0;
+			GObjSession ses = (runTo == sesid1) ? ses1 : ses2;
 			tmp1 = ses.getFirst4Way(way);
-			if (tmp1 != null && tmp1.isColliding(wolf)) {
+			if (wolf.isColliding(tmp1)) {
 				tmp1.runBack(2);
+				runTo = ses1.getId();
 			}
 
-			if (runTo <= 0) {
+			if (isRunZero) {
 				tmp1 = ses1.getFirst4Way(way);
-				if (tmp1 != null && tmp1.isColliding(wolf)) {
+				if (wolf.isColliding(tmp1)) {
 					tmp1.runBack(2);
+					runTo = ses2.getId();
 				}
+			}
+
+			if (runTo > 0) {
+				wolf.startRunning(runTo);
 			}
 		}
 	}
@@ -349,17 +331,17 @@ public class GObjRoom extends BeanOrigin implements Runnable {
 		}
 	}
 
-	private void _calcNeutralColliding(GObjSession srcSes, GObjNeutral tmp1, int way, long beTo) {
+	private void _calcNeutralColliding(GObjSession srcSes, GObjNeutral neutral, int way, long beTo) {
 		GObject gobj = srcSes.getFirst4Way(way);
-		if (gobj != null && tmp1.isColliding(gobj)) {
-			if (tmp1.isOverMutiny()) {
-				tmp1.disappear(true);
+		if (neutral.isColliding(gobj)) {
+			if (neutral.isOverMutiny()) {
+				neutral.disappear(true);
 				return;
 			}
-			int power1 = tmp1.getGobjType().getPower();
+			int power1 = neutral.getGobjType().getPower();
 			int power2 = gobj.getGobjType().getPower();
 			if (power1 < power2) {
-				tmp1.doMutiny(srcSes.getId(), beTo);
+				neutral.doMutiny(srcSes.getId(), beTo);
 			} else if (power1 > power2) {
 				gobj.runBack(0);
 			}
@@ -380,6 +362,8 @@ public class GObjRoom extends BeanOrigin implements Runnable {
 			way = tmp1.getRunway();
 			if (tmp1.isEnd()) {
 				tmp1.disappear(true);
+			} else if (tmp1.isCanRelive()) {
+				tmp1.ready();
 			} else if (tmp1.isReadyRunning()) {
 				if (beTo > 0) {
 					tmpSes = beTo == ses1.getId() ? ses2 : ses1;
@@ -398,10 +382,6 @@ public class GObjRoom extends BeanOrigin implements Runnable {
 					beTo = ses2.getId();
 					_calcNeutralColliding(tmpSes, tmp1, way, beTo);
 				}
-			} else if (tmp1.isCanRelive()) {
-				// runTo = RndEx.nextBoolean() ? sesid1 : sesid2;
-				// rndStartNeutral(tmp1, runTo);
-				tmp1.ready(GObjConfig.NI_PosNeutral);
 			}
 		}
 

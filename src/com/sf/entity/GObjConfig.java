@@ -22,8 +22,8 @@ public class GObjConfig {
 	static final public int LMS_Net = 5 * 1000; // 5秒
 	static final public int NMax_OnLine = 100000; // 同时在线人数(超过了就排队)
 	static final public int LMS_RoomMatching = 15 * 1000; // 匹配玩家倒计时 - 15秒
-	static final public int LMS_RoomUpFirst = 10 * 2; // 房间 首次更新 - 20 毫秒
-	static final public int LMS_RoomUpDelay = 10 * 5; // 房间 间隔更新 - 50 毫秒
+	static final public int LMS_RoomUpFirst = 10 * 2; // 房间 首次更新 - 毫秒
+	static final public int LMS_RoomUpDelay = 10 * 2; // 房间 间隔更新 - 毫秒
 	static final public int LmtN_Net = LMS_Net / LMS_RoomUpDelay + 10; // 每个session对象每 LMS_Net 秒限定最多请求数
 	static final public int NMax_Runway = 5; // 总共有多少跑道(N = Num)
 	static final public int NI_Forage = 100; // 初始草料值
@@ -42,6 +42,7 @@ public class GObjConfig {
 	static final public double NI_PosWolf = 5; // 狼的初始位置
 	static final public double NMin_SpeedWolf = 2; // 狼最小随机速度
 	static final public double NMax_SpeedWolf = 2; // 狼最大随机速度
+	static final public int LMS_NextLive_Wolf = 3000; // 狼消失后，下次刷新间隔
 	static final public double NI_PosNeutral = 5; // 叛变羊的初始位置
 	static final public double NMin_SpeedNeutral = 1.0; // 叛变羊最小随机速度
 	static final public double NMax_SpeedNeutral = 1.0; // 叛变羊最大随机速度
