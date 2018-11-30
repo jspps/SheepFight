@@ -35,7 +35,8 @@ public class GObjRobot extends GObjSession {
 	}
 
 	public void reRobot(long roomid) {
-		this.aiDown = RndEx.nextInt(2);
+		int rndVal = RndEx.nextInt(GObjConfig.NMax_RobotAI_Basic);
+		this.aiDown = (rndVal <= GObjConfig.NL_RobotAI_Middle) ? 1 : 0;
 		this.msNextDown = now() + GObjConfig.LMS_FirstRobotDownSheep;
 		String strRobot = String.format("robot_%s", RndEx.nextString09(9));
 		initSes(strRobot, strRobot);

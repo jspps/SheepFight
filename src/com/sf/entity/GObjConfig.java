@@ -33,6 +33,8 @@ public class GObjConfig {
 	static final public int NMax_RoomTime = 10 * 60 * 1000; // 房间战斗最长时间为 10 分钟
 	static final public int NMin_RoomTime = 30 * 1000; // 判断胜负的最小时间
 	static final public int LMS_NextNewSheep = 5000; // 下一次随机得羊的时间
+	static final public int NMax_RobotAI_Basic = 100; // 机器人AI的随机底数
+	static final public int NL_RobotAI_Middle = 30; // 机器人AI - 中级AI所占有值
 	static final public int LMS_FirstRobotDownSheep = 5000; // 首次 机器人 放羊時間
 	static final public int LMS_NextRobotDownSheep = 5000; // 机器人 放羊時間 间隔
 	static final public int LenMax_Runway = 10; // 跑道总长度
