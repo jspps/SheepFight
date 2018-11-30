@@ -51,5 +51,5 @@ public class GObjConfig {
 	static final public int LMS_NextLive_Neutral = 1500; // 叛变羊消失后，下次刷新间隔
 	static final public double NMin_PosSpinach = 5; // 菠菜罐头位置
 	static final public double NMax_PosSpinach = 5; // 菠菜罐头位置
-	static final public int LMS_NextLive_Spinach = 2000; // 菠菜罐头消失后，下次刷新间隔
+	static final public int LMS_NextLive_Spinach = 5000; // 菠菜罐头消失后，下次刷新间隔
 }
