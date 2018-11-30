@@ -207,6 +207,14 @@ public class GObjSession extends GObjSPlayer {
 		}
 	}
 
+	@Override
+	public void reduceForage(int reduce) {
+		super.reduceForage(reduce);
+		if(this.forage <= 0){
+			this.state = ETState.Fail;
+		}
+	}
+
 	public boolean isFails() {
 		return this.state == ETState.Fail;
 	}
