@@ -199,26 +199,11 @@ public class GObjRoom extends BeanOrigin implements Runnable {
 
 			ses.start(id2);
 			sesOther.start(id1);
-
-			long runTo = 0;
-			// if (ses.isRobot()) {
-			// runTo = id2;
-			// } else if (sesOther.isRobot()) {
-			// runTo = id1;
-			// } else {
-			// runTo = RndEx.nextBoolean() ? id1 : id2;
-			// }
-			// rndStartWolf(runTo);
+			
 			wolf.ready(GObjConfig.NI_PosWolf);
-
-			// runTo = RndEx.nextBoolean() ? id1 : id2;
-			// rndStartNeutral(neutral1, runTo);
 			neutral1.ready(GObjConfig.NI_PosNeutral);
-
-			// runTo = RndEx.nextBoolean() ? id1 : id2;
-			// rndStartNeutral(neutral2, runTo);
 			neutral2.ready(GObjConfig.NI_PosNeutral);
-			spinach.startRnd(runTo);
+			spinach.startRnd(0);
 			ms_start = now();
 			ms_over = ms_start + GObjConfig.NMax_RoomTime;
 
@@ -342,8 +327,7 @@ public class GObjRoom extends BeanOrigin implements Runnable {
 
 	private void handlerSpinach(GObjSession ses1, GObjSession ses2) {
 		if (spinach.isCanRelive()) {
-			long beTo = RndEx.nextBoolean() ? ses1.getId() : ses2.getId();
-			spinach.startRnd(beTo);
+			spinach.startRnd(0);
 			return;
 		}
 
