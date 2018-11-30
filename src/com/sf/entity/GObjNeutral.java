@@ -32,7 +32,7 @@ public class GObjNeutral extends GObject {
 
 	public GObjNeutral(int runway, long belongTo) {
 		reInit(ETGObj.SheepNeutral, runway, belongTo);
-		int power = RndEx.nextInt(GObjConfig.NMin_NeutralPower, GObjConfig.NMax_NeutralPower + 1);
+		int power = RndEx.nextInt(GObjConfig.NMin_NeutralPower, GObjConfig.NMax_NeutralPower);
 		this.getGobjType().setPower(power);
 	}
 
@@ -41,9 +41,11 @@ public class GObjNeutral extends GObject {
 	}
 
 	public void doMutiny(long beTo, long runTo) {
+		this.numMutiny++;
+		double speed = RndEx.nextDouble(GObjConfig.NMin_SpeedNeutral, GObjConfig.NMax_SpeedNeutral);
+		getGobjType().setSpeed(speed);
 		setBelongTo(beTo);
 		runBack(runTo, false);
-		this.numMutiny++;
 	}
 
 	public void disappear(boolean isReLive) {
@@ -61,6 +63,12 @@ public class GObjNeutral extends GObject {
 		if (this.nextLiveMs > 0)
 			return this.nextLiveMs <= now();
 		return false;
+	}
+	
+	@Override
+	public void ready(double initPos) {
+		super.ready(initPos);
+		this.nextLiveMs = 0;
 	}
 
 	@Override
