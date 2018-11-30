@@ -151,17 +151,30 @@ public class GObjSPlayer extends Session {
 	}
 
 	public boolean jugdeRndSheep() {
-		if (this.listWait.size() >= GObjConfig.NMax_Sheep_Wait)
+		if (this.listWait.size() >= GObjConfig.NMax_Sheep_Wait){
+			this.nextRndWait = 0;
 			return false;
+		}
+		
 		long now = now();
-		if (nextRndWait <= 0) {
-			this.nextRndWait = now + GObjConfig.LMS_NextNewSheep;
-		} else if (nextRndWait <= now) {
+		if (nextRndWait <= now) {
 			this.nextRndWait = now + GObjConfig.LMS_NextNewSheep;
 			rndWaitOne(id);
 			return true;
 		}
 		return false;
+	}
+	
+	private void reNextTime4Wait() {
+		if (this.listWait.size() >= GObjConfig.NMax_Sheep_Wait){
+			this.nextRndWait = 0;
+			return;
+		}
+		
+		long now = now();
+		if (nextRndWait <= 0) {
+			this.nextRndWait = now + GObjConfig.LMS_NextNewSheep;
+		}
 	}
 
 	private boolean startRunning(long sheepId, int way, long runTo) {
@@ -173,7 +186,7 @@ public class GObjSPlayer extends Session {
 		listWait.remove(gobj);
 		mapRunning.put(sheepId, gobj);
 		listRunning.add(gobj);
-		jugdeRndSheep();
+		reNextTime4Wait();
 		return true;
 	}
 
