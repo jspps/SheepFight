@@ -124,9 +124,9 @@ public class GObjSession extends GObjSPlayer {
 	public Map<String, Object> toMapMust(Map<String, Object> map) {
 		if (map == null)
 			map = new HashMap<String, Object>();
-		map.put(GObjConfig.K_SesID, id);
+		map.put(GObjConfig.K_SesID, String.valueOf(id));
 		map.put("time_ms", now());
-		map.put("roomid", roomid);
+		map.put("roomid", String.valueOf(roomid));
 		return map;
 	}
 
