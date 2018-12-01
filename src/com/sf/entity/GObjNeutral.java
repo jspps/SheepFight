@@ -40,20 +40,8 @@ public class GObjNeutral extends GObject {
 		if (isReLive)
 			nextLiveMs = now() + GObjConfig.LMS_NextLive_Neutral;
 	}
-	
-	@Override
-	public void ready(double initPos) {
-		super.ready(initPos);
-		this.nextLiveMs = 0;
-	}
-	
+		
 	public void ready(){
 		ready(GObjConfig.NI_PosNeutral);
-	}
-
-	@Override
-	public void startRunning(long runTo) {
-		super.startRunning(runTo);
-		this.nextLiveMs = 0;
 	}
 }
