@@ -90,6 +90,12 @@ public class LgcGame extends LgcRoom {
 			pars.put("tip", "超出了跑道[1-5]");
 			return msg(GObjConfig.S_Fails, pars, isEncode);
 		}
+		
+		GObjRoom room = getRoom(ses.getRoomid());
+		if(room == null){
+			pars.put("tip", "战斗已结束!");
+			return msg(GObjConfig.S_Fails, pars, isEncode);
+		}
 
 		GObjSession sesOther = enemySession(ses);
 		if (sesOther == null) {
