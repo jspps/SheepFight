@@ -290,14 +290,14 @@ public class GObjRoom extends BeanOrigin implements Runnable {
 			tmp1 = ses.getFirst4Way(way);
 			if (wolf.isColliding(tmp1)) {
 				tmp1.runBack(2);
-				runTo = ses1.getId();
+				runTo = ses2.getId();
 			}
 
 			if (isRunZero) {
 				tmp1 = ses1.getFirst4Way(way);
 				if (wolf.isColliding(tmp1)) {
 					tmp1.runBack(2);
-					runTo = ses2.getId();
+					runTo = ses1.getId();
 				}
 			}
 

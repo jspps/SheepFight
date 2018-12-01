@@ -34,6 +34,7 @@ public class GObjNeutral extends GObject {
 	public void disappear(boolean isReLive) {
 		int way = getRunway();
 		setBelongTo(0);
+		getGobjType().setPower(0);
 		stop();
 		nextLiveMs = 0;
 		numMutiny = 0;
