@@ -31,8 +31,8 @@ public class GObjSPlayer extends Session {
 	private List<GObject> listWait = new ArrayList<GObject>();
 	private Map<Long, GObject> mapRunning = new ConcurrentHashMap<Long, GObject>();
 	private List<GObject> listRunning = new ArrayList<GObject>();
-	private List<GObject> listWay = new ArrayList<GObject>();
-	private List<GObject> listEnd = new ArrayList<GObject>();
+	private List<GObject> ltWay = new ArrayList<GObject>();
+	private List<GObject> ltEnd = new ArrayList<GObject>();
 	List<Map<String, Object>> lmWait = new ArrayList<Map<String, Object>>();
 	CompGObjPower objPower = new CompGObjPower();
 
@@ -205,45 +205,45 @@ public class GObjSPlayer extends Session {
 	}
 	
 	public List<GObject> getList4Way(int way) {
-		return getList(way, listWay);
+		return getList(way, ltWay);
 	}
 
 	public GObject getFirst4Way(int way) {
 		GObject gobj = null;
-		listWay = getList(way, listWay);
-		if (listWay.size() > 0)
-			gobj = listWay.get(0);
-		listWay.clear();
+		ltWay = getList(way, ltWay);
+		if (ltWay.size() > 0)
+			gobj = ltWay.get(0);
+		ltWay.clear();
 		return gobj;
 	}
 
 	public int getAllPower4Way(int way) {
-		listWay = getList(way, listWay);
-		int lens = listWay.size();
+		ltWay = getList4Way(way);
+		int lens = ltWay.size();
 		int sum = 0;
 		for (int i = 0; i < lens; i++) {
-			sum += listWay.get(i).getGobjType().getPower();
+			sum += ltWay.get(i).getGobjType().getPower();
 		}
-		listWay.clear();
+		ltWay.clear();
 		return sum;
 	}
 
 	public List<GObject> jugdeArrive() {
-		listEnd.clear();
+		ltEnd.clear();
 		int lens = listRunning.size();
 		GObject item = null;
 		for (int i = 0; i < lens; i++) {
 			item = listRunning.get(i);
 			if (item.isEnd()) {
 				item.getGobjType().setSpeed(1);
-				listEnd.add(item);
+				ltEnd.add(item);
 			}
 		}
-		return listEnd;
+		return ltEnd;
 	}
 
 	public void onArrive(GObject gobj) {
-		gobj.stop();
+		gobj.disappear(false);
 		mapRunning.remove(gobj.getId());
 		listRunning.remove(gobj);
 		queEnd.add(gobj);
@@ -252,12 +252,12 @@ public class GObjSPlayer extends Session {
 	public void clear() {
 		GObject item = null;
 		int lens = 0;
-		listEnd.clear();
-		listEnd.addAll(listRunning);
-		listEnd.addAll(listWait);
-		lens = listEnd.size();
+		ltEnd.clear();
+		ltEnd.addAll(listRunning);
+		ltEnd.addAll(listWait);
+		lens = ltEnd.size();
 		for (int i = 0; i < lens; i++) {
-			item = listEnd.get(i);
+			item = ltEnd.get(i);
 			onArrive(item);
 		}
 		nextRndWait = 0;
@@ -266,8 +266,8 @@ public class GObjSPlayer extends Session {
 		listWait.clear();
 		mapRunning.clear();
 		listRunning.clear();
-		listWay.clear();
-		listEnd.clear();
+		ltWay.clear();
+		ltEnd.clear();
 		lmWait.clear();
 		
 		forage = GObjConfig.NI_Forage;

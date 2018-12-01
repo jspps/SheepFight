@@ -9,9 +9,12 @@ import com.bowlong.lang.RndEx;
  * @version createtime：2018-11-17下午7:16:09
  */
 public class GObjWolf extends GObject {
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;	
+	private long preRunto;
 
-	private long nextLiveMs; // 下次复活时间
+	public long getPreRunto() {
+		return preRunto;
+	}
 
 	public GObjWolf() {
 		super(ETGObj.Wolf, 0);
@@ -38,16 +41,14 @@ public class GObjWolf extends GObject {
 	}
 
 	public void disappear(boolean isReLive) {
-		setBelongTo(0);
-		stop();
-		nextLiveMs = 0;
+		this.preRunto = getRunTo();
+		super.disappear(isReLive);
 		if (isReLive)
 			nextLiveMs = now() + GObjConfig.LMS_NextLive_Wolf;
 	}
 
-	public boolean isCanRelive() {
-		if (this.nextLiveMs > 0)
-			return this.nextLiveMs <= now();
-		return false;
+	public void readyGo(long runTo) {
+		this.ready(0);
+		startRunning(runTo);
 	}
 }

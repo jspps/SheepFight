@@ -20,8 +20,7 @@ public class GObject extends BeanOrigin {
 	private long startMs = 0;// 开始跑的时间
 	private long belongTo = 0; // 拥有者
 	private long runTo = 0; // 跑向的人
-	private boolean isRunning = false;
-	protected int nState = 0; // 运行状态
+	protected int nState = 0; // 运行状态[1:ready,2:Running]
 	protected double endDistance = 0; // 目的距离
 	private double base_speed = -1; // 基础速度
 	private long startStayMs = 0;// 开始停留时间
@@ -29,6 +28,7 @@ public class GObject extends BeanOrigin {
 	protected boolean isRunBack = false; // 是否返了(用于距离减少) - 目前没用
 	private double initPos = 0; // 初始位置
 	private double volume = 0.2d; // 体积大小
+	protected long nextLiveMs; // 下次复活时间
 
 	public long getId() {
 		return id;
@@ -87,11 +87,7 @@ public class GObject extends BeanOrigin {
 	}
 
 	public boolean isRunning() {
-		return isRunning;
-	}
-
-	public void setRunning(boolean isRunning) {
-		this.isRunning = isRunning;
+		return nState == 2;
 	}
 
 	public double getVolume() {
@@ -125,7 +121,7 @@ public class GObject extends BeanOrigin {
 		map.put("runTo", String.valueOf(runTo));
 		map.put("endDistance", this.endDistance);
 		map.put("distance", calcDistance());
-		map.put("isRunning", isRunning);
+		map.put("isRunning", isRunning());
 		// map.put("start_ms", startMs);
 		return map;
 	}
@@ -162,15 +158,20 @@ public class GObject extends BeanOrigin {
 		return this.runway;
 	}
 
-	public void stop() {
+	protected void stop() {
 		this.runway = 0;
-		this.runTo = 0;
 		this.startMs = 0;
-		this.stayMs = 0;
-		this.startStayMs = 0;
-		this.isRunning = false;
+		this.runTo = 0;
 		this.nState = 0;
+		this.startStayMs = 0;
+		this.stayMs = 0;
+		this.isRunBack = false;
 		this.initPos = 0;
+		this.nextLiveMs = 0;
+	}
+
+	public void disappear(boolean isReLive) {
+		stop();
 	}
 
 	public void ready(double initPos) {
@@ -178,13 +179,12 @@ public class GObject extends BeanOrigin {
 			this.runway = currWay(true);
 		}
 		reRunning(this.runTo, this.runway, GObjConfig.LenMax_Runway);
-		this.isRunning = false;
 		this.nState = 1;
 		this.initPos = initPos;
 	}
 
 	public boolean isReadyRunning() {
-		return this.isRunning || this.nState == 1;
+		return this.nState == 1 || this.nState == 2;
 	}
 
 	private void reRunning(long runTo, int runway, double endDis) {
@@ -194,7 +194,6 @@ public class GObject extends BeanOrigin {
 		this.startMs = now() + 20;
 		this.stayMs = 0;
 		this.startStayMs = 0;
-		this.isRunning = true;
 		this.nState = 2;
 		this.isRunBack = (this.runTo == this.belongTo);
 	}
@@ -225,7 +224,7 @@ public class GObject extends BeanOrigin {
 
 	public double calcDistance() {
 		double val = initPos;
-		if (isRunning) {
+		if (isRunning()) {
 			long diffMs = (now() - this.startMs - this.stayMs);
 			val += (diffMs * gobjType.getSpeed()) / 1000;
 		}
@@ -265,8 +264,14 @@ public class GObject extends BeanOrigin {
 		return 0;
 	}
 
-	public boolean isMvEnemy() {
+	public boolean isToEnemy() {
 		return this.belongTo != this.runTo;
+	}
+
+	public boolean isCanRelive() {
+		if (this.nextLiveMs > 0)
+			return this.nextLiveMs <= now();
+		return false;
 	}
 
 	// 停留会儿吧

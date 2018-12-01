@@ -12,7 +12,6 @@ public class GObjNeutral extends GObject {
 	private static final long serialVersionUID = 1L;
 
 	private int numMutiny; // 叛变次数
-	private long nextLiveMs; // 下次复活时间
 
 	public GObjNeutral(int runway) {
 		super(ETGObj.SheepNeutral, runway,0);
@@ -35,18 +34,11 @@ public class GObjNeutral extends GObject {
 		int way = getRunway();
 		setBelongTo(0);
 		getGobjType().setPower(0);
-		stop();
-		nextLiveMs = 0;
+		super.disappear(isReLive);
 		numMutiny = 0;
 		setRunway(way);
 		if (isReLive)
 			nextLiveMs = now() + GObjConfig.LMS_NextLive_Neutral;
-	}
-
-	public boolean isCanRelive() {
-		if (this.nextLiveMs > 0)
-			return this.nextLiveMs <= now();
-		return false;
 	}
 	
 	@Override

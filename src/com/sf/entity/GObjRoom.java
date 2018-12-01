@@ -144,7 +144,7 @@ public class GObjRoom extends BeanOrigin implements Runnable {
 			sesid2 = 0;
 			isMatchRobot = false;
 			robot.clear();
-			wolf.stop();
+			wolf.disappear(false);
 			neutral1.disappear(false);
 			neutral2.disappear(false);
 			spinach.disappear(false);
@@ -277,34 +277,56 @@ public class GObjRoom extends BeanOrigin implements Runnable {
 	}
 
 	void handlerWolf(GObjSession ses1, GObjSession ses2) {
-		int way = wolf.getRunway();
-		long runTo = wolf.getRunTo();
-		GObject tmp1 = null;
 		if (wolf.isEnd()) {
 			wolf.disappear(true);
 		} else if (wolf.isCanRelive()) {
-			wolf.ready();
+			long runTo = getOther(wolf.getPreRunto());
+			wolf.readyGo(runTo);
 		} else if (wolf.isReadyRunning()) {
-			boolean isRunZero = runTo <= 0;
-			GObjSession ses = (runTo == sesid1) ? ses1 : ses2;
-			tmp1 = ses.getFirst4Way(way);
-			if (wolf.isColliding(tmp1)) {
-				tmp1.runBack(2);
-				runTo = ses2.getId();
-			}
-
-			if (isRunZero) {
-				tmp1 = ses1.getFirst4Way(way);
-				if (wolf.isColliding(tmp1)) {
-					tmp1.runBack(2);
-					runTo = ses1.getId();
+			_wolf(ses1);
+			_wolf(ses2);
+			if (wolf.isRunning()) {
+				GObjNeutral neutral = null;
+				int way = wolf.getRunway();
+				switch (way) {
+				case 2:
+					if (neutral1.isRunning()) {
+						neutral = neutral1;
+					}
+					break;
+				case 4:
+					if (neutral2.isRunning()) {
+						neutral = neutral2;
+					}
+					break;
+				default:
+					break;
+				}
+				if (wolf.isColliding(neutral)) {
+					neutral.disappear(true);
 				}
 			}
+		}
+	}
 
-			if (runTo > 0) {
-				wolf.startRunning(runTo);
+	private long _wolf(GObjSession ses) {
+		int way = wolf.getRunway();
+		long runTo = wolf.getRunTo();
+		boolean isRunZero = runTo <= 0;
+		List<GObject> list = ses.getList4Way(way);
+		int lens = list.size();
+		GObject tmp1 = null;
+		for (int i = 0; i < lens; i++) {
+			tmp1 = list.get(i);
+			if (wolf.isColliding(tmp1)) {
+				ses.onArrive(tmp1);
+				runTo = ses.getId();
 			}
 		}
+		if (isRunZero && runTo > 0) {
+			wolf.startRunning(runTo);
+		}
+		return runTo;
 	}
 
 	void handlerSpinach(GObjSession ses1, GObjSession ses2) {
@@ -328,23 +350,6 @@ public class GObjRoom extends BeanOrigin implements Runnable {
 		} else if (df2 <= GObjConfig.NMax_CollidDistance) {
 			tmp2.setGobjType(ETGObj.SheepBig);
 			spinach.disappear(true);
-		}
-	}
-
-	private void _calcNeutralColliding(GObjSession srcSes, GObjNeutral neutral, int way, long beTo) {
-		GObject gobj = srcSes.getFirst4Way(way);
-		if (neutral.isColliding(gobj)) {
-			if (neutral.isOverMutiny()) {
-				neutral.disappear(true);
-				return;
-			}
-			int power1 = neutral.getGobjType().getPower();
-			int power2 = gobj.getGobjType().getPower();
-			if (power1 < power2) {
-				neutral.doMutiny(srcSes.getId(), beTo, power2);
-			} else if (power1 > power2) {
-				gobj.runBack(0);
-			}
 		}
 	}
 
@@ -376,15 +381,31 @@ public class GObjRoom extends BeanOrigin implements Runnable {
 						beTo = ses1.getId();
 					}
 				}
-				_calcNeutralColliding(tmpSes, tmp1, way, beTo);
+				_neutral(tmpSes, tmp1, way, beTo);
 				if (runTo <= 0) {
 					tmpSes = ses1;
 					beTo = ses2.getId();
-					_calcNeutralColliding(tmpSes, tmp1, way, beTo);
+					_neutral(tmpSes, tmp1, way, beTo);
 				}
 			}
 		}
+	}
 
+	private void _neutral(GObjSession srcSes, GObjNeutral neutral, int way, long beTo) {
+		GObject gobj = srcSes.getFirst4Way(way);
+		if (neutral.isColliding(gobj)) {
+			if (neutral.isOverMutiny()) {
+				neutral.disappear(true);
+				return;
+			}
+			int power1 = neutral.getGobjType().getPower();
+			int power2 = gobj.getGobjType().getPower();
+			if (power1 < power2) {
+				neutral.doMutiny(srcSes.getId(), beTo, power2);
+			} else if (power1 > power2) {
+				gobj.runBack(0);
+			}
+		}
 	}
 
 	void handlerColliding(GObjSession ses1, GObjSession ses2) {
@@ -396,12 +417,12 @@ public class GObjRoom extends BeanOrigin implements Runnable {
 			lens1 = list1.size();
 			lens2 = list2.size();
 			for (int j = 0; j < lens1; j++) {
-				_Colliding(list1.get(j), lens2 > j ? list2.get(j) : null);
+				_colliding(list1.get(j), lens2 > j ? list2.get(j) : null);
 			}
 		}
 	}
 
-	private void _Colliding(GObject gobj1, GObject gobj2) {
+	private void _colliding(GObject gobj1, GObject gobj2) {
 		if (gobj1 != null && gobj2 != null) {
 			int powerState = 0;
 			if (gobj1.isColliding(gobj2)) {
@@ -432,7 +453,7 @@ public class GObjRoom extends BeanOrigin implements Runnable {
 		lens = listEnd.size();
 		for (int i = 0; i < lens; i++) {
 			tmp1 = listEnd.get(i);
-			if (tmp1.isMvEnemy()) {
+			if (tmp1.isToEnemy()) {
 				tmp = tmp1.getBelongTo() == ses1.getId() ? ses2 : ses1;
 				tmp.reduceForage(tmp1.getGobjType().getPower());
 				if (tmp.isFails()) {
