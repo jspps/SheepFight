@@ -14,18 +14,19 @@ public class GObjNeutral extends GObject {
 	private int numMutiny; // 叛变次数
 	private long nextLiveMs; // 下次复活时间
 
-	public GObjNeutral(int runway, long belongTo) {
-		super(ETGObj.SheepNeutral, runway, belongTo);
+	public GObjNeutral(int runway) {
+		super(ETGObj.SheepNeutral, runway,0);
 	}
 
 	public boolean isOverMutiny() {
 		return numMutiny >= GObjConfig.NMax_NeutralMutiny;
 	}
 
-	public void doMutiny(long beTo, long runTo) {
+	public void doMutiny(long beTo, long runTo,int power) {
 		this.numMutiny++;
 		double speed = RndEx.nextDouble(GObjConfig.NMin_SpeedNeutral, GObjConfig.NMax_SpeedNeutral);
 		getGobjType().setSpeed(speed);
+		getGobjType().setPower(power);
 		setBelongTo(beTo);
 		runBack(runTo, false);
 	}

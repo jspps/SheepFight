@@ -32,8 +32,8 @@ public class GObjRoom extends BeanOrigin implements Runnable {
 	private CompGObjEnd comObj = new CompGObjEnd();
 	private GObjRobot robot = new GObjRobot(); // 机器人
 	private GObjWolf wolf = new GObjWolf();
-	private GObjNeutral neutral1 = new GObjNeutral(2, 0);
-	private GObjNeutral neutral2 = new GObjNeutral(4, 0);
+	private GObjNeutral neutral1 = new GObjNeutral(2);
+	private GObjNeutral neutral2 = new GObjNeutral(4);
 	private GObjSpinach spinach = new GObjSpinach();
 	private List<GObject> listEnd = new ArrayList<GObject>();
 
@@ -341,7 +341,7 @@ public class GObjRoom extends BeanOrigin implements Runnable {
 			int power1 = neutral.getGobjType().getPower();
 			int power2 = gobj.getGobjType().getPower();
 			if (power1 < power2) {
-				neutral.doMutiny(srcSes.getId(), beTo);
+				neutral.doMutiny(srcSes.getId(), beTo, power2);
 			} else if (power1 > power2) {
 				gobj.runBack(0);
 			}

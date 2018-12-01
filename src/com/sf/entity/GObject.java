@@ -104,11 +104,7 @@ public class GObject extends BeanOrigin {
 	public GObject(ETGObj gobjType, long belongTo) {
 		reInit(gobjType, 0, belongTo);
 	}
-
-	public GObject(ETGObj gobjType) {
-		reInit(gobjType, rndWay(), 0);
-	}
-
+	
 	@Override
 	public Map<String, Object> toMap(Map<String, Object> map) {
 		if (map == null)

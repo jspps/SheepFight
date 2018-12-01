@@ -2,7 +2,6 @@ package com.sf.entity;
 
 import com.bowlong.lang.RndEx;
 
-
 /**
  * 狼
  * 
@@ -13,11 +12,11 @@ public class GObjWolf extends GObject {
 	private static final long serialVersionUID = 1L;
 
 	private long nextLiveMs; // 下次复活时间
-	
+
 	public GObjWolf() {
-		super(ETGObj.Wolf,0,0);
+		super(ETGObj.Wolf, 0);
 	}
-	
+
 	@Override
 	public void ready(double initPos) {
 		super.ready(initPos);
@@ -26,18 +25,18 @@ public class GObjWolf extends GObject {
 		getGobjType().setSpeed(speed);
 		setRunway(rndWay());
 	}
-	
-	public void ready(){
+
+	public void ready() {
 		ready(GObjConfig.NI_PosWolf);
 	}
-	
+
 	@Override
 	public void startRunning(long runTo) {
-		if(this.isRunning())
+		if (this.isRunning())
 			return;
 		super.startRunning(runTo);
 	}
-	
+
 	public void disappear(boolean isReLive) {
 		setBelongTo(0);
 		stop();
@@ -45,7 +44,7 @@ public class GObjWolf extends GObject {
 		if (isReLive)
 			nextLiveMs = now() + GObjConfig.LMS_NextLive_Wolf;
 	}
-	
+
 	public boolean isCanRelive() {
 		if (this.nextLiveMs > 0)
 			return this.nextLiveMs <= now();
