@@ -151,20 +151,20 @@ public class GObjRoom extends BeanOrigin implements Runnable {
 		}
 	}
 
-	public List<GObject> listScene(List<GObject> lMap) {
+	public List<GObject> listScene(List<GObject> list) {
 		if (wolf.isReadyRunning()) {
-			lMap.add(wolf);
+			list.add(wolf);
 		}
 		if (neutral1.isReadyRunning()) {
-			lMap.add(neutral1);
+			list.add(neutral1);
 		}
 		if (neutral2.isReadyRunning()) {
-			lMap.add(neutral2);
+			list.add(neutral2);
 		}
 		if (spinach.isReadyRunning()) {
-			lMap.add(spinach);
+			list.add(spinach);
 		}
-		return lMap;
+		return list;
 	}
 
 	public void matching(GObjSession ses) {
@@ -183,7 +183,7 @@ public class GObjRoom extends BeanOrigin implements Runnable {
 		}
 	}
 
-	public void starting(GObjSession ses, boolean isNdSelf) {
+	public void starting(GObjSession ses, boolean isNoticeSelf) {
 		synchronized (this) {
 			long id1 = ses.getId();
 			if (!isHas(id1)) {
@@ -210,7 +210,7 @@ public class GObjRoom extends BeanOrigin implements Runnable {
 			if (!sesOther.isRobot()) {
 				sesOther.addNotify(ETNotify.MatchedEnemy);
 			}
-			if (isNdSelf && !ses.isRobot()) {
+			if (isNoticeSelf && !ses.isRobot()) {
 				ses.addNotify(ETNotify.MatchedEnemy);
 			}
 			// objSF = Toolkit.scheduled8FixedRate(_ses, this,200,500);

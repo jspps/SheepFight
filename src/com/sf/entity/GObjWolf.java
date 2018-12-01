@@ -15,7 +15,7 @@ public class GObjWolf extends GObject {
 	private long nextLiveMs; // 下次复活时间
 	
 	public GObjWolf() {
-		reInit(ETGObj.Wolf,0,0);
+		super(ETGObj.Wolf,0,0);
 	}
 	
 	@Override

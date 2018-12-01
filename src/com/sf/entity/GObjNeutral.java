@@ -15,9 +15,7 @@ public class GObjNeutral extends GObject {
 	private long nextLiveMs; // 下次复活时间
 
 	public GObjNeutral(int runway, long belongTo) {
-		reInit(ETGObj.SheepNeutral, runway, belongTo);
-		int power = RndEx.nextInt(GObjConfig.NMin_NeutralPower, GObjConfig.NMax_NeutralPower);
-		this.getGobjType().setPower(power);
+		super(ETGObj.SheepNeutral, runway, belongTo);
 	}
 
 	public boolean isOverMutiny() {
