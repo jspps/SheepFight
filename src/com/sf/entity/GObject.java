@@ -206,8 +206,8 @@ public class GObject extends BeanOrigin {
 	}
 
 	public void runBack(long runTo, boolean isRndWay) {
-		double dis = calcDistance();
-		this.initPos = 0;
+		double dis = GObjConfig.LenMax_Runway;
+		this.initPos = dis - calcDistance();
 		reRunning(runTo, currWay(isRndWay), dis);
 	}
 

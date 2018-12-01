@@ -197,6 +197,7 @@ class LgcRoom extends MgrSession {
 					pars.put("listRunning", ses.toLMRunning());
 					break;
 				case FightEnd:
+					pars.put("isEnd", true);
 					pars.put("isWin", ses.isWin());
 					room.notifyEnd();
 					break;

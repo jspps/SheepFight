@@ -231,6 +231,7 @@ public class GObjSPlayer extends Session {
 		for (int i = 0; i < lens; i++) {
 			item = listRunning.get(i);
 			if (item.isEnd()) {
+				item.getGobjType().setSpeed(1);
 				listEnd.add(item);
 			}
 		}
