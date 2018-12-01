@@ -194,6 +194,7 @@ public class GObject extends BeanOrigin {
 		this.startMs = now() + 20;
 		this.stayMs = 0;
 		this.startStayMs = 0;
+		this.nextLiveMs = 0;
 		this.nState = 2;
 		this.isRunBack = (this.runTo == this.belongTo);
 	}
