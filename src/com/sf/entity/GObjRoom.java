@@ -280,8 +280,9 @@ public class GObjRoom extends BeanOrigin implements Runnable {
 		if (wolf.isEnd()) {
 			wolf.disappear(true);
 		} else if (wolf.isCanRelive()) {
-			long runTo = getOther(wolf.getPreRunto());
-			wolf.readyGo(runTo);
+//			long runTo = getOther(wolf.getPreRunto());
+//			wolf.readyGo(runTo);
+			wolf.ready();
 		} else if (wolf.isReadyRunning()) {
 			_wolf(ses1);
 			_wolf(ses2);
