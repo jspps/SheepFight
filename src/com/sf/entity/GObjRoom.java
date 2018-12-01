@@ -227,7 +227,7 @@ public class GObjRoom extends BeanOrigin implements Runnable {
 		}
 	}
 
-	private void handlerWaitSheep(GObjSession ses1, GObjSession ses2) {
+	void handlerWaitSheep(GObjSession ses1, GObjSession ses2) {
 		boolean isOkey1 = ses1.jugdeRndSheep();
 		boolean isOkey2 = ses2.jugdeRndSheep();
 		if (isOkey1) {
@@ -241,7 +241,7 @@ public class GObjRoom extends BeanOrigin implements Runnable {
 		}
 	}
 
-	private void handlerRobotDownSheep(GObjSession ses1, GObjSession ses2) {
+	void handlerRobotDownSheep(GObjSession ses1, GObjSession ses2) {
 		if (robot.isNoCanDown()) {
 			return;
 		}
@@ -276,7 +276,7 @@ public class GObjRoom extends BeanOrigin implements Runnable {
 		robot.downSheep(sheepId, runway, runTo);
 	}
 
-	private void handlerWolf(GObjSession ses1, GObjSession ses2) {
+	void handlerWolf(GObjSession ses1, GObjSession ses2) {
 		int way = wolf.getRunway();
 		long runTo = wolf.getRunTo();
 		GObject tmp1 = null;
@@ -307,7 +307,7 @@ public class GObjRoom extends BeanOrigin implements Runnable {
 		}
 	}
 
-	private void handlerSpinach(GObjSession ses1, GObjSession ses2) {
+	void handlerSpinach(GObjSession ses1, GObjSession ses2) {
 		if (spinach.isCanRelive()) {
 			spinach.startRnd(0);
 			return;
@@ -348,7 +348,7 @@ public class GObjRoom extends BeanOrigin implements Runnable {
 		}
 	}
 
-	private void handlerNeutral(GObjSession ses1, GObjSession ses2) {
+	void handlerNeutral(GObjSession ses1, GObjSession ses2) {
 		GObjNeutral[] arrs = { neutral1, neutral2 };
 		GObjNeutral tmp1 = null;
 		GObjSession tmpSes = null;
@@ -387,32 +387,40 @@ public class GObjRoom extends BeanOrigin implements Runnable {
 
 	}
 
-	private void handlerColliding(GObjSession ses1, GObjSession ses2) {
-		int powerState = 0;
-		GObject tmp1 = null;
-		GObject tmp2 = null;
+	void handlerColliding(GObjSession ses1, GObjSession ses2) {
+		List<GObject> list1 = null, list2 = null;
+		int lens1 = 0, lens2 = 0;
 		for (int i = 1; i <= GObjConfig.NMax_Runway; i++) {
-			tmp1 = ses1.getFirst4Way(i);
-			tmp2 = ses2.getFirst4Way(i);
-			if (tmp1 != null && tmp2 != null) {
-				if (tmp1.isColliding(tmp2)) {
-					powerState = tmp1.comPower(tmp2);
-					switch (powerState) {
-					case 1:
-						tmp2.runBack(1.5);
-						break;
-					case -1:
-						tmp1.runBack(1.5);
-						break;
-					default:
-						break;
-					}
+			list1 = ses1.getList4Way(i);
+			list2 = ses2.getList4Way(i);
+			lens1 = list1.size();
+			lens2 = list2.size();
+			for (int j = 0; j < lens1; j++) {
+				_Colliding(list1.get(j), lens2 > j ? list2.get(j) : null);
+			}
+		}
+	}
+
+	private void _Colliding(GObject gobj1, GObject gobj2) {
+		if (gobj1 != null && gobj2 != null) {
+			int powerState = 0;
+			if (gobj1.isColliding(gobj2)) {
+				powerState = gobj1.comPower(gobj2);
+				switch (powerState) {
+				case 1:
+					gobj2.runBack(1.5);
+					break;
+				case -1:
+					gobj1.runBack(1.5);
+					break;
+				default:
+					break;
 				}
 			}
 		}
 	}
 
-	private boolean handlerEnd(GObjSession ses1, GObjSession ses2) {
+	boolean handlerEnd(GObjSession ses1, GObjSession ses2) {
 		listEnd.clear();
 		int lens = 0;
 		boolean isEnd = false;

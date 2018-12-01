@@ -203,6 +203,10 @@ public class GObjSPlayer extends Session {
 		}
 		return reList;
 	}
+	
+	public List<GObject> getList4Way(int way) {
+		return getList(way, listWay);
+	}
 
 	public GObject getFirst4Way(int way) {
 		GObject gobj = null;
