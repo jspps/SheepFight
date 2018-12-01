@@ -28,7 +28,7 @@ public class GObject extends BeanOrigin {
 	private int stayMs = 0; // 停留时间毫秒 ms
 	protected boolean isRunBack = false; // 是否返了(用于距离减少) - 目前没用
 	private double initPos = 0; // 初始位置
-	private double volume = 0.4d; // 体积大小
+	private double volume = 0.2d; // 体积大小
 
 	public long getId() {
 		return id;
@@ -191,7 +191,7 @@ public class GObject extends BeanOrigin {
 		this.runway = runway;
 		this.runTo = runTo;
 		this.endDistance = endDis;
-		this.startMs = now();
+		this.startMs = now() + 20;
 		this.stayMs = 0;
 		this.startStayMs = 0;
 		this.isRunning = true;
