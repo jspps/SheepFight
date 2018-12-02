@@ -56,7 +56,7 @@ public class GObjSpinach extends GObject {
 	}
 	
 	public void beEating(GObject gobj){
-		if(!this.isReadyRunning()){
+		if(!this.isReadyRunning() || gobj == null){
 			return;
 		}
 		
@@ -65,13 +65,13 @@ public class GObjSpinach extends GObject {
 				this.endEatMs = 0;
 				this.gobjEating = null;
 			}
-		}
-		
-		if(gobj == this.gobjEating){
-			if(now() <= endEatMs){
-				this.changeBig();
+			
+			if(gobj == this.gobjEating){
+				if(now() <= endEatMs){
+					this.changeBig();
+				}
+				return;
 			}
-			return;
 		}
 		
 		double df1 = diffDistance(gobj);
