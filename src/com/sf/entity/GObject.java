@@ -266,6 +266,7 @@ public class GObject extends BeanOrigin {
 			long ms_mv = (now() - this.startMs);
 			long ms_stay = this.stayMs();
 			long ms_diff = ms_mv - ms_stay;
+			// System.out.println(String.format("mv = %s,stay = %s,diff = %s", ms_mv, ms_stay, ms_diff));
 			val += (ms_diff * getSpeed()) / 1000;
 		}
 		return val;
