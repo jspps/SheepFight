@@ -43,23 +43,49 @@ public class GObjSpinach extends GObject {
 		super.disappear(delay);
 	}
 	
-	public void beEating(GObject obj1){
+	private void changeBig(){
+		this.gobjEating.setGobjType(ETGObj.SheepBig);
+		this.gobjEating.goOn();
+		this.disappear(true);
+	}
+	
+	private void resetEat(GObject gobj){
+		this.endEatMs = now() + this.getGobjType().getPower();
+		this.gobjEating = gobj;
+		this.gobjEating.isStay(true);
+	}
+	
+	public void beEating(GObject gobj){
 		if(!this.isReadyRunning()){
 			return;
 		}
 		
-		if(obj1 == this.gobjEating){
+		if(this.gobjEating != null){
+			if(!this.gobjEating.isReadyRunning()){
+				this.endEatMs = 0;
+				this.gobjEating = null;
+			}
+		}
+		
+		if(gobj == this.gobjEating){
 			if(now() <= endEatMs){
-				this.gobjEating.setGobjType(ETGObj.SheepBig);
-				this.disappear(true);
+				this.changeBig();
 			}
 			return;
 		}
 		
-		double df1 = diffDistance(obj1);
+		double df1 = diffDistance(gobj);
 		if (df1 <= GObjConfig.NMax_CollidDistance) {
-			this.disappear(true);
-			obj1.setGobjType(ETGObj.SheepBig);
+			if(this.gobjEating == null){
+				this.resetEat(gobj);
+			}else{
+				if(this.gobjEating.getPower() > gobj.getPower()){
+					gobj.runBack();
+				}else if(this.gobjEating.getPower() < gobj.getPower()){
+					this.gobjEating.runBack();
+					this.resetEat(gobj);
+				}
+			}
 		}
 	}
 }
