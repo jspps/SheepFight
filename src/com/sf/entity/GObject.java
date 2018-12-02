@@ -263,8 +263,10 @@ public class GObject extends BeanOrigin {
 	private double calcDistance() {
 		double val = initPos;
 		if (isRunning()) {
-			long diffMs = (now() - this.startMs) - this.stayMs();
-			val += (diffMs * getSpeed()) / 1000;
+			long ms_mv = (now() - this.startMs);
+			long ms_stay = this.stayMs();
+			long ms_diff = ms_mv - ms_stay;
+			val += (ms_diff * getSpeed()) / 1000;
 		}
 		return val;
 	}
@@ -326,10 +328,10 @@ public class GObject extends BeanOrigin {
 	}
 
 	private long stayMs() {
-		if(this.currStayMs > 0)
+		if (this.currStayMs > 0)
 			return this.currStayMs;
-		
-		if(this.startStayMs > 0) {
+
+		if (this.startStayMs > 0) {
 			return now() - this.startStayMs;
 		}
 		return 0;
@@ -346,8 +348,8 @@ public class GObject extends BeanOrigin {
 			this.startStayMs = 0;
 		}
 	}
-	
-	public void goOn(){
+
+	public void goOn() {
 		isStay(false);
 	}
 }
