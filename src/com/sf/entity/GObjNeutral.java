@@ -24,15 +24,15 @@ public class GObjNeutral extends GObject {
 	public void doMutiny(long beTo, long runTo,int power) {
 		this.numMutiny++;
 		double speed = RndEx.nextDouble(GObjConfig.NMin_SpeedNeutral, GObjConfig.NMax_SpeedNeutral);
-		getGobjType().setSpeed(speed);
-		getGobjType().setPower(power);
+		setSpeed(speed);
+		setPower(power);
 		setBelongTo(beTo);
 		runBack(runTo, false);
 	}
 
 	public void disappear(boolean isReLive) {
 		numMutiny = 0;
-		getGobjType().setPower(0);
+		setPower(0);
 		int delay = isReLive ? GObjConfig.LMS_NextLive_Neutral : 0;
 		super.disappear(delay);
 	}

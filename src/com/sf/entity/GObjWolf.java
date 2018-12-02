@@ -24,7 +24,7 @@ public class GObjWolf extends GObject {
 	public void ready(double initPos) {
 		super.ready(initPos);
 		double speed = RndEx.nextDouble(GObjConfig.NMin_SpeedWolf, GObjConfig.NMax_SpeedWolf);
-		getGobjType().setSpeed(speed);
+		setSpeed(speed);
 		setRunway(rndWay());
 	}
 

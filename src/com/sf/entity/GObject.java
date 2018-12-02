@@ -15,6 +15,8 @@ public class GObject extends BeanOrigin {
 	private static final long serialVersionUID = 1L;
 	private long id;
 	private ETGObj gobjType = ETGObj.SheepSmall; // 类型
+	private int power;// 力量or总体时长(秒)
+	private double speed;// 速度单位Unit/秒 - 这个单位：可能是米，有可能是一个单元格
 	private int runway = 0; // 跑道编号
 	private long createtime = 0; // 创建时间
 	private long startMs = 0;// 开始跑的时间
@@ -22,7 +24,8 @@ public class GObject extends BeanOrigin {
 	private long runTo = 0; // 跑向的人
 	protected int nState = 0; // 运行状态[1:ready,2:Running]
 	protected double endDistance = 0; // 目的距离
-	private double base_speed = -1; // 基础速度
+	private double speed_base = -1; // 基础速度
+	private double speed_multiples = 1; // 速度倍率
 	private long startStayMs = 0;// 开始停留时间
 	private int stayMs = 0; // 停留时间毫秒 ms
 	protected boolean isRunBack = false; // 是否返了(用于距离减少) - 目前没用
@@ -44,6 +47,25 @@ public class GObject extends BeanOrigin {
 
 	public void setGobjType(ETGObj gobjType) {
 		this.gobjType = gobjType;
+		this.speed_base = this.gobjType.getSpeed();
+		setSpeed(this.speed_base * this.speed_multiples);
+		setPower(this.gobjType.getPower());
+	}
+
+	public int getPower() {
+		return power;
+	}
+
+	public void setPower(int power) {
+		this.power = power;
+	}
+
+	public double getSpeed() {
+		return speed;
+	}
+
+	public void setSpeed(double speed) {
+		this.speed = speed;
 	}
 
 	public int getRunway() {
@@ -122,6 +144,10 @@ public class GObject extends BeanOrigin {
 		map.put("endDistance", this.endDistance);
 		map.put("distance", calcDistance());
 		map.put("isRunning", isRunning());
+		if (power > 0)
+			map.put("power", power);
+		if (speed > 0)
+			map.put("speed", speed);
 		// map.put("start_ms", startMs);
 		return map;
 	}
@@ -129,13 +155,10 @@ public class GObject extends BeanOrigin {
 	public GObject reInit(ETGObj gobjType, int runway, long belongTo) {
 		this.stop();
 		this.id = GObjConfig.SW_GID.nextId();
-		this.gobjType = gobjType;
+		setGobjType(gobjType);
 		this.runway = runway;
 		this.belongTo = belongTo;
 		this.createtime = now();
-		if (this.base_speed == -1) {
-			this.base_speed = this.gobjType.getSpeed();
-		}
 		return this;
 	}
 
@@ -169,9 +192,9 @@ public class GObject extends BeanOrigin {
 		this.isRunBack = false;
 		this.initPos = 0;
 		this.nextLiveMs = 0;
-		if (this.base_speed != -1) {
-			this.getGobjType().setSpeed(this.base_speed);
-		}
+		this.speed_multiples = 1;
+		setSpeed(this.gobjType.getSpeed());
+		setPower(this.gobjType.getPower());
 	}
 
 	public void disappear(boolean isReLive) {
@@ -229,7 +252,8 @@ public class GObject extends BeanOrigin {
 	public void runBack(double multiples) {
 		runBack(this.belongTo, false);
 		if (multiples > 0 && multiples != 1) {
-			this.gobjType.setSpeed(this.base_speed * multiples);
+			this.speed_multiples = multiples;
+			setSpeed(this.speed_base * this.speed_multiples);
 		}
 	}
 
@@ -237,7 +261,7 @@ public class GObject extends BeanOrigin {
 		double val = initPos;
 		if (isRunning()) {
 			long diffMs = (now() - this.startMs - this.stayMs);
-			val += (diffMs * gobjType.getSpeed()) / 1000;
+			val += (diffMs * getSpeed()) / 1000;
 		}
 		return val;
 	}

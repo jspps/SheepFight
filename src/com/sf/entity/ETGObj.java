@@ -11,12 +11,8 @@ import java.util.Map;
  * @version createtime：2018-11-11上午9:13:20
  */
 public enum ETGObj {
-	SheepSmall("小羊", 1, 1), 
-	SheepMiddle("中羊", 2, 2), 
-	SheepBig("大羊", 3, 4), 
-	SheepNeutral("叛变羊", 4), 
-	Wolf("狼", 5), 
-	Spinach("菠菜罐头", 6, 7, 0), ;
+	SheepSmall(1, "小羊", 1), SheepMiddle(2, "中羊", 2), SheepBig(3, "大羊", 4), SheepNeutral(4, "叛变羊"), Wolf(5, "狼"), Spinach(
+			6, "菠菜罐头", 7, 0), ;
 	// 取得对象的方法
 	static public ETGObj get(int index) {
 		for (ETGObj got : ETGObj.values()) {
@@ -43,19 +39,19 @@ public enum ETGObj {
 	private double speed;// 速度单位Unit/秒 - 这个单位：可能是米，有可能是一个单元格
 
 	// 构造方法
-	private ETGObj(String name, int index, int power, double speed) {
+	private ETGObj(int index, String name, int power, double speed) {
 		this.name = name;
 		this.index = index;
 		this.power = power;
 		this.speed = speed;
 	}
 
-	private ETGObj(String name, int index, int power) {
-		this(name, index, power, 1);
+	private ETGObj(int index, String name, int power) {
+		this(index, name, power, 1);
 	}
 
-	private ETGObj(String name, int index) {
-		this(name, index, 0);
+	private ETGObj(int index, String name) {
+		this(index, name, 0);
 	}
 
 	// get set 方法
@@ -100,10 +96,6 @@ public enum ETGObj {
 			map = new HashMap<String, Object>();
 		map.put("index", index);
 		map.put("name", name);
-		if (power > 0)
-			map.put("power", power);
-		if (speed > 0)
-			map.put("speed", speed);
 		return map;
 	}
 
