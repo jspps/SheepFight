@@ -173,6 +173,12 @@ public class GObject extends BeanOrigin {
 	public void disappear(boolean isReLive) {
 		stop();
 	}
+	
+	public void disappear(long delayReLiveMs) {
+		stop();
+		if(delayReLiveMs > 0)
+			this.nextLiveMs = now() + delayReLiveMs;
+	}
 
 	public void ready(double initPos) {
 		if (this.runway <= 0) {

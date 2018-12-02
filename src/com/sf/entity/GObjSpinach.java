@@ -37,9 +37,8 @@ public class GObjSpinach extends GObject {
 	}
 
 	public void disappear(boolean isReLive) {
-		super.disappear(isReLive);
 		setBelongTo(0);
-		if (isReLive)
-			this.nextLiveMs = now() + GObjConfig.LMS_NextLive_Spinach;
+		int delay = isReLive ? GObjConfig.LMS_NextLive_Spinach : 0;
+		super.disappear(delay);
 	}
 }

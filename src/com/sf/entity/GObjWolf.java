@@ -41,9 +41,8 @@ public class GObjWolf extends GObject {
 
 	public void disappear(boolean isReLive) {
 		this.preRunto = getRunTo();
-		super.disappear(isReLive);
-		if (isReLive)
-			nextLiveMs = now() + GObjConfig.LMS_NextLive_Wolf;
+		int delay = isReLive ? GObjConfig.LMS_NextLive_Wolf : 0;
+		super.disappear(delay);
 	}
 
 	public void readyGo(long runTo) {

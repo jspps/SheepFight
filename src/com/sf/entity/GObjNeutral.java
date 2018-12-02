@@ -31,14 +31,11 @@ public class GObjNeutral extends GObject {
 	}
 
 	public void disappear(boolean isReLive) {
-		int way = getRunway();
+		numMutiny = 0;
 		setBelongTo(0);
 		getGobjType().setPower(0);
-		super.disappear(isReLive);
-		numMutiny = 0;
-		setRunway(way);
-		if (isReLive)
-			nextLiveMs = now() + GObjConfig.LMS_NextLive_Neutral;
+		int delay = isReLive ? GObjConfig.LMS_NextLive_Neutral : 0;
+		super.disappear(delay);
 	}
 		
 	public void ready(){
