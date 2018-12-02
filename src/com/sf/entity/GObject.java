@@ -159,7 +159,7 @@ public class GObject extends BeanOrigin {
 	}
 
 	protected void stop() {
-		this.runway = 0;
+//		this.runway = 0;
 		this.startMs = 0;
 		this.runTo = 0;
 		this.nState = 0;
