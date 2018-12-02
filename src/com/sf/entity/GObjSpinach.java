@@ -75,7 +75,7 @@ public class GObjSpinach extends GObject {
 		}
 		
 		double df1 = diffDistance(gobj);
-		if (df1 <= GObjConfig.NMax_CollidDistance) {
+		if (df1 >= 0 && df1 <= GObjConfig.NMax_CollidDistance) {
 			if(this.gobjEating == null){
 				this.resetEat(gobj);
 			}else{
