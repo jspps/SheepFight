@@ -133,7 +133,7 @@ public class GObject extends BeanOrigin {
 		this.runway = runway;
 		this.belongTo = belongTo;
 		this.createtime = now();
-		if (this.base_speed <= 0) {
+		if (this.base_speed == -1) {
 			this.base_speed = this.gobjType.getSpeed();
 		}
 		return this;
@@ -159,8 +159,9 @@ public class GObject extends BeanOrigin {
 	}
 
 	protected void stop() {
-//		this.runway = 0;
+		// this.runway = 0;
 		this.startMs = 0;
+		this.belongTo = 0;
 		this.runTo = 0;
 		this.nState = 0;
 		this.startStayMs = 0;
@@ -168,15 +169,16 @@ public class GObject extends BeanOrigin {
 		this.isRunBack = false;
 		this.initPos = 0;
 		this.nextLiveMs = 0;
+		this.getGobjType().setSpeed(this.base_speed);
 	}
 
 	public void disappear(boolean isReLive) {
 		stop();
 	}
-	
+
 	public void disappear(long delayReLiveMs) {
 		stop();
-		if(delayReLiveMs > 0)
+		if (delayReLiveMs > 0)
 			this.nextLiveMs = now() + delayReLiveMs;
 	}
 
@@ -224,7 +226,7 @@ public class GObject extends BeanOrigin {
 
 	public void runBack(double multiples) {
 		runBack(this.belongTo, false);
-		if (multiples > 0) {
+		if (multiples > 0 && multiples != 1) {
 			this.gobjType.setSpeed(this.base_speed * multiples);
 		}
 	}

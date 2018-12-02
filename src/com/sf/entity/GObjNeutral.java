@@ -32,7 +32,6 @@ public class GObjNeutral extends GObject {
 
 	public void disappear(boolean isReLive) {
 		numMutiny = 0;
-		setBelongTo(0);
 		getGobjType().setPower(0);
 		int delay = isReLive ? GObjConfig.LMS_NextLive_Neutral : 0;
 		super.disappear(delay);

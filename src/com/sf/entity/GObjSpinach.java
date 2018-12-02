@@ -14,12 +14,11 @@ public class GObjSpinach extends GObject {
 	public GObjSpinach() {
 		super(ETGObj.Spinach, 0);
 	}
-
-	public void startRnd(long beTo) {
+	
+	public void readyIn(long beTo) {
 		if (now() <= this.nextLiveMs)
 			return;
 		setBelongTo(beTo); // 通过beto来判断距离(disPos 的距离)
-		setRunTo(0);
 		setRunway(0);
 		double _initPos = RndEx.nextDouble(GObjConfig.NMin_PosSpinach, GObjConfig.NMax_PosSpinach);
 		ready(_initPos);
@@ -37,7 +36,6 @@ public class GObjSpinach extends GObject {
 	}
 
 	public void disappear(boolean isReLive) {
-		setBelongTo(0);
 		int delay = isReLive ? GObjConfig.LMS_NextLive_Spinach : 0;
 		super.disappear(delay);
 	}

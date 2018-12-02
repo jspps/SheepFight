@@ -202,7 +202,7 @@ public class GObjRoom extends BeanOrigin implements Runnable {
 			wolf.ready();
 			neutral1.ready();
 			neutral2.ready();
-			spinach.startRnd(0);
+			spinach.readyIn(0);
 			ms_start = now();
 			ms_over = ms_start + GObjConfig.NMax_RoomTime;
 
@@ -332,7 +332,7 @@ public class GObjRoom extends BeanOrigin implements Runnable {
 
 	void handlerSpinach(GObjSession ses1, GObjSession ses2) {
 		if (spinach.isCanRelive()) {
-			spinach.startRnd(0);
+			spinach.readyIn(0);
 			return;
 		}
 
@@ -430,10 +430,10 @@ public class GObjRoom extends BeanOrigin implements Runnable {
 				powerState = gobj1.comPower(gobj2);
 				switch (powerState) {
 				case 1:
-					gobj2.runBack(1.5);
+					gobj2.runBack(2);
 					break;
 				case -1:
-					gobj1.runBack(1.5);
+					gobj1.runBack(2);
 					break;
 				default:
 					break;
