@@ -284,6 +284,13 @@ public class GObjRoom extends BeanOrigin implements Runnable {
 			// wolf.readyGo(runTo);
 			wolf.ready();
 		} else if (wolf.isReadyRunning()) {
+			if (!wolf.isRunning()) {
+				int lens1 = ses1.getLens4Way(wolf.getRunway());
+				int lens2 = ses2.getLens4Way(wolf.getRunway());
+				if (lens1 + lens2 <= 0) {
+					wolf.nextRndWay();
+				}
+			}
 			_wolf(ses1);
 			_wolf(ses2);
 			if (wolf.isRunning()) {

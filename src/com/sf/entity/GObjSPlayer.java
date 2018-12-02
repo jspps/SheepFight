@@ -87,7 +87,6 @@ public class GObjSPlayer extends Session {
 		map.put("name", name);
 		map.put("icon", icon);
 		map.put("forage", forage);
-//		map.put("listWait", lmWait());
 		return map;
 	}
 
@@ -118,7 +117,7 @@ public class GObjSPlayer extends Session {
 		}
 		return lMap;
 	}
-	
+
 	public List<Map<String, Object>> lmWait() {
 		lmWait.clear();
 		return toListMap(lmWait, listWait);
@@ -151,11 +150,11 @@ public class GObjSPlayer extends Session {
 	}
 
 	public boolean jugdeRndSheep() {
-		if (this.listWait.size() >= GObjConfig.NMax_Sheep_Wait){
+		if (this.listWait.size() >= GObjConfig.NMax_Sheep_Wait) {
 			this.nextRndWait = 0;
 			return false;
 		}
-		
+
 		long now = now();
 		if (nextRndWait <= now) {
 			this.nextRndWait = now + GObjConfig.LMS_NextNewSheep;
@@ -164,13 +163,13 @@ public class GObjSPlayer extends Session {
 		}
 		return false;
 	}
-	
+
 	private void reNextTime4Wait() {
-		if (this.listWait.size() >= GObjConfig.NMax_Sheep_Wait){
+		if (this.listWait.size() >= GObjConfig.NMax_Sheep_Wait) {
 			this.nextRndWait = 0;
 			return;
 		}
-		
+
 		long now = now();
 		if (nextRndWait <= 0) {
 			this.nextRndWait = now + GObjConfig.LMS_NextNewSheep;
@@ -203,7 +202,7 @@ public class GObjSPlayer extends Session {
 		}
 		return reList;
 	}
-	
+
 	public List<GObject> getList4Way(int way) {
 		return getList(way, ltWay);
 	}
@@ -226,6 +225,13 @@ public class GObjSPlayer extends Session {
 		}
 		ltWay.clear();
 		return sum;
+	}
+
+	public int getLens4Way(int way) {
+		ltWay = getList4Way(way);
+		int lens = ltWay.size();
+		ltWay.clear();
+		return lens;
 	}
 
 	public List<GObject> jugdeArrive() {
@@ -260,7 +266,7 @@ public class GObjSPlayer extends Session {
 			onArrive(item);
 		}
 		nextRndWait = 0;
-		
+
 		mapWait.clear();
 		listWait.clear();
 		mapRunning.clear();
@@ -268,17 +274,17 @@ public class GObjSPlayer extends Session {
 		ltWay.clear();
 		ltEnd.clear();
 		lmWait.clear();
-		
+
 		forage = GObjConfig.NI_Forage;
 	}
-	
+
 	public void reduceForage(int reduce) {
 		int curr = getForage();
 		int nCurr = curr - reduce;
 		nCurr = nCurr <= 0 ? 0 : nCurr;
 		setForage(nCurr);
 	}
-	
+
 	public boolean downSheep(long sheepId, int runway, long runTo) {
 		return startRunning(sheepId, runway, runTo);
 	}

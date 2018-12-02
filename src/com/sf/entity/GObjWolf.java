@@ -11,6 +11,7 @@ import com.bowlong.lang.RndEx;
 public class GObjWolf extends GObject {
 	private static final long serialVersionUID = 1L;	
 	private long preRunto;
+	private long ms_next_rndway = 0; // 在一条道上，待久了没羊来，就随机跑道
 
 	public long getPreRunto() {
 		return preRunto;
@@ -26,6 +27,7 @@ public class GObjWolf extends GObject {
 		double speed = RndEx.nextDouble(GObjConfig.NMin_SpeedWolf, GObjConfig.NMax_SpeedWolf);
 		setSpeed(speed);
 		setRunway(rndWay());
+		this.ms_next_rndway = now() + GObjConfig.LMS_NextRndWay_Wolf;
 	}
 
 	public void ready() {
@@ -48,5 +50,16 @@ public class GObjWolf extends GObject {
 	public void readyGo(long runTo) {
 		this.ready(0);
 		startRunning(runTo);
+	}
+	
+	public void nextRndWay(){
+		if(this.isRunning())
+			return;
+		
+		if(this.ms_next_rndway > 0){
+			if(now() <= this.ms_next_rndway){
+				ready();
+			}
+		}
 	}
 }
