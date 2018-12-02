@@ -225,11 +225,10 @@ public class GObject extends BeanOrigin {
 		this.runTo = runTo;
 		this.endDistance = endDis;
 		this.startMs = now() + 20;
-		this.stayMs = 0;
-		this.startStayMs = 0;
 		this.nextLiveMs = 0;
 		this.nState = 2;
 		this.isRunBack = (this.runTo == this.belongTo);
+		this.stayOrRun(false);
 	}
 
 	public void startRunning(long runTo, int runway) {
@@ -257,7 +256,7 @@ public class GObject extends BeanOrigin {
 		}
 	}
 
-	public double calcDistance() {
+	private double calcDistance() {
 		double val = initPos;
 		if (isRunning()) {
 			long diffMs = (now() - this.startMs - this.stayMs);
@@ -266,14 +265,22 @@ public class GObject extends BeanOrigin {
 		return val;
 	}
 
-	// 是否移动到终点
-	private boolean isEnd(double otherDis, boolean isAbs) {
-		double mvDis = calcDistance() + otherDis + this.volume / 2;
-		double diff = this.endDistance - mvDis;
+	public double allDistance() {
+		return calcDistance() + this.volume / 2;
+	}
+
+	private boolean isJugdeCollide(double diff, boolean isAbs) {
 		if (isAbs) {
 			diff = Math.abs(diff);
 		}
 		return diff <= GObjConfig.NMax_CollidDistance;
+	}
+
+	// 是否移动到终点
+	private boolean isEnd(double otherDis, boolean isAbs) {
+		double mvDis = allDistance() + otherDis;
+		double diff = this.endDistance - mvDis;
+		return isJugdeCollide(diff, isAbs);
 	}
 
 	// 是否移动到终点
@@ -284,7 +291,12 @@ public class GObject extends BeanOrigin {
 	public boolean isColliding(GObject gobj) {
 		if (gobj == null)
 			return false;
-		double val = gobj.calcDistance() + gobj.getVolume() / 2;
+		boolean isSameDirection = gobj.getRunTo() == this.getRunTo();
+		double val = gobj.allDistance();
+		if (isSameDirection) {
+			double curVal = allDistance();
+			return isJugdeCollide(val - curVal, true);
+		}
 		return isEnd(val, true);
 	}
 
@@ -313,7 +325,7 @@ public class GObject extends BeanOrigin {
 	public void stayOrRun(boolean isStay) {
 		if (isStay) {
 			this.startStayMs = now();
-		} else {
+		} else if(!this.isRunBack) {
 			if (this.startStayMs > 0) {
 				this.startMs += now() - this.startStayMs;
 			}

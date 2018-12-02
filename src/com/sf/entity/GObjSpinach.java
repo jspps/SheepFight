@@ -29,8 +29,8 @@ public class GObjSpinach extends GObject {
 		if (gobj == null)
 			return lens;
 
-		double dis = gobj.calcDistance();
-		double disCur = calcDistance();
+		double dis = gobj.allDistance();
+		double disCur = allDistance();
 		boolean isSameDir = gobj.getId() == getBelongTo();
 		return isSameDir ? (disCur - dis) : (lens - disCur - dis);
 	}
