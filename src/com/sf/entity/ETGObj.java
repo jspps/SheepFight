@@ -11,8 +11,8 @@ import java.util.Map;
  * @version createtime：2018-11-11上午9:13:20
  */
 public enum ETGObj {
-	SheepSmall(1, "小羊", 1), SheepMiddle(2, "中羊", 2), SheepBig(3, "大羊", 4), SheepNeutral(4, "叛变羊"), Wolf(5, "狼"), Spinach(
-			6, "菠菜罐头", 7, 0), ;
+	SheepSmall(1, "小羊", 1), SheepMiddle(2, "中羊", 2), SheepBig(3, "大羊", 4), 
+	SheepNeutral(4, "叛变羊"), Wolf(5, "狼"), Spinach(6, "菠菜罐头", 7000, 0),;
 	// 取得对象的方法
 	static public ETGObj get(int index) {
 		for (ETGObj got : ETGObj.values()) {

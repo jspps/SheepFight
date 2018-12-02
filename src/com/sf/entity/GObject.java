@@ -27,7 +27,7 @@ public class GObject extends BeanOrigin {
 	private double speed_base = -1; // 基础速度
 	private double speed_multiples = 1; // 速度倍率
 	private long startStayMs = 0;// 开始停留时间
-	private int stayMs = 0; // 停留时间毫秒 ms
+	private long currStayMs = 0; // 停留时间
 	protected boolean isRunBack = false; // 是否返了(用于距离减少) - 目前没用
 	private double initPos = 0; // 初始位置
 	private double volume = 0.2d; // 体积大小
@@ -188,7 +188,7 @@ public class GObject extends BeanOrigin {
 		this.runTo = 0;
 		this.nState = 0;
 		this.startStayMs = 0;
-		this.stayMs = 0;
+		this.currStayMs = 0;
 		this.isRunBack = false;
 		this.initPos = 0;
 		this.nextLiveMs = 0;
@@ -228,7 +228,7 @@ public class GObject extends BeanOrigin {
 		this.nextLiveMs = 0;
 		this.nState = 2;
 		this.isRunBack = (this.runTo == this.belongTo);
-		this.stayOrRun(false);
+		this.isStay(false);
 	}
 
 	public void startRunning(long runTo, int runway) {
@@ -256,10 +256,14 @@ public class GObject extends BeanOrigin {
 		}
 	}
 
+	public void runBack() {
+		runBack(GObjConfig.NL_BackSpeedMultiples);
+	}
+
 	private double calcDistance() {
 		double val = initPos;
 		if (isRunning()) {
-			long diffMs = (now() - this.startMs - this.stayMs);
+			long diffMs = (now() - this.startMs) - this.stayMs();
 			val += (diffMs * getSpeed()) / 1000;
 		}
 		return val;
@@ -321,14 +325,29 @@ public class GObject extends BeanOrigin {
 		return false;
 	}
 
-	// 停留会儿吧
-	public void stayOrRun(boolean isStay) {
-		if (isStay) {
-			this.startStayMs = now();
-		} else if(!this.isRunBack) {
-			if (this.startStayMs > 0) {
-				this.startMs += now() - this.startStayMs;
-			}
+	private long stayMs() {
+		if(this.currStayMs > 0)
+			return this.currStayMs;
+		
+		if(this.startStayMs > 0) {
+			return now() - this.startStayMs;
 		}
+		return 0;
+	}
+
+	// 停留会儿吧
+	public void isStay(boolean isStaying) {
+		if (isStaying) {
+			this.startStayMs = now();
+		} else {
+			if (!this.isRunBack && this.startStayMs > 0) {
+				this.currStayMs = now() - this.startStayMs;
+			}
+			this.startStayMs = 0;
+		}
+	}
+	
+	public void goOn(){
+		isStay(false);
 	}
 }
