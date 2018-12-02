@@ -280,8 +280,8 @@ public class GObjRoom extends BeanOrigin implements Runnable {
 		if (wolf.isEnd()) {
 			wolf.disappear(true);
 		} else if (wolf.isCanRelive()) {
-//			long runTo = getOther(wolf.getPreRunto());
-//			wolf.readyGo(runTo);
+			// long runTo = getOther(wolf.getPreRunto());
+			// wolf.readyGo(runTo);
 			wolf.ready();
 		} else if (wolf.isReadyRunning()) {
 			_wolf(ses1);
@@ -339,19 +339,11 @@ public class GObjRoom extends BeanOrigin implements Runnable {
 		if (!spinach.isReadyRunning()) {
 			return;
 		}
-
 		int way = spinach.getRunway();
 		GObject tmp1 = ses1.getFirst4Way(way);
 		GObject tmp2 = ses2.getFirst4Way(way);
-		double df1 = spinach.diffDistance(tmp1);
-		double df2 = spinach.diffDistance(tmp2);
-		if (df1 <= GObjConfig.NMax_CollidDistance) {
-			tmp1.setGobjType(ETGObj.SheepBig);
-			spinach.disappear(true);
-		} else if (df2 <= GObjConfig.NMax_CollidDistance) {
-			tmp2.setGobjType(ETGObj.SheepBig);
-			spinach.disappear(true);
-		}
+		spinach.beEating(tmp1);
+		spinach.beEating(tmp2);
 	}
 
 	void handlerNeutral(GObjSession ses1, GObjSession ses2) {

@@ -10,7 +10,8 @@ import com.bowlong.lang.RndEx;
  */
 public class GObjSpinach extends GObject {
 	private static final long serialVersionUID = 1L;
-
+	private long endEatMs = 0;
+	private GObject gobjEating = null;
 	public GObjSpinach() {
 		super(ETGObj.Spinach, 0);
 	}
@@ -24,7 +25,7 @@ public class GObjSpinach extends GObject {
 		ready(_initPos);
 	}
 
-	public double diffDistance(GObject gobj) {
+	private double diffDistance(GObject gobj) {
 		double lens = GObjConfig.LenMax_Runway;
 		if (gobj == null)
 			return lens;
@@ -36,7 +37,29 @@ public class GObjSpinach extends GObject {
 	}
 
 	public void disappear(boolean isReLive) {
+		this.endEatMs = 0;
+		this.gobjEating = null;
 		int delay = isReLive ? GObjConfig.LMS_NextLive_Spinach : 0;
 		super.disappear(delay);
+	}
+	
+	public void beEating(GObject obj1){
+		if(!this.isReadyRunning()){
+			return;
+		}
+		
+		if(obj1 == this.gobjEating){
+			if(now() <= endEatMs){
+				this.gobjEating.setGobjType(ETGObj.SheepBig);
+				this.disappear(true);
+			}
+			return;
+		}
+		
+		double df1 = diffDistance(obj1);
+		if (df1 <= GObjConfig.NMax_CollidDistance) {
+			this.disappear(true);
+			obj1.setGobjType(ETGObj.SheepBig);
+		}
 	}
 }
