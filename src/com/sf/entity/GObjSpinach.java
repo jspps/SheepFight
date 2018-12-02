@@ -67,7 +67,7 @@ public class GObjSpinach extends GObject {
 			}
 			
 			if(gobj == this.gobjEating){
-				if(now() <= endEatMs){
+				if(this.endEatMs > 0 && now() >= this.endEatMs){
 					this.changeBig();
 				}
 				return;
