@@ -169,7 +169,9 @@ public class GObject extends BeanOrigin {
 		this.isRunBack = false;
 		this.initPos = 0;
 		this.nextLiveMs = 0;
-		this.getGobjType().setSpeed(this.base_speed);
+		if (this.base_speed != -1) {
+			this.getGobjType().setSpeed(this.base_speed);
+		}
 	}
 
 	public void disappear(boolean isReLive) {

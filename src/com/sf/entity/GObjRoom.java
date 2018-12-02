@@ -404,7 +404,7 @@ public class GObjRoom extends BeanOrigin implements Runnable {
 			if (power1 < power2) {
 				neutral.doMutiny(srcSes.getId(), beTo, power2);
 			} else if (power1 > power2) {
-				gobj.runBack(0);
+				gobj.runBack(GObjConfig.NL_BackSpeedMultiples);
 			}
 		}
 	}
@@ -430,10 +430,10 @@ public class GObjRoom extends BeanOrigin implements Runnable {
 				powerState = gobj1.comPower(gobj2);
 				switch (powerState) {
 				case 1:
-					gobj2.runBack(2);
+					gobj2.runBack(GObjConfig.NL_BackSpeedMultiples);
 					break;
 				case -1:
-					gobj1.runBack(2);
+					gobj1.runBack(GObjConfig.NL_BackSpeedMultiples);
 					break;
 				default:
 					break;

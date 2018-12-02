@@ -30,7 +30,7 @@ public class GObjConfig {
 	static final public int NI_Sheep_Wait = 3; // 等待区 - 初始羊数(NI = NumInit)
 	static final public int NMax_Sheep_Wait = 3; // 等待区 - 最大羊数
 	static final public int LMS_RoomWaitEnd = 2 * 1000; // 房间战斗结束倒计时 - 2秒
-	static final public int NMax_RoomTime = 10 * 60 * 1000; // 房间战斗最长时间为 10 分钟
+	static final public int NMax_RoomTime = 20 * 60 * 1000; // 房间战斗最长时间  (数字1) - 分钟
 	static final public int NMin_RoomTime = 30 * 1000; // 判断胜负的最小时间
 	static final public int LMS_NextNewSheep = 5000; // 下一次随机得羊的时间
 	static final public int NMax_RobotAI_Basic = 100; // 机器人AI的随机底数
@@ -39,6 +39,7 @@ public class GObjConfig {
 	static final public int LMS_NextRobotDownSheep = 5000; // 机器人 放羊時間 间隔
 	static final public int LenMax_Runway = 10; // 跑道总长度
 	static final public double NMax_CollidDistance = 0.08; // 判断相碰的最小距离
+	static final public double NL_BackSpeedMultiples = 2.5; // 羊碰撞后返回自己的速度倍率
 	static final public double NI_PosWolf = 5; // 狼的初始位置
 	static final public double NMin_SpeedWolf = 2; // 狼最小随机速度
 	static final public double NMax_SpeedWolf = 2; // 狼最大随机速度
