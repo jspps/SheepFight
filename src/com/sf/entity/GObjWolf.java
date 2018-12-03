@@ -57,7 +57,7 @@ public class GObjWolf extends GObject {
 			return;
 		
 		if(this.ms_next_rndway > 0){
-			if(now() <= this.ms_next_rndway){
+			if(now() >= this.ms_next_rndway){
 				ready();
 			}
 		}
