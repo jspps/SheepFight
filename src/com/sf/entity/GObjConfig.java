@@ -44,7 +44,7 @@ public class GObjConfig {
 	static final public double NMin_SpeedWolf = 2; // 狼最小随机速度
 	static final public double NMax_SpeedWolf = 2; // 狼最大随机速度
 	static final public int LMS_NextLive_Wolf = 5000; // 狼消失后，下次刷新间隔
-	static final public int LMS_NextRndWay_Wolf = 5500; // 狼所在跑道，没羊来，随机下一个跑道的时间
+	static final public int LMS_NextRndWay_Wolf = 6000; // 狼所在跑道，没羊来，随机下一个跑道的时间
 	static final public double NI_PosNeutral = 5; // 叛变羊的初始位置
 	static final public double NMin_SpeedNeutral = 1.0; // 叛变羊最小随机速度
 	static final public double NMax_SpeedNeutral = 1.0; // 叛变羊最大随机速度
