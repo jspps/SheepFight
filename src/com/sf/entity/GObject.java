@@ -30,7 +30,7 @@ public class GObject extends BeanOrigin {
 	private long currStayMs = 0; // 停留时间
 	protected boolean isRunBack = false; // 是否返了(用于距离减少) - 目前没用
 	private double initPos = 0; // 初始位置
-	private double volume = 0.38d; // 体积大小
+	private double volume = 0.2d; // 体积大小
 	protected long nextLiveMs; // 下次复活时间
 
 	public long getId() {
@@ -50,6 +50,7 @@ public class GObject extends BeanOrigin {
 		this.speed_base = this.gobjType.getSpeed();
 		setSpeed(this.speed_base * this.speed_multiples);
 		setPower(this.gobjType.getPower());
+		setVolume(this.gobjType.getVolume());
 	}
 
 	public int getPower() {
@@ -298,7 +299,7 @@ public class GObject extends BeanOrigin {
 
 	// 是否移动到终点
 	public boolean isEnd() {
-		return isEnd(0, false,true);
+		return isEnd(0, false, true);
 	}
 
 	public boolean isColliding(GObject gobj) {

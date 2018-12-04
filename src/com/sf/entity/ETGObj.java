@@ -11,8 +11,8 @@ import java.util.Map;
  * @version createtime：2018-11-11上午9:13:20
  */
 public enum ETGObj {
-	SheepSmall(1, "小羊", 1), SheepMiddle(2, "中羊", 2), SheepBig(3, "大羊", 4), 
-	SheepNeutral(4, "叛变羊"), Wolf(5, "狼"), Spinach(6, "菠菜罐头", 7000, 0),;
+	SheepSmall(1, "小羊", 1,0.6), SheepMiddle(2, "中羊", 2,0.78), SheepBig(3, "大羊", 4, 1.05), 
+	SheepNeutral(4,"叛变羊", 1), Wolf(5, "狼", 1.32), Spinach(6, "菠菜罐头", 7000, 0.6),;
 	// 取得对象的方法
 	static public ETGObj get(int index) {
 		for (ETGObj got : ETGObj.values()) {
@@ -89,16 +89,16 @@ public enum ETGObj {
 		this.volume = volume;
 	}
 
-	private ETGObj(int index, String name, int power, double speed) {
-		this(index, name, power, speed, 0.38d);
+	private ETGObj(int index, String name, int power, double volume) {
+		this(index, name, power, 1, volume);
 	}
 
-	private ETGObj(int index, String name, int power) {
-		this(index, name, power, 1);
+	private ETGObj(int index, String name, double volume) {
+		this(index, name, 0,volume);
 	}
 
 	private ETGObj(int index, String name) {
-		this(index, name, 0);
+		this(index, name, 0.5d);
 	}
 
 	public String toStr() {
