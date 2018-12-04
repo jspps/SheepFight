@@ -30,7 +30,7 @@ public class GObject extends BeanOrigin {
 	private long currStayMs = 0; // 停留时间
 	protected boolean isRunBack = false; // 是否返了(用于距离减少) - 目前没用
 	private double initPos = 0; // 初始位置
-	private double volume = 0.2d; // 体积大小
+	private double volume = 0.38d; // 体积大小
 	protected long nextLiveMs; // 下次复活时间
 
 	public long getId() {
@@ -272,7 +272,13 @@ public class GObject extends BeanOrigin {
 		return val;
 	}
 
-	public double allDistance() {
+	protected double allDistance() {
+		return allDistance(false);
+	}
+
+	protected double allDistance(boolean ignoreVolume) {
+		if (ignoreVolume)
+			return calcDistance();
 		return calcDistance() + this.volume / 2;
 	}
 
@@ -284,15 +290,15 @@ public class GObject extends BeanOrigin {
 	}
 
 	// 是否移动到终点
-	private boolean isEnd(double otherDis, boolean isAbs) {
-		double mvDis = allDistance() + otherDis;
+	private boolean isEnd(double otherDis, boolean isAbs, boolean ignoreVolume) {
+		double mvDis = allDistance(ignoreVolume) + otherDis;
 		double diff = this.endDistance - mvDis;
 		return isJugdeCollide(diff, isAbs);
 	}
 
 	// 是否移动到终点
 	public boolean isEnd() {
-		return isEnd(0, false);
+		return isEnd(0, false,true);
 	}
 
 	public boolean isColliding(GObject gobj) {
@@ -304,7 +310,7 @@ public class GObject extends BeanOrigin {
 			double curVal = allDistance();
 			return isJugdeCollide(val - curVal, true);
 		}
-		return isEnd(val, true);
+		return isEnd(val, true, false);
 	}
 
 	public int comPower(GObject gobj) {
