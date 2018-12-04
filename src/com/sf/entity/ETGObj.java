@@ -37,22 +37,7 @@ public enum ETGObj {
 	private int index; // 唯一标识int值
 	private int power;// 力量or总体时长(秒)
 	private double speed;// 速度单位Unit/秒 - 这个单位：可能是米，有可能是一个单元格
-
-	// 构造方法
-	private ETGObj(int index, String name, int power, double speed) {
-		this.name = name;
-		this.index = index;
-		this.power = power;
-		this.speed = speed;
-	}
-
-	private ETGObj(int index, String name, int power) {
-		this(index, name, power, 1);
-	}
-
-	private ETGObj(int index, String name) {
-		this(index, name, 0);
-	}
+	private double volume;// 体积单位与速度一个单位Unit
 
 	// get set 方法
 	public String getName() {
@@ -87,8 +72,37 @@ public enum ETGObj {
 		this.speed = speed;
 	}
 
+	public double getVolume() {
+		return volume;
+	}
+
+	public void setVolume(double volume) {
+		this.volume = volume;
+	}
+
+	// 构造方法
+	private ETGObj(int index, String name, int power, double speed, double volume) {
+		this.name = name;
+		this.index = index;
+		this.power = power;
+		this.speed = speed;
+		this.volume = volume;
+	}
+
+	private ETGObj(int index, String name, int power, double speed) {
+		this(index, name, power, speed, 0.38d);
+	}
+
+	private ETGObj(int index, String name, int power) {
+		this(index, name, power, 1);
+	}
+
+	private ETGObj(int index, String name) {
+		this(index, name, 0);
+	}
+
 	public String toStr() {
-		return String.format("%s_%s_%s_%s_%s_%s", name(), ordinal(), index, name, power, speed);
+		return String.format("%s_%s_%s_%s_%s_%s_%s", name(), ordinal(), index, name, power, speed, volume);
 	}
 
 	public Map<String, Object> toMap(Map<String, Object> map) {
