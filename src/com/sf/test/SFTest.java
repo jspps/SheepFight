@@ -31,7 +31,7 @@ public class SFTest extends BeanOrigin implements Runnable {
 
 	public static void main(String[] args) throws Exception {
 		// test_swids();
-		// test_enum();
+		 test_enum();
 		// test_net();
 		// test_queue();
 		// test_rnd();
@@ -154,6 +154,11 @@ public class SFTest extends BeanOrigin implements Runnable {
 		gt1.setIndex(9);
 		System.out.println(gt1.getIndex());
 		System.out.println(gt1.toStr());
+		System.out.println("==========");
+		ETGObj[] gobjs = ETGObj.values();
+		for (int i = 0; i < gobjs.length; i++) {
+			System.out.println(gobjs[i].toStr());
+		}
 	}
 
 	static void test_swids() {
