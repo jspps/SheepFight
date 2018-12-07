@@ -221,7 +221,7 @@ public class GObjSPlayer extends Session {
 		int lens = ltWay.size();
 		int sum = 0;
 		for (int i = 0; i < lens; i++) {
-			sum += ltWay.get(i).getGobjType().getPower();
+			sum += ltWay.get(i).getPower();
 		}
 		ltWay.clear();
 		return sum;

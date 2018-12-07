@@ -315,11 +315,11 @@ public class GObject extends BeanOrigin {
 	}
 
 	public int comPower(GObject gobj) {
-		if (this.gobjType.getPower() > gobj.getGobjType().getPower()) {
+		if (this.getPower() > gobj.getPower()) {
 			return 1;
 		}
 
-		if (this.gobjType.getPower() < gobj.getGobjType().getPower()) {
+		if (this.getPower() < gobj.getPower()) {
 			return -1;
 		}
 		return 0;
